@@ -1,7 +1,3 @@
----
---- editor:    markdown:      wrap: 72 ---
----
-
 # Time Series Econometrics (TSE): kurssimateriaali
 
 Tämä repo sisältää kurssimateriaalin **lähdetiedostot**. Quarto tuottaa niistä kaksi versiota:
@@ -34,6 +30,8 @@ Tarkemmat ohjeet alla.
 ### 1. Hae uusin versio (Pull)
 
 Git-välilehden sininen nuoli alas. Tee tämä **aina ennen kuin aloitat**. Muuten muokkaat vanhaa versiota, ja myöhemmin Push hylätään.
+
+**Useampi kone** (esim. työ- ja kotikone): tee aina Push, kun lopetat työskentelyn koneella, ja Pull, kun aloitat toisella. Muuten koneille syntyy eri versiot, ja muutoksia jää vain toiselle koneelle.
 
 ### 2. Muokkaa ja esikatsele
 

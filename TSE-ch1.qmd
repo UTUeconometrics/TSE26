@@ -28,7 +28,8 @@ knitr::include_graphics("images/us_cpi.png")
 
 As noted above, **plotting the series and inspecting its main characteristics visually** is a natural first step, to be done alongside any underlying theory or background knowledge of the phenomenon the time series represents. This provides at least a preliminary understanding of the dependence structures behind the **data generating process** (**DGP**). Some important questions to consider when examining a time series graph include:
 
-::: {layout-ncol=2}
+:::: {.columns}
+::: {.column width="50%"}
 (i) Is there a **trend** (that is, do the values of the time series tend to increase or decrease over time)?
 
 (ii) Are there **seasonal effects** (a repeating regular pattern of highs and lows related to, e.g., seasons, quarters, months or days of the week)?
@@ -38,11 +39,14 @@ As noted above, **plotting the series and inspecting its main characteristics vi
 (iv) Is the **variability** (variance) relatively **constant over time**? 
 
 (v) Are there any **abrupt changes**, such as **breaks** or **regime switches** (such as in figure (v)), in either the level or variance of the series?
+:::
 
-```{r, generalexamples, echo=FALSE, out.width=if (knitr::is_html_output()) "150%" else "100%", fig.align = "center", fig.cap=""}
+::: {.column width="50%"}
+```{r, generalexamples, echo=FALSE, out.width=if (knitr::is_html_output()) "100%" else "55%", fig.align = "center", fig.cap=""}
 knitr::include_graphics("images/Ch1-figure_260729_230326.png")
 ```
 :::
+::::
 
 As an example, in the U.S. CPI time series shown above, a clear feature is the persistent trend over time. However, rather than focusing on the level of the CPI, we are primarily interested in its changes as a measure of inflation, as will be discussed below.
 

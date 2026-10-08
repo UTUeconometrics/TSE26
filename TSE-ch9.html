@@ -1,0 +1,1757 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Time Series Econometrics (TSE) - 9&nbsp; Volatility modelling: AR-GARCH model</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./TSE-ch10.html" rel="next">
+<link href="./TSE-ch8.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<!-- Lisätään jokaisen HTML-sivun <head>-osaan (ks. _quarto.yml). -->
+
+<!-- Omat LaTeX-makrot MathJaxille. Pidä samana kuin assets/preamble-TSE.tex. -->
+<script>
+window.MathJax = {
+  tex: {
+    macros: {
+      ubar: ["\\mkern3mu\\underline{\\mkern-3mu#1\\mkern-3mu}\\mkern3mu", 1]
+    }
+  }
+};
+</script>
+
+<!-- Estää hiiren oikean painikkeen valikon (Roopen alkuperäinen ratkaisu). -->
+<script>
+document.addEventListener('contextmenu', event => event.preventDefault());
+</script>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<link rel="stylesheet" href="assets/styles-TSE.css">
+</head>
+
+<body class="nav-sidebar docked">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./TSE-ch9.html"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Volatility modelling: AR-GARCH model</span></a></li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Time Series Econometrics (TSE)</a> 
+        <div class="sidebar-tools-main">
+    <a href="./msTSE2026.pdf" rel="" title="Download PDF" class="quarto-navigation-tool px-1" aria-label="Download PDF"><i class="bi bi-file-pdf"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./TSE-ch1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./TSE-ch2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">A primer on time series models</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./TSE-ch3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Stationary processes</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./TSE-ch4.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Linear process</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./TSE-ch5.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">ARMA processes</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./TSE-ch6.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Parameter estimation</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./TSE-ch7.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">ARMA model selection</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./TSE-ch8.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Forecasting ARMA processes</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./TSE-ch9.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Volatility modelling: AR-GARCH model</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./TSE-ch10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Multivariate time series models</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./TSE-ch11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Basics of vector autoregression</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./TSE-ch12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Nonstationary processes</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./TSE-ch13.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Linear regressions with <span class="math inline">\(I(1)\)</span> variables</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#modelling-conditional-variance" id="toc-modelling-conditional-variance" class="nav-link active" data-scroll-target="#modelling-conditional-variance"><span class="header-section-number">9.1</span> Modelling conditional variance</a></li>
+  <li><a href="#model-formulation" id="toc-model-formulation" class="nav-link" data-scroll-target="#model-formulation"><span class="header-section-number">9.2</span> Model formulation</a></li>
+  <li><a href="#garch11-and-archs-models" id="toc-garch11-and-archs-models" class="nav-link" data-scroll-target="#garch11-and-archs-models"><span class="header-section-number">9.3</span> GARCH(1,1) and ARCH(<span class="math inline">\(s\)</span>) models</a></li>
+  <li><a href="#parameter-estimation" id="toc-parameter-estimation" class="nav-link" data-scroll-target="#parameter-estimation"><span class="header-section-number">9.4</span> Parameter estimation</a></li>
+  <li><a href="#extra-forecasting" id="toc-extra-forecasting" class="nav-link" data-scroll-target="#extra-forecasting"><span class="header-section-number">9.5</span> Extra: Forecasting</a></li>
+  <li><a href="#garch-in-mean-model" id="toc-garch-in-mean-model" class="nav-link" data-scroll-target="#garch-in-mean-model"><span class="header-section-number">9.6</span> GARCH-in-mean model</a></li>
+  <li><a href="#r-lab" id="toc-r-lab" class="nav-link" data-scroll-target="#r-lab"><span class="header-section-number">9.7</span> R Lab</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span id="part-ch9" class="quarto-section-identifier"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Volatility modelling: AR-GARCH model</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="modelling-conditional-variance" class="level2" data-number="9.1">
+<h2 data-number="9.1" class="anchored" data-anchor-id="modelling-conditional-variance"><span class="header-section-number">9.1</span> Modelling conditional variance</h2>
+<p>ARMA models can be characterized as models for the conditional mean of a stationary process.</p>
+<ul>
+<li>When the invertibility condition holds, ARMA processes have the AR(<span class="math inline">\(\infty\)</span>) representation from which it can be seen that the conditional expected value of <span class="math inline">\(y_{t}\)</span>, conditional on the past of the process <span class="math inline">\(\left\{y_{t-1},y_{t-2},\ldots\right\}\)</span>, is <span class="math inline">\(\mathsf{E}_{t-1}(y_t) = \mu -\sum_{j=1}^{\infty}\pi_{j} (y_{t-j}-\mu)\)</span>.</li>
+</ul>
+<p>The conditional variance of an ARMA process (model) <span class="math inline">\(y_t\)</span> is <span class="math display">\[\begin{eqnarray*}
+\mathsf{Var}_{t-1}(y_t) &amp;=&amp; \mathsf{E}_{t-1}(y_t-\mathsf{E}_{t-1}(y_t))^2 \\
+&amp;=&amp; \mathsf{E}_{t-1}(u^2_t) \\
+&amp;=&amp; \mathsf{E}(u^2_t) \qquad (\mathrm{CEV2}) \\
+&amp;=&amp; \sigma ^{2}.
+\end{eqnarray*}\]</span> This shows that evident systematic variation in conditional variance, that several time series contain, cannot be taken into consideration with an ARMA model. Typical examples of such time series are financial time series and especially different asset return series.</p>
+<p>&nbsp;</p>
+<p><strong>Empirical example</strong>. The NASDAQ 100 (ticker symbol ^NDX) is a major stock market index that tracks the performance of 100 of the largest non-financial companies listed on the NASDAQ stock market (U.S. stock market).</p>
+<ul>
+<li><p>It includes 100 of the largest domestic and international companies listed on NASDAQ, weighted by a modified market capitalization method to limit the influence of the very large firms. The index excludes financial companies and is heavily concentrated in the technology sector and dominated by a few extremely large companies like (as in 2025) NVIDIA Corporation (NVDA), Microsoft Corp.&nbsp;(MSFT), Apple Inc.&nbsp;(AAPL) and Amazon.com Inc.&nbsp;(AMZN).</p></li>
+<li><p>The NASDAQ 100 is widely viewed as the benchmark for large-cap growth stocks.</p></li>
+<li><p>The data source: quantmod package in R, which accesses publicly available financial data, seemingly sourced from Yahoo Finance.</p></li>
+</ul>
+<p>Let us consider excess stock returns of the NASDAQ 100 over the 3-Month Treasury Bill rate. As a simple approximation, we can think that we are interested in the percentage changes (log-differences) of the NASDAQ 100 index adjusted for risk-free rate return (see Transformations in Section 1). Below we depict the daily excess stock returns between 1.1.2003–30.9.2025.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/nasdaq_returns.png" class="img-fluid figure-img" style="width:85.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<center>
+<span style="color: #0069d9;">Figure: Excess stock returns of the NASDAQ 100 stock market index. (source: R package quantmod)</span>
+</center>
+<p>&nbsp;</p>
+<p>The return series seems quite stationary in terms of its level. Below we depict the sample autocorrelation and partial autocorrelation functions for the first 40 lags and their approximate 95% critical bounds. These suggest that there is some autocorrelation but its degree is not very high.</p>
+<ul>
+<li><p>Typically asset returns are almost non-autocorrelated</p></li>
+<li><p>For this sample period and NASDAQ returns, the resulting Ljung-Box test statistics reject the null hypothesis of no autocorrelation with all the relevant statistical significance levels.</p></li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/nasdaq_returns_ACFPACF.png" class="img-fluid figure-img" style="width:85.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<center>
+<span style="color: #0069d9;">Figure: Sample autocorrelations and partial autocorrelations of the NASDAQ 100 excess returns.</span>
+</center>
+<p>&nbsp;</p>
+<p>The asset return series exhibits, however, some even more clear and typical variation, which is reflected by the autocorrelation function of the squared observations: All the reported autocorrelation coefficients of squared observations exhibit clear positive autocorrelation exceeding the 95%-critical bound. The approximate <span class="math inline">\(p\)</span>-value of the McLeod-Li test with <span class="math inline">\(H=10\)</span>, and also with other lag length selections, is zero with four decimal precision.</p>
+<ul>
+<li><p>There are periods (see above) during which the variation of the series is either larger or smaller than on average. This “<strong>volatility clustering</strong>” is a certain type of heteroskedasticity.</p></li>
+<li><p>When the definition of variance is taken into account, it is natural to investigate this using the autocorrelation function of the squared observations. Notable is also the large difference between large and small absolute values, which suggests a more fat-tailed distribution than the normal distribution.</p></li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/nasdaq_squaredreturns.png" class="img-fluid figure-img" style="width:75.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<center>
+<span style="color: #0069d9;">Figure: Sample autocorrelations for squared observations (squared stock returns).</span>
+</center>
+<p>&nbsp;</p>
+<p>In what follows, heteroskedasticity similar to that of the stock return series above is thought to be not related with changes in unconditional variance, but rather with changes in the <strong>conditional variance</strong> when conditioning on the past values of the series. Next, we will first consider some general aspects of models used in modelling conditional variance, and then focus on some particular models that are most common in practice.</p>
+<p>&nbsp;</p>
+</section>
+<section id="model-formulation" class="level2" data-number="9.2">
+<h2 data-number="9.2" class="anchored" data-anchor-id="model-formulation"><span class="header-section-number">9.2</span> Model formulation</h2>
+<p>In this section, we consider an AR-GARCH model determined by the following two equations <span class="math display">\[\begin{equation*}
+y_{t} = \nu + \phi_{1}y_{t-1}+\cdots+\phi_{p}y_{t-p}+u_{t},
+\end{equation*}\]</span> <span class="math display">\[\begin{equation*}
+u_{t} = h_{t}^{1/2}\varepsilon_{t},\quad \varepsilon_{t}\sim\mathsf{iid}(0,1),
+\end{equation*}\]</span> where <span class="math inline">\(h_{t}\)</span> is a function of the variables <span class="math inline">\(u_{t-j}\)</span>, <span class="math inline">\(j&gt;0\)</span>, and the error term <span class="math inline">\(\varepsilon_{t}\)</span> is assumed to be independent of the variables <span class="math inline">\(y_{t-j}, \, j&gt;0\)</span>, and hence also of the variables <span class="math inline">\(u_{t-j}\)</span>, <span class="math inline">\(j&gt;0\)</span>. In other words, we consider an <strong>AR(<span class="math inline">\(p\)</span>) model whose error term is conditionally heteroskedastic</strong>.</p>
+<ul>
+<li>The coefficients <span class="math inline">\(\phi_{1},\ldots,\phi_{p}\)</span> are assumed to satisfy the (sufficient) stationarity condition of the AR(<span class="math inline">\(p\)</span>) process: <span class="math inline">\(1 - \phi_1 z - \cdots - \phi_p z^p = \phi(z) \neq 0, \, \mathrm{when} \, |z| \le 1\)</span>.</li>
+</ul>
+<p>Regarding the conditional variance, by its definition, the variance of a random variable is associated with the squares of the random variable. Therefore, it seems natural that the conditional variance <span class="math inline">\(h_t\)</span> would depend on the past squared values of the process. For concreteness sake, consider a general <strong>GARCH(<span class="math inline">\(r\)</span>,<span class="math inline">\(s\)</span>) model</strong> <span class="math display">\[\begin{equation*}
+    h_{t}=\omega+\beta_{1}h_{t-1}+\cdots+\beta_{r}h_{t-r}+\alpha_{1}u_{t-1}^{2}+\cdots+\alpha_{s}u_{t-s}^{2},
+\end{equation*}\]</span> whose parameters are assumed to satisfy the required conditions for non-negativeness, identification, and strict stationarity (to be considered below).</p>
+<p>As before, we denote the conditional expectation as <span class="math inline">\(\mathsf{E}_{t-1}\left(\cdot\right)=\mathsf{E}\left(\cdot\left\vert y_{s},\text{ }s\leq t-1\right.\right)\)</span>. Because <span class="math inline">\(u_{t}\)</span> is a function of the variables <span class="math inline">\(y_{t}\)</span>, …, <span class="math inline">\(y_{t-p}\)</span>, <strong>the conditional variance</strong> <span class="math inline">\(h_{t}\)</span> <strong>is a function of the variables</strong> <span class="math inline">\(y_{t-j}\)</span>, <span class="math inline">\(j&gt;0\)</span>. Therefore, we can use the same arguments as considered, e.g., in forecast construction (see CEV4) to conclude that in the AR-GARCH model <span class="math display">\[\begin{equation*}
+\mathsf{E}_{t-1}\left(  u_{t}\right)  =h_{t}^{1/2} \mathsf{E}_{t-1}\left(\varepsilon_{t}\right)  =h_{t}^{1/2}\mathsf{E}\left(\varepsilon_{t}\right)=0.
+\end{equation*}\]</span> Together with this result, the model equations of the AR-GARCH model can be used to justify the following two results <span class="math display">\[\begin{equation*}
+\mathsf{E}_{t-1}(y_t) = \nu + \phi_{1} y_{t-1}+ \cdots + \phi_{p}y_{t-p} \quad \mathrm{and} \quad   \mathsf{Var}_{t-1}(y_t)=h_t.
+\end{equation*}\]</span></p>
+<ul>
+<li>The latter result can be justified by noticing that <span class="math inline">\(y_{t} = \mathsf{E}_{t-1}\left(y_{t}\right) + u_{t}\)</span> and that <span class="math display">\[\begin{eqnarray*}
+\mathsf{Var}_{t-1}\left(y_{t}\right) &amp;=&amp; \mathsf{E}_{t-1}(y_t - \mathsf{E}_{t-1}(y_t))^2 \\
+&amp;=&amp; \mathsf{E}_{t-1}\left(u_{t}^{2}\right) \\
+&amp;=&amp; h_t \mathsf{E}(\varepsilon_{t}^{2}) \\
+&amp;=&amp; h_{t},
+\end{eqnarray*}\]</span> where the result CEV2 and the identity <span class="math inline">\(u_{t}^{2}=h_{t}\varepsilon_{t}^{2}\)</span> are used (see the general model definition above).</li>
+</ul>
+<p>These two results demonstrate that the conditional mean and conditional variance of the process <span class="math inline">\(y_{t}\)</span> depend on the past values of the process. Based on the above points, <strong>building a volatility model</strong>, that is selecting the model equation for <span class="math inline">\(h_t\)</span>, roughly consists of the following steps:</p>
+<ul>
+<li><p>Finding an adequate specification for the conditional mean <span class="math inline">\(\mathsf{E}_{t-1}(y_t)\)</span> (e.g., to select a suitable AR or ARMA model, and including also possible deterministic terms) is necessary to obtain a suitable specification for the conditional variance.</p></li>
+<li><p>Checking for the (conditional) heteroskedasticity of the error term. This can be based on residuals, as they are empirical counterparts of the error terms. That is, testing for “ARCH effects” using, e.g., the McLeod-Li test or the ARCH-LM test described below.</p></li>
+<li><p>Finding a sufficient specification for the conditional variance <span class="math inline">\(h_t\)</span>. There are a lot of different alternative model specifications to GARCH(<span class="math inline">\(r,s\)</span>) suggested in the econometric literature. Replacing it with one of the alternatives yields a straightforward extension of the AR-GARCH model introduced above.</p></li>
+<li><p>Estimation of the full model can be carried out by the method of maximum likelihood (see details below).</p></li>
+</ul>
+<p>&nbsp;</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Extra: Relation to risk management and Value-at-Risk (VaR)
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The core motivation for modeling conditional heteroskedasticity (time-varying volatility <span class="math inline">\(h_t\)</span>) in asset returns <span class="math inline">\(y_t\)</span> is its direct and profound impact on risk management, particularly in calculating measures like Value-at-Risk (VaR).</p>
+<p>The question that often arises in risk management is: What is the maximum expected loss over a specific time horizon with a given confidence level? This loss is the Value-at-Risk (VaR) threshold <span class="math inline">\(c\)</span>. The VaR threshold <span class="math inline">\(c\)</span> is the loss level such that the probability of the actual loss <span class="math inline">\(y_{t+1}\)</span> being less than or equal to <span class="math inline">\(c\)</span> is a fixed, small probability <span class="math inline">\(\pi\)</span> (e.g., 1% or 5%): <span class="math display">\[\begin{equation*}
+P_t(y_{t+1} \le c ) = G \Bigg(\frac{c - \mathsf{E}_{t}(y_{t+1})}{ h^{1/2}_{t+1}} \Bigg) = \pi,
+\end{equation*}\]</span> where <span class="math inline">\(P_t(\cdot)\)</span> denotes the conditional probability given information up to time <span class="math inline">\(t\)</span>, <span class="math inline">\(\mathsf{E}_{t}(y_{t+1})\)</span> is the conditional mean (return forecast), <span class="math inline">\(h_{t+1}\)</span> is the conditional variance forecast (volatility), and <span class="math inline">\(G(\cdot)\)</span> is the cumulative distribution function (CDF) of the standardized innovation <span class="math inline">\(\frac{y_{t+1} - \mathsf{E}_{t}(y_{t+1})}{ h^{1/2}_{t+1}}\)</span>.</p>
+<p>The Value-at-Risk is the most commonly used risk measure. For the VaR model to be a useful and reliable tool in practice, the specification of the conditional variance <span class="math inline">\(h_t\)</span> is critical. Ignoring or otherwise misspecifying the time-varying nature of volatility (for example, treating <span class="math inline">\(h_t\)</span> as a constant) leads to severely flawed risk estimates.</p>
+</div>
+</div>
+</div>
+<p>&nbsp;</p>
+</section>
+<section id="garch11-and-archs-models" class="level2" data-number="9.3">
+<h2 data-number="9.3" class="anchored" data-anchor-id="garch11-and-archs-models"><span class="header-section-number">9.3</span> GARCH(1,1) and ARCH(<span class="math inline">\(s\)</span>) models</h2>
+<p>Instead of the general GARCH(<span class="math inline">\(r,s\)</span>) model, the <strong>GARCH(1,1) model</strong> <span class="math display">\[\begin{equation*}
+h_t = \omega + \beta_1 h_{t-1} + \alpha_1 u^2_{t-1}
+\end{equation*}\]</span> has been found adequate for most (financial) time series data.</p>
+<ul>
+<li><p>In this GARCH(1,1) case, the non-negativeness of <span class="math inline">\(h_t\)</span> requires <span class="math inline">\(\omega &gt; 0\)</span> and <span class="math inline">\(\alpha_1, \beta_1 \ge 0\)</span>. Moreover, for <span class="math inline">\(\beta_1\)</span> to be identified, <span class="math inline">\(\alpha_1\)</span> must be strictly positive <span class="math inline">\(\alpha_1 &gt; 0\)</span>.</p></li>
+<li><p>In the GARCH(<span class="math inline">\(r,s\)</span>) model, these non-negativeness conditions are clearly more complicated.</p></li>
+</ul>
+<p>Another special case of GARCH models is obtained when <span class="math inline">\(r=0\)</span>. That is the “GARCH-part” is missing and the GARCH(<span class="math inline">\(r,s\)</span>) model reduces to an <strong>ARCH(<span class="math inline">\(s\)</span>)</strong> model <span class="math display">\[\begin{equation*}
+h_t = \omega +  \sum_{i=1}^{s} \alpha_i u^2_{t-i}.
+\end{equation*}\]</span></p>
+<p>In line with the idea of capturing volatility clustering with ARCH and GARCH models, the periods of high (and low) conditional variance tend to persist. This is easy to see with the <strong>ARCH(1) model</strong> (<span class="math inline">\(s=1\)</span>) <span class="math display">\[\begin{equation*}
+h_t = \omega + \alpha_1 u^2_{t-1},
+\end{equation*}\]</span> where <span class="math inline">\(\omega, \alpha_1 \ge 0\)</span>. A large shock (<span class="math inline">\(u^2_{t-1}\)</span>) increases <span class="math inline">\(h_t\)</span>, which then subsequently increases <span class="math inline">\(u^2_t\)</span> and <span class="math inline">\(h_{t+1}\)</span>. This same logic holds also for more general ARCH and GARCH models. Moreover, in the ARCH(1) model, assuming normality of <span class="math inline">\(\varepsilon_t\)</span>, the (unconditional) kurtosis of <span class="math inline">\(u_t\)</span> is <span class="math display">\[\begin{equation*}
+\frac{\mathsf{E}(u^4_t)}{\mathsf{E}(u^2_t)^2} = \frac{3 (1 - \alpha^2_1)}{1 - 3 \alpha^2_1}.
+\end{equation*}\]</span> The kurtosis is finite (i.e.&nbsp;the 4th moment exists) if <span class="math inline">\(3\alpha^{2}_{1} &lt; 1\)</span>, and it then always exceeds the value 3 implied by the normal distribution. The ARCH(1) model is hence capable of capturing excess kurtosis often present in financial data.</p>
+<ul>
+<li><p>Large outliers (in absolute value) appear in (observed) asset returns more often than implied by <span class="math inline">\(\mathsf{nid}\)</span> innovations.</p></li>
+<li><p>Similar result on excess kurtosis holds also for more general ARCH and GARCH models, but the formulae become more complicated.</p></li>
+</ul>
+<p>&nbsp;</p>
+<p>As a summary of large past research, the GARCH(1,1) model has generally been found a successful and parsimonious alternative to the ARCH(<span class="math inline">\(s\)</span>) model with a typically large <span class="math inline">\(s\)</span> for asset returns. Why? By recursive substitutions, we get <span class="math display">\[\begin{eqnarray*}
+h_t &amp;=&amp; \omega + \beta_1 h_{t-1} + \alpha_1 u^2_{t-1} \\
+&amp;=&amp; \omega + \beta_1 \omega + \beta_1^2 h_{t-2} + \alpha_1 \beta_1 u^2_{t-2} + \alpha_1 u^2_{t-1} \\
+&amp; \vdots &amp; \\
+&amp;=&amp; \omega \sum_{j=0}^{k} \beta_1^j + \alpha_1 \sum_{j=0}^{k} \beta_1^j u^2_{t-1-j} + \beta_1^{k+1} h_{t-k-1}.
+\end{eqnarray*}\]</span> This suggests that in the case <span class="math inline">\(\beta_1 &lt; 1\)</span>, <span class="math display">\[\begin{equation*}
+h_t = \omega \sum_{j=0}^{\infty} \beta_1^j + \alpha_1 \sum_{j=0}^{\infty} \beta_1^j u^2_{t-1-j},
+\end{equation*}\]</span> which is a particular kind of ARCH(<span class="math inline">\(\infty\)</span>) form. Therefore, we can conclude that GARCH(1,1) is able to capture volatility clustering in a parsimonious way via only three parameters.</p>
+<p>Another perspective on the GARCH models, and specifically on the GARCH(1,1) model, is obtained by substituting <span class="math inline">\(h_{t}=u_{t}^{2}-\xi_{t}\)</span> (and <span class="math inline">\(h_{t-1}=u_{t-1}^{2}-\xi_{t-1}\)</span>) into the model equation. Therefore, the GARCH(1,1) can be rewritten as <span class="math display">\[\begin{equation*}
+u^2_t = \omega + (\alpha_1 + \beta_1) u^2_{t-1} + \xi_t - \beta_1 \xi_{t-1},
+\end{equation*}\]</span> where <span class="math inline">\(\xi_t = u^2_t - h_t = h_t(\varepsilon^2_t-1)\)</span> and <span class="math inline">\(\mathsf{E}(\xi_t)=0\)</span>. This is an ARMA(1,1) type of presentation for <span class="math inline">\(u_t^2\)</span>. Note, however, that <span class="math inline">\(\xi_{t}\)</span> is only a martingale difference sequence (uncorrelated with its own past, but heteroskedastic), not an <span class="math inline">\(\mathsf{iid}\)</span> error term.</p>
+<ul>
+<li><p>As for the ARMA(1,1) process, the condition <span class="math inline">\(\alpha_1 + \beta_1 &lt; 1\)</span> (together with <span class="math inline">\(\omega&gt;0\)</span> and <span class="math inline">\(\alpha_1, \beta_1 \ge 0\)</span>, which guarantee the non-negativity of <span class="math inline">\(h_t\)</span>) is necessary and sufficient for the existence of a weakly stationary solution, i.e., for a finite unconditional variance <span class="math display">\[\begin{equation*}
+\mathsf{E}(u^2_t) = \frac{\omega}{1 - \alpha_1 - \beta_1}.
+\end{equation*}\]</span></p></li>
+<li><p>Strict stationarity holds under the weaker condition <span class="math inline">\(\mathsf{E}\left[\mathrm{log}(\alpha_{1}\varepsilon_{t}^{2}+\beta_{1})\right]&lt;0\)</span>, which also allows <span class="math inline">\(\alpha_{1}+\beta_{1}=1\)</span>. The latter borderline case is known as the integrated GARCH (IGARCH) model, in which the conditional variance process is strictly stationary but has no finite unconditional variance.</p></li>
+</ul>
+<p>&nbsp;</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Extra: Special case: AR-GARCH model with zero conditional mean
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The AR-GARCH model presentation above contains also the special case of <span class="math inline">\(\mathsf{E}_{t-1}(y_t) = 0\)</span> often considered in various references (books etc.). This leads to the notation <span class="math display">\[\begin{equation*}
+u_t= y_t = h^{1/2}_t \varepsilon_t, \quad \varepsilon_t \thicksim \mathsf{iid}(0,1).
+\end{equation*}\]</span> Therefore, in this case the GARCH(1,1) model reduces to <span class="math display">\[\begin{equation*}
+    h_{t}=\omega+\beta_1 h_{t-1}+\alpha_1 y_{t-1}^{2}
+\end{equation*}\]</span> and in the ARCH(<span class="math inline">\(s\)</span>) case, we get <span class="math display">\[\begin{equation*}
+h_t = \omega +  \sum_{i=1}^{s} \alpha_i y^2_{t-i}.
+\end{equation*}\]</span></p>
+</div>
+</div>
+</div>
+<p>&nbsp;</p>
+</section>
+<section id="parameter-estimation" class="level2" data-number="9.4">
+<h2 data-number="9.4" class="anchored" data-anchor-id="parameter-estimation"><span class="header-section-number">9.4</span> Parameter estimation</h2>
+<p>If it is assumed that the error term is Gaussian <span class="math display">\[\begin{equation*}
+\varepsilon_{t}\sim\mathsf{nid}(0,1),
+\end{equation*}\]</span> the (conditional) likelihood function can be derived following analogous principles as in ARMA models. In other words, assuming <span class="math inline">\(\varepsilon_t \thicksim \mathsf{nid}(0,1)\)</span>, we get <span class="math display">\[\begin{equation*}
+u_t = h^{1/2}_t \varepsilon_t, \quad \varepsilon_t \thicksim \mathsf{nid}(0,1),
+\end{equation*}\]</span> where <span class="math inline">\(h_t = h_t(y_{t-1}, y_{t-2},\ldots)\)</span>, <span class="math inline">\(\varepsilon_t\)</span> and vector <span class="math inline">\((y_{t-1}, y_{t-2},\ldots)\)</span> are independent, and <span class="math inline">\(u_t = y_t - \mathsf{E}_{t-1}(y_t)\)</span>. Assume also that <span class="math inline">\(y_t\)</span> is stationary. Given the above assumptions and the conditional moments (conditional mean and variance) of the AR-GARCH model, we get the conditional density function of the observation <span class="math inline">\(y_t\)</span> as <span class="math display">\[\begin{equation*}
+y_t|\ubar{\mathbf{Y}}_{t-1} \thicksim \mathsf{N}(\nu + \phi_1 y_{t-1} + \cdots + \phi_p y_{t-p}, h_t).
+\end{equation*}\]</span> Therefore, the conditional distribution of <span class="math inline">\(y_{t}\)</span>, conditional on <span class="math inline">\(\ubar{\mathbf{Y}}_{t-1}=(y_1, \ldots y_{t-1}), \, t=1,\ldots,T\)</span>, is Gaussian with the conditional mean (see above) <span class="math inline">\(\nu + \phi_{1}y_{t-1}+\cdots+\phi_{p}y_{t-p}\)</span> and conditional variance <span class="math inline">\(h_{t}\)</span> where the model equation for <span class="math inline">\(h_{t}\)</span> needs to be specified.</p>
+<p>Using the observed time series and required initial values (depending on the specific model) <span class="math inline">\(\ldots, y_{-1}, y_0, y_1, \ldots, y_T\)</span>, as in the parameter estimation of ARMA models, this leads to the conditional joint density function <span class="math display">\[\begin{equation*}
+\prod_{t=1}^{T} f_{y_t|\ubar{\mathbf{Y}}_{t-1}} = (2\pi)^{-T/2} \cdot
+\prod_{t=1}^{T} h^{-1/2}_t \cdot \mathrm{exp}\Big(-\frac{1}{2} \sum_{t=1}^{T} \frac{u^2_t}{h_t} \Big).
+\end{equation*}\]</span> Denote the parameter vector of the AR-GARCH model by <span class="math inline">\(\boldsymbol{\vartheta}=(\boldsymbol{\phi}^{\prime},\boldsymbol{\lambda}^{\prime})^{\prime}\)</span> where</p>
+<ul>
+<li><p><span class="math inline">\(\boldsymbol{\phi} = (\nu, \phi_1,\ldots, \phi_p)^{\prime}\)</span> contains the parameters related to the conditional mean, and</p></li>
+<li><p><span class="math inline">\(\boldsymbol{\lambda} = (\omega, \alpha_1, \ldots, \alpha_s, \beta_1, \ldots, \beta_r)^{\prime}\)</span> contains the parameters of the model for the conditional variance. As an example, in the GARCH(1,1) case (<span class="math inline">\(r=s=1\)</span>), <span class="math inline">\(h_{t} = \omega + \beta_1 h_{t-1} + \alpha_1 u_{t-1}^{2}\)</span>, and hence <span class="math inline">\(\boldsymbol{\lambda} = (\omega, \alpha_1, \beta_1)^{\prime}\)</span>.</p></li>
+<li><p>A remark on the notation: in the estimation of ARMA models (see Section 6) the parameters of the conditional mean were collected in <span class="math inline">\(\boldsymbol{\beta}\)</span>, so that the full parameter vector was <span class="math inline">\(\boldsymbol{\vartheta}=(\boldsymbol{\beta}^{\prime},\sigma^{2})^{\prime}\)</span>. Here the symbol <span class="math inline">\(\beta\)</span> is reserved for the GARCH coefficients <span class="math inline">\(\beta_{1},\ldots,\beta_{r}\)</span>, and hence the conditional mean parameters are denoted by <span class="math inline">\(\boldsymbol{\phi}\)</span> (which now contains the constant term <span class="math inline">\(\nu\)</span> as well). Otherwise the two setups are completely parallel: the single variance parameter <span class="math inline">\(\sigma^{2}\)</span> of the ARMA model is replaced by the vector <span class="math inline">\(\boldsymbol{\lambda}\)</span> that determines the time-varying conditional variance <span class="math inline">\(h_{t}\)</span>.</p></li>
+</ul>
+<p>The log-likelihood then becomes (omitting the constant term <span class="math inline">\(-(T/2)\,\mathrm{log}(2\pi)\)</span> that does not depend on the model parameters) <span class="math display">\[\begin{equation*}
+l(\boldsymbol{\vartheta}) = \sum_{t=1}^{T} l_t(\boldsymbol{\vartheta}) =  -\frac{1}{2} \sum_{t=1}^{T} \mathrm{log}\, h_t(\boldsymbol{\phi}, \boldsymbol{\lambda}) - \frac{1}{2} \sum_{t=1}^{T} \frac{u_t(\boldsymbol{\phi})^2}{h_t(\boldsymbol{\phi},\boldsymbol{\lambda})},
+\end{equation*}\]</span> where the notation <span class="math inline">\(u_t(\boldsymbol{\phi}) = y_t - \nu - \phi_1 y_{t-1} - \cdots - \phi_p y_{t-p}\)</span> and <span class="math inline">\(h_t(\boldsymbol{\phi}, \boldsymbol{\lambda})\)</span> emphasizes that both quantities are functions of the parameters.</p>
+<ul>
+<li><p>Note that the conditional variance <span class="math inline">\(h_{t}\)</span> depends on the conditional mean parameters <span class="math inline">\(\boldsymbol{\phi}\)</span> as well, because it is a function of the lagged errors <span class="math inline">\(u_{t-j}(\boldsymbol{\phi})\)</span>, <span class="math inline">\(j&gt;0\)</span>. This is why the estimation of the two equations cannot, in general, be separated.</p></li>
+<li><p>The connection to the ARMA case is seen by setting <span class="math inline">\(h_{t}\equiv\sigma^{2}\)</span>: the log-likelihood above then reduces to <span class="math inline">\(-(T/2)\,\mathrm{log}(\sigma^{2})-(1/2\sigma^{2})\sum_{t=1}^{T}u_{t}(\boldsymbol{\phi})^{2}\)</span>, which is exactly the conditional Gaussian log-likelihood function of Section 6 (there written in terms of <span class="math inline">\(\boldsymbol{\beta}\)</span>).</p></li>
+<li><p>Just as in the ARMA case, the recursions require initial values: in the GARCH(1,1) case one needs <span class="math inline">\(u_{0}\)</span> and <span class="math inline">\(h_{0}\)</span>. A common choice is to set <span class="math inline">\(h_{0}\)</span> equal to the sample variance of the series (or of the residuals of the conditional mean model). In the stationary case the effect of the initial values vanishes as <span class="math inline">\(T\)</span> increases, so that the conditional and exact ML estimators have the same asymptotic distribution.</p></li>
+</ul>
+<p>Maximization of the likelihood function is performed using numerical methods, similarly as with ARMA models. In addition, the non-negativity and stationarity restrictions of the conditional variance parameters have to be imposed during the optimization.</p>
+<p>&nbsp;</p>
+<p><strong>Statistical inference</strong>. If the normality assumption of the error term <span class="math inline">\(\varepsilon_t \thicksim \mathsf{nid}(0,1)\)</span> made above holds, the usual asymptotic properties of the maximum likelihood estimator (consistency and asymptotic normality) hold, as described for ARMA models in Section 6. If the Gaussianity assumption is found inappropriate, one could either (or both):</p>
+<ul>
+<li><p>Use a non-Gaussian distribution, like the <span class="math inline">\(t\)</span>-distribution for the error term. This leads to the different form for the log-likelihood function, but the general lines to obtain it are the same as above.</p></li>
+<li><p>Modify the asymptotic distribution and interpret the maximum likelihood estimator (MLE) as <strong>quasi-MLE (QMLE)</strong>.</p></li>
+</ul>
+<p>&nbsp;</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Extra: Details on the QMLE
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Concerning the QMLE approach, if the likelihood function is maximized at <span class="math inline">\(\widehat{\boldsymbol{\vartheta}}=(\widehat{\boldsymbol{\phi}}^{\prime},\widehat{\boldsymbol{\lambda}}^{\prime})^{\prime}\)</span>, it can be shown, even without the normality assumption and under general assumptions and regularity conditions, that <span class="math display">\[\begin{equation*}
+\widehat{\boldsymbol{\vartheta}} \underset{as}{\sim}\mathsf{N}\left(\boldsymbol{\vartheta},\boldsymbol{\mathrm{V}}\left(\boldsymbol{\vartheta}\right)^{-1} \boldsymbol{\mathrm{B}} \left(\boldsymbol{\vartheta}\right) \boldsymbol{\mathrm{V}}\left(\boldsymbol{\vartheta}\right)^{-1}\right),
+\end{equation*}\]</span> where <span class="math display">\[\begin{equation*}
+    \boldsymbol{\mathrm{V}}\left(\boldsymbol{\vartheta}\right) = \mathsf{E}\left[-\frac{\partial^{2}l(\boldsymbol{\vartheta})}{\partial\boldsymbol{\vartheta}\partial\boldsymbol{\vartheta}^{\prime}}\right]
+\end{equation*}\]</span> and <span class="math display">\[\begin{equation*}
+\boldsymbol{\mathrm{B}}\left(\boldsymbol{\vartheta}\right)  =\mathsf{E}\left[\sum_{t=1}^{T}\left(\frac{\partial}{\partial\boldsymbol{\vartheta}}l_{t}(\boldsymbol{\vartheta})\right)  \left(\frac{\partial}{\partial\boldsymbol{\vartheta}}l_{t}(\boldsymbol{\vartheta})\right)^{\prime}\right],
+\end{equation*}\]</span> where <span class="math inline">\(l_{t}(\boldsymbol{\vartheta})\)</span> is as described above and its specific form naturally depends on the selected AR-GARCH model.</p>
+<ul>
+<li>The matrix <span class="math inline">\(\boldsymbol{\mathrm{V}}(\boldsymbol{\vartheta})\)</span> is the same (Fisher information) matrix as in Section 6. <!--, now written for the whole parameter vector $\boldsymbol{\vartheta}$ instead of the conditional mean parameters only. --> The matrix <span class="math inline">\(\boldsymbol{\mathrm{B}}(\boldsymbol{\vartheta})\)</span> is the expected outer product of the scores, and the covariance matrix above is the corresponding “sandwich” matrix.</li>
+</ul>
+<!-- - As in Section 6, the result is stated here in the "unscaled" form, in which the covariance matrix is of order $1/T$. The formal statement of the result is $\sqrt{T}(\widehat{\boldsymbol{\vartheta}}-\boldsymbol{\vartheta})\overset{d}{\rightarrow}\mathsf{N}(\boldsymbol{0},\mathcal{I}^{-1}\mathcal{J}\mathcal{I}^{-1})$, where $\mathcal{I}$ and $\mathcal{J}$ are the limits of $T^{-1}\boldsymbol{\mathrm{V}}(\boldsymbol{\vartheta})$ and $T^{-1}\boldsymbol{\mathrm{B}}(\boldsymbol{\vartheta})$, respectively. -->
+<p>Using the empirical counterparts of the matrices <span class="math inline">\(\boldsymbol{\mathrm{V}} \left(\boldsymbol{\vartheta}\right)\)</span> and <span class="math inline">\(\boldsymbol{\mathrm{B}}\left(\boldsymbol{\vartheta}\right)\)</span>, namely <span class="math display">\[\begin{equation*}
+    \widehat{\boldsymbol{\mathrm{V}}}=-\frac{\partial^{2}l(\widehat{\boldsymbol{\vartheta}})}{\partial\boldsymbol{\vartheta}\partial\boldsymbol{\vartheta}^{\prime}} \quad \mathrm{and} \quad \widehat{\boldsymbol{\mathrm{B}}}=\sum_{t=1}^{T}\left(  \frac{\partial}{\partial\boldsymbol{\vartheta}}l_{t}(\widehat{\boldsymbol{\vartheta}})\right)\left(\frac{\partial}{\partial\boldsymbol{\vartheta}}l_{t}(\widehat{\boldsymbol{\vartheta}})\right)^{\prime}
+\end{equation*}\]</span> (both evaluated at the estimates and, as in Section 6, computed in practice with numerical derivatives), the asymptotic distribution of the estimator <span class="math inline">\(\widehat{\boldsymbol{\vartheta}}\)</span> presented above can be used to form approximate standard errors and Wald tests concerning the parameter <span class="math inline">\(\boldsymbol{\vartheta}\)</span>. Specifically, the approximate standard errors are the square roots of the diagonal elements of the estimated sandwich matrix <span class="math display">\[\begin{equation*}
+    \widehat{\boldsymbol{\mathrm{V}}}^{-1}\widehat{\boldsymbol{\mathrm{B}}}\,\widehat{\boldsymbol{\mathrm{V}}}^{-1} = [\widehat{v}^{ij}], \quad \mathrm{s.e.}(\widehat{\vartheta}_{i}) = \sqrt{\widehat{v}^{ii}},
+\end{equation*}\]</span> and individual <span class="math inline">\(t\)</span>-ratios, confidence intervals, and (joint) Wald tests are formed exactly as described for ARMA models in Section 6: the null hypothesis <span class="math inline">\(\vartheta_{i}=0\)</span> is rejected at the 5% level if <span class="math inline">\(|\widehat{\vartheta}_{i}/\sqrt{\widehat{v}^{ii}}| \ge 1.96\)</span>, and the 95% confidence interval is <span class="math inline">\(\widehat{\vartheta}_{i}\pm1.96\sqrt{\widehat{v}^{ii}}\)</span>.</p>
+<ul>
+<li><p>Cf. the maximum likelihood estimation of AR (and ARMA) models.</p></li>
+<li><p>If the normality assumption (i.e.&nbsp;<span class="math inline">\(\varepsilon_t \thicksim \mathsf{nid}(0,1)\)</span>) holds, then <span class="math inline">\(\boldsymbol{\mathrm{V}}\left(\boldsymbol{\vartheta}\right) = \boldsymbol{\mathrm{B}}\left(\boldsymbol{\vartheta}\right)\)</span> (the information matrix equality), and the expressions above for the (QMLE) asymptotic distribution and the standard errors and Wald tests simplify to the usual MLE (maximum likelihood estimator) case <span class="math inline">\(\boldsymbol{\mathrm{V}}(\boldsymbol{\vartheta})^{-1}\)</span>, that is, to the result of Section 6.</p></li>
+<li><p>Unlike the Wald test, the likelihood ratio test is <em>not</em> robust to the misspecification of the error distribution: under the QMLE interpretation the <span class="math inline">\(LR\)</span> statistic no longer has the <span class="math inline">\(\chi^{2}\)</span> limiting distribution. When the normality assumption is questionable, hypotheses concerning <span class="math inline">\(\boldsymbol{\vartheta}\)</span> should therefore be tested with Wald tests based on the robust covariance matrix above.</p></li>
+<li><p>The asymptotic results require the parameters to be interior points of the admissible parameter space. In particular, testing <span class="math inline">\(\alpha_{1}=0\)</span> (“no ARCH effects”) with a <span class="math inline">\(t\)</span>-ratio is <em>not</em> a standard testing problem, because <span class="math inline">\(\alpha_{1}\ge0\)</span> is a boundary value and <span class="math inline">\(\beta_{1}\)</span> is not identified when <span class="math inline">\(\alpha_{1}=0\)</span>. This is one reason why the presence of conditional heteroskedasticity is tested with the ARCH-LM (or McLeod-Li) test described below rather than with a <span class="math inline">\(t\)</span>-ratio. Similarly, the results require strict stationarity, and the normal approximation deteriorates when <span class="math inline">\(\alpha_{1}+\beta_{1}\)</span> is very close to unity (cf.&nbsp;the “nearly violated” conditions in Section 6).</p></li>
+<li><p>If the distribution of <span class="math inline">\(\varepsilon_{t}\)</span> is symmetric, the information matrix is block diagonal with respect to <span class="math inline">\(\boldsymbol{\phi}\)</span> and <span class="math inline">\(\boldsymbol{\lambda}\)</span>, so that the estimators of the conditional mean and conditional variance parameters are asymptotically independent. With asymmetric (skewed) innovations this is no longer the case, and the full covariance matrix has to be used.</p></li>
+</ul>
+</div>
+</div>
+</div>
+<p>&nbsp;</p>
+<p>The practical message from above is that it is often reasonable to rely on the QMLE-based asymptotic distribution result and resulting robust standard errors in the first place, such as so called Bollerslev-Wooldridge standard errors, for different parameter estimates of the AR-GARCH model.</p>
+<ul>
+<li><p>The rationale is that the model specification, and especially the distributional assumption <span class="math inline">\(\varepsilon_t \thicksim \mathsf{nid}(0,1)\)</span>, is rarely exactly correct. Even though the model is not entirely correctly specified, the QMLE-based standard errors allow for additional robustness against such misspecification, which makes their use advisable.</p></li>
+<li><p>Using the QMLE specifically means that we obtain the same estimates <span class="math inline">\(\widehat{\boldsymbol{\vartheta}}\)</span> but we rely on the robust (sandwich) asymptotic covariance matrix and hence on the resulting robust standard errors.</p></li>
+</ul>
+<p>&nbsp;</p>
+<p><strong>Empirical example (continue)</strong>. Consider the estimation result of the AR-GARCH model with Gaussian error term for the excess stock returns of the NASDAQ 100 index. For simplicity, fit a relatively simple AR(1)-GARCH(1,1) model (see above with selections <span class="math inline">\(p=r=s=1\)</span>). That is, we specify</p>
+<ul>
+<li><p>AR(1) model for the conditional mean.</p></li>
+<li><p>GARCH(1,1) model for the conditional variance</p></li>
+</ul>
+<p>That is, we estimate an AR(1) model with GARCH(1,1) errors. The estimation result of the maximum likelihood estimation, based on the normality assumption of <span class="math inline">\(\varepsilon_t\)</span>, yields <span class="math display">\[\begin{eqnarray*}
+y_{t} &amp;=&amp; \underset{{\left(0.013\right) }}{0.087} - \underset{{\left(0.013\right) }}{0.044} y_{t-1} +
+\widehat{u}_{t},
+\notag \\
+&amp;&amp; \\
+\widehat{h}_{t} &amp;=&amp;\underset{{\left(0.006\right) }}{0.035} +\underset{{\left(
+0.013\right) }}{0.876}\widehat{h}_{t-1}+\underset{{\left( 0.012 \right) }}{0.105}\widehat{u}_{t-1}^{2},  \notag
+\end{eqnarray*}\]</span> where we report the robust standard errors under the parameter estimates (see the QMLE asymptotic distribution result). The full estimation result provided by <strong>rugarch package</strong> in R yields the following results:</p>
+<center>
+<div class="sourceCode" id="cb1"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>*---------------------------------*</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ss">*          </span>GARCH Model Fit        *</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>*---------------------------------*</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>Conditional Variance Dynamics   </span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>-----------------------------------</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>GARCH Model : sGARCH(1,1)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>Mean Model  : ARFIMA(1,0,0)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>Distribution    : norm </span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>Optimal Parameters</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>------------------------------------</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="in">        Estimate  Std. Error  t value Pr(&gt;|t|)</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>mu      0.087229    0.012889   6.7679 0.000000</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>ar1    -0.043797    0.014149  -3.0954 0.001965</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>omega   0.035129    0.004868   7.2160 0.000000</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>alpha1  0.104804    0.008170  12.8272 0.000000</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>beta1   0.876000    0.008975  97.6078 0.000000</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>Robust Standard Errors:</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>        Estimate  Std. Error  t value Pr(&gt;|t|)</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>mu      0.087229    0.012567   6.9412 0.000000</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>ar1    -0.043797    0.012630  -3.4677 0.000525</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>omega   0.035129    0.006497   5.4066 0.000000</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>alpha1  0.104804    0.012428   8.4331 0.000000</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>beta1   0.876000    0.012869  68.0716 0.000000</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>LogLikelihood : -9030.906 </span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>Information Criteria</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>------------------------------------</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="in">                   </span></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>Akaike       3.1583</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>Bayes        3.1641</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>Shibata      3.1583</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>Hannan-Quinn 3.1603</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>Weighted Ljung-Box Test on Standardized Residuals</span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>------------------------------------</span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a><span class="in">                        statistic p-value</span></span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>Lag<span class="co">[</span><span class="ot">1</span><span class="co">]</span>                     0.1471  0.7014</span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>Lag<span class="co">[</span><span class="ot">2*(p+q)+(p+q)-1</span><span class="co">][2]</span>    0.6119  0.9317</span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>Lag<span class="co">[</span><span class="ot">4*(p+q)+(p+q)-1</span><span class="co">][5]</span>    2.0557  0.6952</span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>d.o.f=1</span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>H0 : No serial correlation</span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>Weighted Ljung-Box Test on Standardized Squared Residuals</span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>------------------------------------</span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a><span class="in">                        statistic p-value</span></span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>Lag<span class="co">[</span><span class="ot">1</span><span class="co">]</span>                      1.998  0.1575</span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a>Lag<span class="co">[</span><span class="ot">2*(p+q)+(p+q)-1</span><span class="co">][5]</span>     4.486  0.1993</span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a>Lag<span class="co">[</span><span class="ot">4*(p+q)+(p+q)-1</span><span class="co">][9]</span>     6.661  0.2292</span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a>d.o.f=2</span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a>Weighted ARCH LM Tests</span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a>------------------------------------</span>
+<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a><span class="in">            Statistic Shape Scale P-Value</span></span>
+<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a>ARCH Lag<span class="co">[</span><span class="ot">3</span><span class="co">]</span>   0.09937 0.500 2.000  0.7526</span>
+<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a>ARCH Lag<span class="co">[</span><span class="ot">5</span><span class="co">]</span>   4.68135 1.440 1.667  0.1217</span>
+<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a>ARCH Lag<span class="co">[</span><span class="ot">7</span><span class="co">]</span>   5.49080 2.315 1.543  0.1794</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</center>
+<p>The estimation result shows well the point using the QMLE:</p>
+<ul>
+<li><p>The estimated coefficients (“AR”, “ARCH” and “GARCH” estimates) are the same for the “optimal parameters” (that is, when we assume that the normality assumption <span class="math inline">\(\varepsilon_t\)</span> holds) and for QMLE (resulting robust estimation results), but the estimated standard errors are different. Especially for the GARCH part this means, as often in these circumstances, that the robust standard errors are somewhat higher, reflecting the additional uncertainty coming from possible model misspecification.</p></li>
+<li><p>All in all, all the estimated coefficients are statistically significant at the conventional significance levels. Moreover, the typical pattern of the GARCH(1,1) model is also present where the GARCH parameter (here <span class="math inline">\(\beta_1\)</span>) is larger than the ARCH coefficient <span class="math inline">\(\alpha_1\)</span>, and their sum is relatively close to 1. Estimated volatility, which is here the conditional standard deviation <span class="math inline">\(\widehat{h}^{1/2}_t\)</span> of the estimated model and is at times interpreted as a measure of risk in financial markets, is depicted below.</p></li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/nasdaq_estimcondstd.png" class="img-fluid figure-img" style="width:75.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<center>
+<span style="color: #0069d9;">Figure: Estimated conditional standard deviation based on the AR(1)-GARCH(1,1) model for the NASDAQ 100 excess returns.</span>
+</center>
+<p>&nbsp;</p>
+<p>Residual diagnostics show that:</p>
+<ul>
+<li><p>There is no remaining autocorrelation in the residuals and squared residuals (based on the Ljung-Box and the McLeod-Li tests and residual autocorrelation coefficients).</p></li>
+<li><p>The ARCH LM tests do not reject the null hypothesis of no remaining conditional heteroskedasticity in the standardized residuals <span class="math inline">\(\widehat{\varepsilon}_{t}=\widehat{u}_{t}/\widehat{h}_{t}^{1/2}\)</span> either. Together with the previous point, the <span class="math inline">\(p\)</span>-values reported above show that the parsimonious AR(1)-GARCH(1,1) is an adequate model for the NASDAQ 100 excess returns.</p></li>
+<li><p>There is some deviation from the normality assumption in the (standardized) residuals. This suggests that the estimates should be interpreted as QMLEs, as above.</p></li>
+</ul>
+<p>&nbsp;</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/nasdaq_resid_normality.png" class="img-fluid figure-img" style="width:55.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<center>
+<span style="color: #0069d9;">Figure: Histogram and Q-Q plot of (standardized) residuals.</span>
+</center>
+<p>&nbsp;</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Extra: Details on the ARCH-LM test and “weighted” test statistics reported by rugarch
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-4" class="callout-4-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>Testing for ARCH effects: the ARCH-LM test</strong>. Recall the second step of building a volatility model above: before (and after) specifying a model for <span class="math inline">\(h_{t}\)</span>, one has to check whether the error term really is conditionally heteroskedastic. The most common test for this purpose, alongside the McLeod-Li test, is the <strong>ARCH-LM test</strong> of Engle (1982).</p>
+<p>Let <span class="math inline">\(\widehat{u}_{t}\)</span>, <span class="math inline">\(t=1,\ldots,T\)</span>, denote the residuals of the estimated conditional mean model (here the AR(<span class="math inline">\(p\)</span>) model, estimated by OLS or ML). Under the null hypothesis there are no ARCH effects, that is, the conditional variance is constant, <span class="math inline">\(h_{t}=\sigma^{2}\)</span>, whereas under the alternative <span class="math inline">\(h_{t}\)</span> follows an ARCH(<span class="math inline">\(m\)</span>) model. The test is based on the auxiliary regression <span class="math display">\[\begin{equation*}
+    \widehat{u}_{t}^{2} = \gamma_{0} + \gamma_{1}\widehat{u}_{t-1}^{2}+\cdots+\gamma_{m}\widehat{u}_{t-m}^{2} + e_{t}, \quad t=m+1,\ldots,T,
+\end{equation*}\]</span> in which the null hypothesis of no ARCH effects is <span class="math display">\[\begin{equation*}
+    \mathsf{H}_{0}: \gamma_{1}=\cdots=\gamma_{m}=0.
+\end{equation*}\]</span> The Lagrange multiplier (LM) test statistic is obtained from the coefficient of determination <span class="math inline">\(R^{2}\)</span> of this auxiliary regression as <span class="math display">\[\begin{equation*}
+    \mathrm{ARCH\text{-}LM}(m) = TR^{2} \overset{d}{\rightarrow} \chi^{2}(m)
+\end{equation*}\]</span> under the null hypothesis, so that <span class="math inline">\(\mathsf{H}_{0}\)</span> is rejected for large values of the statistic (small <span class="math inline">\(p\)</span>-values), indicating the presence of conditional heteroskedasticity. Equivalently, the conventional <span class="math inline">\(F\)</span>-test of the joint significance of the lagged squared residuals in the auxiliary regression can be used; the two versions are asymptotically equivalent.</p>
+<ul>
+<li><p>The intuition is transparent: if the squared errors are predictable from their own past, the conditional variance is time varying. Note the analogy with the ACF of the squared observations examined in the empirical example above.</p></li>
+<li><p>The test is of the Lagrange multiplier type, which means that only the <em>restricted</em> model has to be estimated: the residuals <span class="math inline">\(\widehat{u}_{t}\)</span> are obtained from the conditional mean model alone, and no GARCH model needs to be estimated. This makes the test convenient at the specification stage. As mentioned above, a Wald (<span class="math inline">\(t\)</span>-ratio) test of <span class="math inline">\(\alpha_{1}=0\)</span> would not be valid here, because the null hypothesis lies on the boundary of the parameter space.</p></li>
+<li><p>Although the alternative hypothesis is an ARCH(<span class="math inline">\(m\)</span>) model, the test also has good power against GARCH alternatives, because a GARCH(1,1) model can be written as an ARCH(<span class="math inline">\(\infty\)</span>) model (see above). The lag length <span class="math inline">\(m\)</span> is chosen by the user, and it is advisable to report the results for a few different values of <span class="math inline">\(m\)</span>.</p></li>
+<li><p><strong>Post-estimation use</strong>. The same test can be applied to the <strong>standardized residuals</strong> <span class="math inline">\(\widehat{\varepsilon}_{t}=\widehat{u}_{t}/\widehat{h}_{t}^{1/2}\)</span> of the estimated AR-GARCH model, in which case it tests whether there is any conditional heteroskedasticity <em>left</em> in the residuals, that is, whether the specified model for <span class="math inline">\(h_{t}\)</span> is adequate. Rejection suggests increasing the orders <span class="math inline">\(r\)</span> and <span class="math inline">\(s\)</span> or changing the specification of the conditional variance.</p></li>
+<li><p>A caveat concerning this post-estimation use: because <span class="math inline">\(\widehat{h}_{t}\)</span> depends on the estimated parameters, the estimation of the model affects the asymptotic distribution of the statistic and the <span class="math inline">\(\chi^{2}(m)\)</span> approximation is no longer exact. The correct limiting distribution for the squared standardized residuals of a fitted GARCH model was derived by Li and Mak (1994). The tests reported by the rugarch package are based on this line of work (see the next remark).</p></li>
+</ul>
+<p>&nbsp;</p>
+<p><strong>Weighted test statistics</strong>. The tests in the output above are <em>weighted</em> versions of the Ljung-Box and ARCH-LM tests. The reason for the modification is twofold.</p>
+<ul>
+<li><p><em>The effect of estimation.</em> The Ljung-Box and ARCH-LM statistics introduced above have their <span class="math inline">\(\chi^{2}\)</span> limiting distributions when they are computed from the true errors. When they are computed from the residuals of an <em>estimated</em> model, the estimation of the parameters changes the asymptotic distribution of the (squared) residual autocorrelations. The conventional remedy is a degrees-of-freedom adjustment, <span class="math inline">\(\chi^{2}(H-k)\)</span>, where <span class="math inline">\(k\)</span> is the number of estimated parameters. This is what the rows “d.o.f=1” and “d.o.f=2” in the output refer to: <span class="math inline">\(k=1\)</span> for the standardized residuals (the AR(1) coefficient <span class="math inline">\(\phi_{1}\)</span>) and <span class="math inline">\(k=2\)</span> for the squared standardized residuals (<span class="math inline">\(\alpha_{1}\)</span> and <span class="math inline">\(\beta_{1}\)</span>). For squared standardized residuals of a fitted GARCH model, the appropriate statistic was derived by Li and Mak (1994).</p></li>
+<li><p><em>Power.</em> The conventional Ljung-Box statistic weights all the autocorrelations equally, <span class="math display">\[\begin{equation*}
+  Q(H) = T(T+2)\sum_{j=1}^{H}\frac{\widehat{\rho}_{j}^{2}}{T-j},
+\end{equation*}\]</span> so that its power deteriorates as <span class="math inline">\(H\)</span> grows: the informative low-order autocorrelations get diluted by a large number of uninformative higher-order ones. Fisher and Gallagher (2012) therefore propose weighting the squared autocorrelations by weights that decrease in the lag length, <span class="math display">\[\begin{equation*}
+  Q_{W}(H) = T(T+2)\sum_{j=1}^{H}\frac{H-j+1}{H}\cdot\frac{\widehat{\rho}_{j}^{2}}{T-j},
+\end{equation*}\]</span> and an analogous weighting is applied to the ARCH-LM statistic. The weighted statistic behaves asymptotically as a linear combination of <span class="math inline">\(\chi^{2}\)</span> distributed random variables, whose distribution is approximated by a <strong>gamma distribution</strong>. This is why the weighted ARCH LM output reports the columns “Shape” and “Scale” (the parameters of the gamma distribution) instead of degrees of freedom.</p></li>
+</ul>
+<p>What this means in practice:</p>
+<ul>
+<li><p>The numerical values of the weighted statistics are <strong>not</strong> comparable with the values of the plain Ljung-Box, McLeod-Li, or ARCH-LM statistics computed as described above; only the <span class="math inline">\(p\)</span>-values and the conclusions drawn from them are comparable. In the example above, both lead to the same conclusion that nothing systematic is left in the residuals.</p></li>
+<li><p>The labels of the type “Lag[<span class="math inline">\(2(p+q)+(p+q)-1\)</span>]” indicate that rugarch selects the lag lengths as a function of the fitted model orders instead of letting the user pick them; the figure in the second brackets is the lag length actually used.</p></li>
+<li><p>For teaching purposes, the unweighted statistics remain the reference case: they are transparent and have the familiar <span class="math inline">\(\chi^{2}\)</span> limiting distribution. In applied work, when the tests are computed from the residuals of an estimated GARCH model, the weighted versions have better size and power properties. They are also directly available in the R package <strong>WeightedPortTest</strong> (functions <code>Weighted.Box.test</code> and <code>Weighted.LM.test</code>).</p></li>
+</ul>
+</div>
+</div>
+</div>
+<p>&nbsp;</p>
+</section>
+<section id="extra-forecasting" class="level2" data-number="9.5">
+<h2 data-number="9.5" class="anchored" data-anchor-id="extra-forecasting"><span class="header-section-number">9.5</span> Extra: Forecasting</h2>
+<p>Assume observations are available up to time <span class="math inline">\(t\)</span> and the object of interest is to forecast the future values of <span class="math inline">\(y_{t+k}\)</span>&nbsp;(<span class="math inline">\(k\geq1\)</span>). In addition to stationarity, assume that <span class="math inline">\(\mathsf{E}\left(y_{t}^{2}\right)&lt;\infty\)</span>.</p>
+<p><strong>Forecasts for <span class="math inline">\(y_t\)</span></strong>. From the first equation of the AR(<span class="math inline">\(p\)</span>)-GARCH model, that is, the model for the conditional mean, it can be seen that the optimal (in the mean square sense) one-step-ahead forecast is <span class="math display">\[\begin{equation*}
+\mathsf{E}_{t}\left(y_{t+1}\right) = \nu + \phi_{1}y_{t}+\cdots+\phi_{p}y_{t+1-p}.
+\end{equation*}\]</span> When <span class="math inline">\(k\geq2\)</span>, it can be seen that (cf.&nbsp;forecasting formulae for AR(MA) models) <span class="math display">\[\begin{equation*}
+    \mathsf{E}_{t}(u_{t+k})=\mathsf{E}_{t}\left[  \mathsf{E}_{t+k-1}(u_{t+k})\right]=0,
+\end{equation*}\]</span> so that <span class="math display">\[\begin{equation*}
+    \mathsf{E}_{t}\left(y_{t+k}\right) = \nu + \phi_{1}\mathsf{E}_{t}(y_{t+k-1})+\cdots+\phi_{p}\mathsf{E}_{t}(y_{t+k-p}), \quad k=1,2,\ldots,
+\end{equation*}\]</span> where <span class="math inline">\(\mathsf{E}_{t}(y_{t+k-j})=y_{t+k-j}\)</span> for <span class="math inline">\(j\geq k\)</span>.</p>
+<ul>
+<li><p>In conclusion, from these and the forecasting formulae for an AR(<span class="math inline">\(p\)</span>) process with a homoskedastic error term, it can be concluded that the optimal forecasts can be formed recursively exactly in the same manner as in the (conditionally) homoskedastic case.</p></li>
+<li><p>In practice, when computing forecasts, unknown parameters naturally need to be replaced with their estimates, which are based on the finite sample sizes, and hence numerically here forecasts can be slightly different than obtained with an AR(<span class="math inline">\(p\)</span>) model with conditionally homoskedastic errors.</p></li>
+</ul>
+<p>&nbsp;</p>
+<p>As the above shows, conditional heteroskedasticity does not affect the forecasting formulae, which are the same as in the AR case discussed earlier. However, the presence of conditional heteroskedasticity changes how the prediction intervals are computed (see Extra below).</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Extra: Prediction intervals under conditional heteroskedasticity
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>To see this, note that because the forecasts can be derived exactly as in the homoskedastic AR(<span class="math inline">\(p\)</span>) model, the same also holds for the <span class="math inline">\(k\)</span>-step forecast errors. Based on the calculations above, <span class="math display">\[\begin{equation*}
+    \mathsf{E}_{t}\left(  u_{t+k-j}\right)  =\left\{
+    \begin{array}{cc}
+         &amp; u_{t+k-j}, \quad \mathrm{when} \quad k\leq j \\
+         &amp; 0, \quad \mathrm{when} \quad k &gt; j,
+    \end{array}
+    \right.
+\end{equation*}\]</span> so that <span class="math display">\[\begin{equation*}
+    y_{t+k}-\mathsf{E}_{t}(y_{t+k})=\sum_{j=0}^{k-1}\psi_{j}u_{t+k-j}=\sum_{j=0}^{k-1}\psi_{j}h_{t+k-j}^{1/2}\varepsilon_{t+k-j},
+\end{equation*}\]</span> where <span class="math inline">\(\psi_{j}\)</span> are again the coefficients of the power series <span class="math inline">\(\psi\left(z\right)=\phi\left(z\right)^{-1}=\sum_{j=0}^{\infty}\psi_{j}z^{j}\)</span> (<span class="math inline">\(\psi_{0}=1\)</span>).</p>
+<p>Let us focus our attention on the one-step-ahead forecast error, whose conditional expected value becomes <span class="math display">\[\begin{equation*}
+    \mathsf{E}_{t}\left[y_{t+1}-\mathsf{E}_{t}(y_{t+1})\right]  =\mathsf{E}_{t}(u_{t+1})=0
+\end{equation*}\]</span> with conditional variance <span class="math display">\[\begin{equation*}
+    \mathsf{E}_{t}\left[\left(y_{t+1}-\mathsf{E}_{t}\left(y_{t+1}\right)\right)^{2}\right]=\mathsf{E}_{t}\left(u_{t+1}^{2}\right)=h_{t+1}.
+\end{equation*}\]</span> This shows that the one-step-ahead prediction error is conditionally heteroskedastic, that is, the forecast accuracy depends on what kind of values the process attained at the forecast origin (at time of forecast computation) and just before it.</p>
+<ul>
+<li>As can be seen from the expression of the forecast error, a similar result holds also for forecast horizons longer than one. Therefore, any analysis of forecast accuracy, such as prediction intervals is sensible to be based on the conditional distribution with conditioning on the history up until the date of forecasting.</li>
+</ul>
+<p>If it is assumed that <span class="math inline">\(\varepsilon_{t}\sim\mathsf{nid}\left( 0,1\right)\)</span>, then the conditional distribution of the one-step-ahead forecast error <span class="math inline">\(u_{t}\)</span> (conditioned on <span class="math inline">\(\left\{y_{t-1},y_{t-2},\ldots\right\}\)</span>) is Gaussian with mean zero and variance <span class="math inline">\(h_{t}\)</span>.</p>
+<ul>
+<li><p>Using this result, one can form prediction intervals for the one-step-ahead forecast exactly as for ARMA process.</p></li>
+<li><p>For multiple step ahead forecasts, the situation is not that straightforward, because the conditional distributions of multiple step forecast errors are not Gaussian and have no simple expressions. Therefore, forming prediction intervals for multiple step ahead forecasts is more complicated.</p></li>
+</ul>
+</div>
+</div>
+</div>
+<p>&nbsp;</p>
+<p><strong>Volatility forecasts</strong>. Concerning forecasting the conditional variance, we assume that observations up to and including time <span class="math inline">\(t\)</span> (i.e.&nbsp;the forecast origin at time <span class="math inline">\(t\)</span>) are available, and that forecasts for <span class="math inline">\(h_{t+1}, h_{t+2},\ldots\)</span> are desired.</p>
+<p>Since <span class="math inline">\(h_{t+1}\)</span> is a (deterministic) function of the variables <span class="math inline">\(y_{t},y_{t-1},\ldots\)</span>, it is already known at the forecast origin, and thus the first conditional variance that genuinely needs to be forecast is <span class="math inline">\(h_{t+2}\)</span>. For simplicity, let us concentrate on the GARCH(1,1) case. Taking conditional expected values (conditional on <span class="math inline">\(\left\{y_{t},y_{t-1},\ldots\right\}\)</span>) of both sides of <span class="math display">\[\begin{equation*}
+    h_{t+2}=\omega+\beta_1 h_{t+1}+\alpha_1 u_{t+1}^{2}
+\end{equation*}\]</span> yields the optimal (in the mean squared error sense) forecast of <span class="math inline">\(h_{t+2}\)</span> as <span class="math display">\[\begin{equation*}
+    \mathsf{E}_{t}\left(h_{t+2}\right)=\omega + \beta_1\mathsf{E}_{t}\left(h_{t+1}\right)+\alpha_1 \mathsf{E}_{t}\left(u_{t+1}^{2}\right),
+\end{equation*}\]</span> where <span class="math inline">\(\mathsf{E}_{t}\left(h_{t+1}\right)=h_{t+1}\)</span> (see CEV4). Moreover, we obtain that (see CEV2 and CEV4) <span class="math display">\[\begin{equation*}
+    \mathsf{E}_{t}\left(u_{t+1}^{2}\right) = \mathsf{E}_{t}\left(h_{t+1}\varepsilon_{t+1}^{2}\right)=h_{t+1}\mathsf{E}_{t}\left(\varepsilon_{t+1}^{2}\right)=h_{t+1}\mathsf{E}\left(\varepsilon_{t+1}^{2}\right)=h_{t+1},
+\end{equation*}\]</span> so that <span class="math display">\[\begin{equation*}
+    \mathsf{E}_{t}\left(h_{t+2}\right)=\omega+(\alpha_1+\beta_1)h_{t+1}.
+\end{equation*}\]</span></p>
+<p>When the forecast horizon is <span class="math inline">\(k\geq3\)</span>, in a similar fashion, we obtain <span class="math display">\[\begin{equation*}
+    \mathsf{E}_{t}\left(h_{t+k}\right) = \omega+\beta_1 \mathsf{E}_{t}\left(h_{t+k-1}\right)+\alpha_1 \mathsf{E}_{t}\left(u_{t+k-1}^{2}\right),
+\end{equation*}\]</span> and finally <span class="math display">\[\begin{equation*}
+    \mathsf{E}_{t}\left(h_{t+k}\right)=\omega \sum_{j=0}^{k-2}\left(\alpha_1+\beta_1\right)^{j}+\left(\alpha_1+\beta_1\right)^{k-1}h_{t+1}, \quad  k=2,3,\ldots,
+\end{equation*}\]</span> where <span class="math inline">\(h_{t+1}\)</span> is a function of variables <span class="math inline">\(\left\{y_{t},y_{t-1},\ldots\right\}\)</span> known at the time when forecasts are constructed.</p>
+<p>&nbsp;</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Extra: Details for forecasting formulae multiple periods ahead
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-6" class="callout-6-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Consider the part <span class="math display">\[\begin{equation*}
+    \mathsf{E}_{t}\left(h_{t+k}\right) = \omega+\beta_1 \mathsf{E}_{t}\left(h_{t+k-1}\right)+\alpha_1 \mathsf{E}_{t}\left(u_{t+k-1}^{2}\right),
+\end{equation*}\]</span> Here <span class="math display">\[\begin{equation*}
+    \mathsf{E}_{t}\left(u_{t+k-1}^{2}\right)=\mathsf{E}_{t}\left(h_{t+k-1}\varepsilon_{t+k-1}^{2}\right) = \mathsf{E}_{t}\left[\mathsf{E}_{t+k-2}\left(h_{t+k-1}\varepsilon_{t+k-1}^{2}\right)\right],
+\end{equation*}\]</span> where the latter equality can be justified based on a generalization of property CEV3, that is, a generalization of the law of iterated expectations.</p>
+<p>This generalization says that <span class="math inline">\(\mathsf{E}\left(Y\left\vert X_{2}\right.\right)=\mathsf{E}\left[\mathsf{E}\left(Y\left\vert X_{1}\right.\right)\left\vert X_{2}\right.\right]\)</span>, when the components of the (potentially infinite-dimensional) random vector <span class="math inline">\(X_{2}\)</span> are a subset of the components of <span class="math inline">\(X_{1}\)</span> (or more generally, <span class="math inline">\(X_{2}\)</span> is a function of <span class="math inline">\(X_{1}\)</span>).</p>
+<p>Because <span class="math display">\[\begin{equation*}
+    \mathsf{E}_{t+k-2}\left(h_{t+k-1}\varepsilon_{t+k-1}^{2}\right)=h_{t+k-1}\mathsf{E}_{t+k-2}\left(\varepsilon_{t+k-1}^{2}\right)=h_{t+k-1},
+\end{equation*}\]</span> we obtain <span class="math display">\[\begin{equation*}
+    \mathsf{E}_{t}\left(u_{t+k-1}^{2}\right)=\mathsf{E}_{t}\left(h_{t+k-1}\right), \quad k=3,4,\ldots\text{ .}
+\end{equation*}\]</span> To summarize, we have shown that <span class="math display">\[\begin{equation*}
+    \mathsf{E}_{t}\left(h_{t+k}\right) = \omega+(\alpha_1+\beta_1)\mathsf{E}_{t}\left(h_{t+k-1}\right),\quad k=2,3,\ldots\text{ .}
+\end{equation*}\]</span> Because <span class="math inline">\(\mathsf{E}_{t}\left(h_{t+1}\right)=h_{t+1}\)</span>, we inductively obtain the solution <span class="math display">\[\begin{equation*}
+    \mathsf{E}_{t}\left(h_{t+k}\right)=\omega \sum_{j=0}^{k-2}\left(\alpha_1+\beta_1\right)^{j}+\left(\alpha_1+\beta_1\right)^{k-1}h_{t+1}, \quad  k=2,3,\ldots,
+\end{equation*}\]</span> where <span class="math inline">\(h_{t+1}\)</span> is a function of variables <span class="math inline">\(\left\{y_{t},y_{t-1},\ldots\right\}\)</span> known at the time of forecasting.</p>
+</div>
+</div>
+</div>
+<p>&nbsp;</p>
+<p>In practice,</p>
+<ul>
+<li><p>the unknown parameters <span class="math inline">\(\alpha_1\)</span>, <span class="math inline">\(\beta_1\)</span>, and <span class="math inline">\(\omega\)</span> have to be replaced by corresponding estimates.</p></li>
+<li><p>Unlike in ARMA models, the quantity being predicted is now unobserved, although it can be computed using GARCH model equation for all <span class="math inline">\(t\geq1\)</span> as long as parameter values and required initial values for <span class="math inline">\(h_t\)</span> and <span class="math inline">\(y_t\)</span> are available. A common choice in practice is to use the sample variance of the observed time series as the initial value <span class="math inline">\(h_{0}\)</span>. In the stationary case, the effect of the initial values diminishes as <span class="math inline">\(t\)</span> increases.</p></li>
+<li><p>Forecasting with a more general GARCH(<span class="math inline">\(r,s\)</span>) model is carried out in principle in the same way as outlined above, although the resulting forecasting formulae become more cumbersome. Deriving interval predictions is also complicated, one major reason for this being that the distribution of the conditional variance deviates heavily from a Gaussian distribution.</p></li>
+<li><p>Overall, <strong>volatility forecasting</strong> is a separate and a large area in financial econometrics that we are not considering in this course more detail.</p></li>
+</ul>
+<p>&nbsp;</p>
+</section>
+<section id="garch-in-mean-model" class="level2" data-number="9.6">
+<h2 data-number="9.6" class="anchored" data-anchor-id="garch-in-mean-model"><span class="header-section-number">9.6</span> GARCH-in-mean model</h2>
+<p>In the <strong>GARCH-in-mean</strong> (<strong>GARCH-M</strong>) <strong>model</strong>, the conditional variance is allowed to directly affect the conditional mean as well.</p>
+<p>To simplify the notation, let us consider the first-order special case, i.e., the AR(1)-GARCH(1,1)-M model <span class="math display">\[\begin{eqnarray*}
+y_t = \nu + \phi_1 y_{t-1} + \delta g(h_t) + u_t, \quad
+h_t = \omega + \alpha_1 u^2_{t-1} + \beta_1 h_{t-1},
+\end{eqnarray*}\]</span> where, as before, <span class="math inline">\(u_t = y_t - \nu - \phi_1 y_{t-1} - \delta g(h_t)\)</span>, but now the conditional variance <span class="math inline">\(h_t\)</span> also affects the level of <span class="math inline">\(y_t\)</span> through the function <span class="math inline">\(g(h_t)\)</span>. Depending on the situation, the “in-mean effect” can be defined as</p>
+<ul>
+<li><p><span class="math inline">\(g(h_t) = h_t\)</span>,</p></li>
+<li><p><span class="math inline">\(g(h_t) = \sqrt{h_t}\)</span>, or</p></li>
+<li><p><span class="math inline">\(g(h_t) = \mathrm{log} (h_t)\)</span>.</p></li>
+</ul>
+<p>A positive coefficient <span class="math inline">\(\delta\)</span> means that the value of <span class="math inline">\(y_t\)</span> increases when the conditional variance increases.</p>
+<ul>
+<li><p>As an extension of the GARCH-M version presented above, the orders of the AR and GARCH models can naturally be greater than 1.</p></li>
+<li><p>In general, instead of the AR(<span class="math inline">\(p\)</span>) model, another suitable model for the conditional mean of <span class="math inline">\(y_t\)</span> can be used.</p></li>
+<li><p>Similarly, a model other than GARCH(1,1) can be chosen for the GARCH part.</p></li>
+</ul>
+<p>The GARCH-M model is used, for example, in financial econometrics (empirical finance) to model the fundamental risk-return relation, where risk (here volatility, measured by the conditional variance or its transformation) is allowed to directly affect the expected return of a security.</p>
+<p><strong>Empirical example (continue)</strong>. Let us consider an GARCH-in-mean extension of the AR(1)-GARCH(1,1) model (with Gaussian innovations) obtained above for the NASDAQ 100 excess stock returns. That is we consider the following model for the conditional mean <span class="math display">\[\begin{eqnarray*}
+\nonumber y_t = \nu + \phi_1 y_{t-1} + \delta \sqrt{h_t} + u_t.
+\end{eqnarray*}\]</span> That is, we include the conditional standard deviation in the conditional mean.</p>
+<ul>
+<li>This is one possible way to examine the fundamental risk-return relationship in (excess) stock returns (here NASDAQ 100 index). The positive risk-return relation is the cornerstone of financial economics, as postulated, e.g., by the intertemporal capital asset pricing model (ICAPM). However, the existing empirical findings have been highly ambiguous: Different GARCH-M models have led to both positive and negative relationships (see, e.g., Engle, Lilien and Robins, 1987; Glosten et al., 1993; Scruggs, 1998; Lanne and Saikkonen, 2006; Nyberg, 2012).</li>
+</ul>
+QMLE-based estimation result obtained with the rugarch package on AR(1)-GARCH(1,1)-M model:
+<center>
+<div class="sourceCode" id="cb2"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="an">Robust Standard Errors:</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co">        Estimate  Std. Error   t value Pr(&gt;|t|)</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>mu      0.000963    0.043060  0.022373 0.982151</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>ar1    -0.043796    0.012596 -3.477072 0.000507</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>archm   0.085665    0.040331  2.124019 0.033669</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>omega   0.035116    0.006429  5.462160 0.000000</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>alpha1  0.104836    0.012296  8.526169 0.000000</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>beta1   0.875948    0.012702 68.958838 0.000000</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</center>
+<p>Therefore, it appears that the estimated coefficient <span class="math inline">\(\delta\)</span>, here “archm”, is positive and also statistically significant at the 5% significance level based on the robust <span class="math inline">\(t\)</span>-value (<span class="math inline">\(2.12&gt;1.96\)</span>). The statistical significance is not very strong, however, so the result gives only tentative support for a positive risk-return relation. Note also that the estimate of the constant term <span class="math inline">\(\nu\)</span> (“mu”) is no longer significant, which is typical once the in-mean term is included.</p>
+<ul>
+<li>The residual diagnostics of this GARCH-M model are essentially the same as those obtained without the in-mean effect, and hence the model seems adequate.</li>
+</ul>
+<p>&nbsp;</p>
+</section>
+<section id="r-lab" class="level2" data-number="9.7">
+<h2 data-number="9.7" class="anchored" data-anchor-id="r-lab"><span class="header-section-number">9.7</span> R Lab</h2>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-7-contents" aria-controls="callout-7" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+R Lab: GARCH and GARCH-M models
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-7" class="callout-7-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># GARCH and GARCH-M MODELS</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Load the libraries</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(quantmod)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rugarch)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(forecast)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Set locale to English for dates</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="fu">Sys.setlocale</span>(<span class="st">"LC_TIME"</span>, <span class="st">"English"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "English_United States.1252"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="do">## User Inputs</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co"># --------------------------------------------------------------------------</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>start_date <span class="ot">&lt;-</span> <span class="st">"2003-01-01"</span> <span class="co"># Start after the dot-com bubble burst</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co">#end_date   &lt;- Sys.Date()   # Use current date for the end period</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>end_date   <span class="ot">&lt;-</span> <span class="st">"2025-09-30"</span>   <span class="co"># Use current date for the end period</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="do">## Data Acquisition and Preparation (NASDAQ 100)</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="co"># --------------------------------------------------------------------------</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Download NASDAQ 100 (^NDX) and 3-Month T-Bill (^IRX) data</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="co"># NASDAQ 100 (^NDX) and 3-Month T-Bill (^IRX) data, originally downloaded</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="co"># from Yahoo Finance with the quantmod package. Download the files</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="co"># NDX_daily.csv and IRX_daily.csv from the course website and place them</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="co"># in the same folder as this file.</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>NDX <span class="ot">&lt;-</span> <span class="fu">as.xts</span>(<span class="fu">read.zoo</span>(<span class="st">"NDX_daily.csv"</span>, <span class="at">header =</span> <span class="cn">TRUE</span>, <span class="at">sep =</span> <span class="st">","</span>))</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>IRX <span class="ot">&lt;-</span> <span class="fu">as.xts</span>(<span class="fu">read.zoo</span>(<span class="st">"IRX_daily.csv"</span>, <span class="at">header =</span> <span class="cn">TRUE</span>, <span class="at">sep =</span> <span class="st">","</span>))</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Alternatively, download the data yourself (requires an internet</span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="co"># connection; the results may then differ slightly from the material):</span></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="co"># NDX &lt;- getSymbols("^NDX", src = "yahoo", from = start_date, to = end_date, auto.assign = FALSE)</span></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a><span class="co"># IRX &lt;- getSymbols("^IRX", src = "yahoo", from = start_date, to = end_date, auto.assign = FALSE)</span></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate daily log returns</span></span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>nasdaq_returns <span class="ot">&lt;-</span> <span class="fu">dailyReturn</span>(NDX, <span class="at">type =</span> <span class="st">'log'</span>)</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Prepare daily risk-free rate</span></span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>rf_daily <span class="ot">&lt;-</span> <span class="fu">na.locf</span>(IRX<span class="sc">$</span>IRX.Adjusted) <span class="sc">/</span> <span class="dv">100</span> <span class="sc">/</span> <span class="dv">252</span></span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a><span class="co"># Align time series and calculate excess returns</span></span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>returns_data <span class="ot">&lt;-</span> <span class="fu">merge</span>(nasdaq_returns, rf_daily, <span class="at">join =</span> <span class="st">'inner'</span>)</span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>excess_returns <span class="ot">&lt;-</span> returns_data<span class="sc">$</span>daily.returns <span class="sc">-</span> returns_data<span class="sc">$</span>IRX.Adjusted</span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(excess_returns) <span class="ot">&lt;-</span> <span class="st">"ExcessReturn"</span></span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a><span class="co"># Percentages Remove any NA values to ensure a clean series</span></span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>excess_returns <span class="ot">&lt;-</span> <span class="fu">na.omit</span>(excess_returns)<span class="sc">*</span><span class="dv">100</span></span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the excess returns to see the volatility</span></span>
+<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(excess_returns, <span class="at">main =</span> <span class="st">""</span>)</span>
+<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a><span class="co"># Add the title manually above the plot area (line = 2 is often default, </span></span>
+<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a><span class="co"># use line = 3 or 4 to move it up)</span></span>
+<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a><span class="fu">mtext</span>(<span class="at">text =</span> <span class="fu">paste</span>(<span class="st">"NASDAQ 100 Daily Excess Returns:"</span>, start_date, <span class="st">"to"</span>, end_date), </span>
+<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a>      <span class="at">side =</span> <span class="dv">3</span>, <span class="co"># Side 3 is the top</span></span>
+<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a>      <span class="at">line =</span> <span class="fl">3.3</span>, <span class="co"># Move it up to line 3.5</span></span>
+<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a>      <span class="at">cex =</span> <span class="fl">1.0</span>) <span class="co"># Optional: adjust text size</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="TSE-ch9_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">#===========================================================================#</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co">#===========================================================================#</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co"># # Function to Export Excess Returns to CSV (Simpler Method)</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co"># # -------------------------------------------------------------------</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="co"># export_excess_returns_to_csv &lt;- function(ts_data, filename = "NASDAQ_Excess_Returns.csv") {</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="co">#  # 1. Convert the xts object to a data frame, preserving the Date index</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="co">#  # We explicitly name the columns for clarity in the CSV header.</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="co">#  data_df &lt;- data.frame(</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="co">#    Date = index(ts_data),</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="co">#    ExcessReturn = coredata(ts_data)</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="co">#  )</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="co">#  # 2. Write the data frame to a CSV file</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="co">#  # row.names = FALSE prevents R from writing an unnecessary row number column.</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="co">#  # The file is overwritten if it already exists.</span></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a><span class="co">#  tryCatch({</span></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a><span class="co">#    write.csv(</span></span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a><span class="co">#      x = data_df,</span></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a><span class="co">#      file = filename,</span></span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a><span class="co">#      row.names = FALSE </span></span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a><span class="co">#    )</span></span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a><span class="co">#    cat(paste0("✅ Successfully exported '", deparse(substitute(ts_data)), "' to ", filename, "\n"))</span></span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a><span class="co">#  }, error = function(e) {</span></span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a><span class="co">#    cat(paste0("❌ Error exporting data: ", e$message, "\n"))</span></span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a><span class="co">#  })</span></span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a><span class="co">#}</span></span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a><span class="co"># ## Example Usage (Exporting only the 'excess_returns')</span></span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a><span class="co">#export_excess_returns_to_csv(</span></span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a><span class="co">#  ts_data = excess_returns,</span></span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a><span class="co">#  filename = "NASDAQ_Daily_Excess_Returns.csv"</span></span>
+<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a><span class="co">#)</span></span>
+<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a><span class="co"># #Output CSV will look like this:</span></span>
+<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a><span class="co"># #Date,ExcessReturn</span></span>
+<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a><span class="co"># #2000-01-03,0.001234</span></span>
+<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a><span class="co"># #2000-01-04,-0.005678</span></span>
+<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a><span class="co">#===========================================================================#</span></span>
+<span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a><span class="co">#===========================================================================#</span></span>
+<span id="cb6-42"><a href="#cb6-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-43"><a href="#cb6-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-44"><a href="#cb6-44" aria-hidden="true" tabindex="-1"></a><span class="do">## Preliminary examination (autocorrelations in returns and squared returns)</span></span>
+<span id="cb6-45"><a href="#cb6-45" aria-hidden="true" tabindex="-1"></a><span class="co"># --------------------------------------------------------------------------</span></span>
+<span id="cb6-46"><a href="#cb6-46" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot ACF and PACF for the returns series</span></span>
+<span id="cb6-47"><a href="#cb6-47" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
+<span id="cb6-48"><a href="#cb6-48" aria-hidden="true" tabindex="-1"></a><span class="fu">Acf</span>(excess_returns, <span class="at">main=</span><span class="st">"ACF of excess returns"</span>)</span>
+<span id="cb6-49"><a href="#cb6-49" aria-hidden="true" tabindex="-1"></a><span class="fu">Pacf</span>(excess_returns, <span class="at">main=</span><span class="st">"PACF of excess returns"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="TSE-ch9_files/figure-html/unnamed-chunk-1-2.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>))</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Extended Ljung-Box test on possible autocorrelation ---</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">Extended Ljung-Box Test on Excess Returns (for mean dependence):</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Extended Ljung-Box Test on Excess Returns (for mean dependence):</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>lags_to_test <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">10</span>, <span class="dv">15</span>, <span class="dv">20</span>) <span class="co"># Test relevant lags (e.g., weekly, bi-weekly)</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>lb_results_returns <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">Lag=</span><span class="fu">integer</span>(), <span class="st">"Q-statistic"</span><span class="ot">=</span><span class="fu">double</span>(), <span class="st">"p-value"</span><span class="ot">=</span><span class="fu">double</span>())</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (l <span class="cf">in</span> lags_to_test) {</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># fitdf=0 assumes no model has been fit yet</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  test <span class="ot">&lt;-</span> <span class="fu">Box.test</span>(excess_returns, <span class="at">type =</span> <span class="st">"Ljung-Box"</span>, <span class="at">lag =</span> l, <span class="at">fitdf =</span> <span class="dv">0</span>)</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  lb_results_returns[<span class="fu">nrow</span>(lb_results_returns) <span class="sc">+</span> <span class="dv">1</span>,] <span class="ot">&lt;-</span> </span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(l, <span class="fu">round</span>(test<span class="sc">$</span>statistic, <span class="dv">3</span>), <span class="fu">round</span>(test<span class="sc">$</span>p.value, <span class="dv">3</span>))</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(lb_results_returns)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  Lag Q.statistic p.value
+1   5      62.373       0
+2  10     101.596       0
+3  15     127.425       0
+4  20     144.725       0</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ----------- Autocorrelation in squared returns ---------------</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">--- Autocorrelation in squared returns (possible need for ARCH/GARCH models) ---</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+--- Autocorrelation in squared returns (possible need for ARCH/GARCH models) ---</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Acf</span>(excess_returns<span class="sc">^</span><span class="dv">2</span>, <span class="at">main=</span><span class="st">"ACF of squared excess returns"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="TSE-ch9_files/figure-html/unnamed-chunk-1-3.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># McLeod-Li test (preliminary test for ARCH/GARCH effects on returns)</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>lags_to_test <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">10</span>, <span class="dv">15</span>, <span class="dv">20</span>)</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>ml_results_squared <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">Lag =</span> <span class="fu">integer</span>(), <span class="at">p_value =</span> <span class="fu">numeric</span>())</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (l <span class="cf">in</span> lags_to_test) {</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>  test <span class="ot">&lt;-</span> TSA<span class="sc">::</span><span class="fu">McLeod.Li.test</span>(<span class="at">y =</span> excess_returns, <span class="at">gof.lag =</span> l)</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>  ml_results_squared[<span class="fu">nrow</span>(ml_results_squared) <span class="sc">+</span> <span class="dv">1</span>, ] <span class="ot">&lt;-</span> <span class="fu">c</span>(l, <span class="fu">round</span>(test<span class="sc">$</span>p.values[l], <span class="dv">3</span>))</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="TSE-ch9_files/figure-html/unnamed-chunk-1-4.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="TSE-ch9_files/figure-html/unnamed-chunk-1-5.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="TSE-ch9_files/figure-html/unnamed-chunk-1-6.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="TSE-ch9_files/figure-html/unnamed-chunk-1-7.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">Extended McLeod-Li Test (Low p-value suggests GARCH effects):</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Extended McLeod-Li Test (Low p-value suggests GARCH effects):</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(ml_results_squared)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  Lag p_value
+1   5       0
+2  10       0
+3  15       0
+4  20       0</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co">#===========================================================================#</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="co">#===========================================================================#</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="do">## Standard ARMA(1,0)-GARCH(1,1) Model Fitting</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="co"># -------------------------------------------------------------------</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Define lag lengths for ARMA model, typically, e.g., AR(1) or ARMA(0,0) for returns</span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Based on common financial literature and often confirmed by the ACF/PACF plots:</span></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>arma_order <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">0</span>) <span class="co"># Use AR(1) in the mean equation as a common starting point</span></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a><span class="co"># GARCH model using Gaussian distribution </span></span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a><span class="co"># -------------------------------------------------------------------</span></span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>sGARCH_spec_norm <span class="ot">&lt;-</span> <span class="fu">ugarchspec</span>(</span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">variance.model =</span> <span class="fu">list</span>(<span class="at">model =</span> <span class="st">"sGARCH"</span>, <span class="at">garchOrder =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>)),</span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">mean.model =</span> <span class="fu">list</span>(</span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">armaOrder =</span> arma_order, </span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">include.mean =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">archm =</span> <span class="cn">FALSE</span></span>
+<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">distribution.model =</span> <span class="st">"norm"</span> <span class="co"># Gaussian (Normal) Distribution</span></span>
+<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">[2] Fitting Standard ARMA(1,0)-GARCH(1,1) Model with Gaussian Dist...</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+[2] Fitting Standard ARMA(1,0)-GARCH(1,1) Model with Gaussian Dist...</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>sGARCH_fit_norm <span class="ot">&lt;-</span> <span class="fu">ugarchfit</span>(<span class="at">spec =</span> sGARCH_spec_norm, <span class="at">data =</span> excess_returns)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(sGARCH_fit_norm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+*---------------------------------*
+*          GARCH Model Fit        *
+*---------------------------------*
+
+Conditional Variance Dynamics   
+-----------------------------------
+GARCH Model : sGARCH(1,1)
+Mean Model  : ARFIMA(1,0,0)
+Distribution    : norm 
+
+Optimal Parameters
+------------------------------------
+        Estimate  Std. Error  t value Pr(&gt;|t|)
+mu      0.087229    0.012889   6.7679 0.000000
+ar1    -0.043798    0.014149  -3.0955 0.001965
+omega   0.035129    0.004868   7.2160 0.000000
+alpha1  0.104804    0.008170  12.8272 0.000000
+beta1   0.875999    0.008975  97.6075 0.000000
+
+Robust Standard Errors:
+        Estimate  Std. Error  t value Pr(&gt;|t|)
+mu      0.087229    0.012567   6.9412 0.000000
+ar1    -0.043798    0.012630  -3.4678 0.000525
+omega   0.035129    0.006498   5.4066 0.000000
+alpha1  0.104804    0.012428   8.4331 0.000000
+beta1   0.875999    0.012869  68.0714 0.000000
+
+LogLikelihood : -9030.906 
+
+Information Criteria
+------------------------------------
+                   
+Akaike       3.1583
+Bayes        3.1641
+Shibata      3.1583
+Hannan-Quinn 3.1603
+
+Weighted Ljung-Box Test on Standardized Residuals
+------------------------------------
+                        statistic p-value
+Lag[1]                     0.1471  0.7013
+Lag[2*(p+q)+(p+q)-1][2]    0.6119  0.9317
+Lag[4*(p+q)+(p+q)-1][5]    2.0557  0.6952
+d.o.f=1
+H0 : No serial correlation
+
+Weighted Ljung-Box Test on Standardized Squared Residuals
+------------------------------------
+                        statistic p-value
+Lag[1]                      1.998  0.1575
+Lag[2*(p+q)+(p+q)-1][5]     4.486  0.1993
+Lag[4*(p+q)+(p+q)-1][9]     6.661  0.2292
+d.o.f=2
+
+Weighted ARCH LM Tests
+------------------------------------
+            Statistic Shape Scale P-Value
+ARCH Lag[3]   0.09937 0.500 2.000  0.7526
+ARCH Lag[5]   4.68133 1.440 1.667  0.1217
+ARCH Lag[7]   5.49078 2.315 1.543  0.1794
+
+Nyblom stability test
+------------------------------------
+Joint Statistic:  1.9784
+Individual Statistics:              
+mu     0.13779
+ar1    0.06113
+omega  0.13219
+alpha1 0.15678
+beta1  0.32216
+
+Asymptotic Critical Values (10% 5% 1%)
+Joint Statistic:         1.28 1.47 1.88
+Individual Statistic:    0.35 0.47 0.75
+
+Sign Bias Test
+------------------------------------
+                    t-value      prob sig
+Sign Bias           2.72947 6.363e-03 ***
+Negative Sign Bias  0.07266 9.421e-01    
+Positive Sign Bias  2.11258 3.468e-02  **
+Joint Effect       30.89452 8.946e-07 ***
+
+
+Adjusted Pearson Goodness-of-Fit Test:
+------------------------------------
+  group statistic p-value(g-1)
+1    20     194.4    4.382e-31
+2    30     218.9    4.838e-31
+3    40     243.2    2.493e-31
+4    50     251.7    4.746e-29
+
+
+Elapsed time : 0.202579 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract the standardized residuals (should follow the assumed distribution: 'std')</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>std_residuals <span class="ot">&lt;-</span> <span class="fu">residuals</span>(sGARCH_fit_norm, <span class="at">standardize =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert the xts object to a simple vector for plotting</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>std_residuals_vec <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(std_residuals) </span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Set up the plotting area for two side-by-side plots</span></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mar =</span> <span class="fu">c</span>(<span class="fl">5.1</span>, <span class="fl">4.1</span>, <span class="fl">4.1</span>, <span class="fl">2.1</span>)) <span class="co"># Reset margins</span></span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a><span class="co"># A. Histogram of Standardized Residuals</span></span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(std_residuals_vec, <span class="at">breaks =</span> <span class="dv">50</span>, <span class="co"># Use more bins for smooth visualization</span></span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>     <span class="at">freq =</span> <span class="cn">FALSE</span>,  <span class="at">main =</span> <span class="st">""</span>, <span class="at">xlab =</span> <span class="st">""</span>)</span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Add the density curve of the assumed Standard Normal distribution (mean 0, SD 1)</span></span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a><span class="fu">curve</span>(<span class="fu">dnorm</span>(x, <span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd =</span> <span class="dv">1</span>), </span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>      <span class="at">col =</span> <span class="st">"blue"</span>, <span class="at">lwd =</span> <span class="dv">2</span>, <span class="at">add =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Q-Q Plot of Standardized Residuals</span></span>
+<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(std_residuals_vec,  <span class="at">main =</span> <span class="st">""</span>, <span class="at">ylab =</span> <span class="st">"Sample Quantiles"</span>,</span>
+<span id="cb23-19"><a href="#cb23-19" aria-hidden="true" tabindex="-1"></a>       <span class="at">xlab =</span> <span class="st">"Theoretical Quantiles"</span>)</span>
+<span id="cb23-20"><a href="#cb23-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Add the theoretical Normal distribution line (qqline uses dnorm/qnorm by default)</span></span>
+<span id="cb23-21"><a href="#cb23-21" aria-hidden="true" tabindex="-1"></a><span class="fu">qqline</span>(std_residuals_vec, <span class="at">col =</span> <span class="st">"red"</span>, <span class="at">lwd =</span> <span class="dv">2</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="TSE-ch9_files/figure-html/unnamed-chunk-1-8.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Note: Since the default qqline() assumes a Normal distribution, </span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="co"># you can omit the explicit 'distribution' argument for a Normal fit.</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Reset the plotting area</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>))</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a><span class="co">#  For comparison, a Model using Student's t-Distribution </span></span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a><span class="co"># -------------------------------------------------------------------</span></span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a><span class="co">#  (standard practice for data with heavy tails, like asset returns)</span></span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>sGARCH_spec_std <span class="ot">&lt;-</span> <span class="fu">ugarchspec</span>(</span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">variance.model =</span> <span class="fu">list</span>(<span class="at">model =</span> <span class="st">"sGARCH"</span>, <span class="at">garchOrder =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>)),</span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">mean.model =</span> <span class="fu">list</span>(</span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">armaOrder =</span> arma_order, </span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">include.mean =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">archm =</span> <span class="cn">FALSE</span>          <span class="co"># Explicitly disable GARCH-M</span></span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">distribution.model =</span> <span class="st">"std"</span> <span class="co"># Student's t-distribution (to capture heavy tails)</span></span>
+<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-21"><a href="#cb24-21" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">[1] Fitting Standard ARMA(1,0)-GARCH(1,1) Model with Student's t-Dist...</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+[1] Fitting Standard ARMA(1,0)-GARCH(1,1) Model with Student's t-Dist...</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>sGARCH_fit_t <span class="ot">&lt;-</span> <span class="fu">ugarchfit</span>(<span class="at">spec =</span> sGARCH_spec_std, <span class="at">data =</span> excess_returns)</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(sGARCH_fit_t)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+*---------------------------------*
+*          GARCH Model Fit        *
+*---------------------------------*
+
+Conditional Variance Dynamics   
+-----------------------------------
+GARCH Model : sGARCH(1,1)
+Mean Model  : ARFIMA(1,0,0)
+Distribution    : std 
+
+Optimal Parameters
+------------------------------------
+        Estimate  Std. Error  t value Pr(&gt;|t|)
+mu      0.114676    0.012170   9.4231 0.000000
+ar1    -0.042437    0.013406  -3.1656 0.001548
+omega   0.024664    0.005087   4.8483 0.000001
+alpha1  0.108965    0.009871  11.0390 0.000000
+beta1   0.882975    0.009653  91.4708 0.000000
+shape   6.416531    0.565110  11.3545 0.000000
+
+Robust Standard Errors:
+        Estimate  Std. Error  t value Pr(&gt;|t|)
+mu      0.114676    0.011663   9.8328 0.000000
+ar1    -0.042437    0.011501  -3.6899 0.000224
+omega   0.024664    0.005677   4.3448 0.000014
+alpha1  0.108965    0.011927   9.1357 0.000000
+beta1   0.882975    0.011557  76.4050 0.000000
+shape   6.416531    0.593727  10.8072 0.000000
+
+LogLikelihood : -8926.771 
+
+Information Criteria
+------------------------------------
+                   
+Akaike       3.1223
+Bayes        3.1292
+Shibata      3.1223
+Hannan-Quinn 3.1247
+
+Weighted Ljung-Box Test on Standardized Residuals
+------------------------------------
+                        statistic p-value
+Lag[1]                     0.1241  0.7247
+Lag[2*(p+q)+(p+q)-1][2]    0.6214  0.9284
+Lag[4*(p+q)+(p+q)-1][5]    2.1915  0.6557
+d.o.f=1
+H0 : No serial correlation
+
+Weighted Ljung-Box Test on Standardized Squared Residuals
+------------------------------------
+                        statistic p-value
+Lag[1]                      1.571  0.2101
+Lag[2*(p+q)+(p+q)-1][5]     3.412  0.3369
+Lag[4*(p+q)+(p+q)-1][9]     5.269  0.3909
+d.o.f=2
+
+Weighted ARCH LM Tests
+------------------------------------
+            Statistic Shape Scale P-Value
+ARCH Lag[3] 0.0001603 0.500 2.000  0.9899
+ARCH Lag[5] 3.6194116 1.440 1.667  0.2117
+ARCH Lag[7] 4.4428991 2.315 1.543  0.2872
+
+Nyblom stability test
+------------------------------------
+Joint Statistic:  3.1219
+Individual Statistics:              
+mu     0.31898
+ar1    0.04839
+omega  0.50898
+alpha1 0.30350
+beta1  0.75545
+shape  0.96805
+
+Asymptotic Critical Values (10% 5% 1%)
+Joint Statistic:         1.49 1.68 2.12
+Individual Statistic:    0.35 0.47 0.75
+
+Sign Bias Test
+------------------------------------
+                   t-value      prob sig
+Sign Bias           2.7538 5.910e-03 ***
+Negative Sign Bias  0.6102 5.417e-01    
+Positive Sign Bias  2.4021 1.634e-02  **
+Joint Effect       31.1908 7.749e-07 ***
+
+
+Adjusted Pearson Goodness-of-Fit Test:
+------------------------------------
+  group statistic p-value(g-1)
+1    20     96.64    2.166e-12
+2    30    117.01    1.571e-12
+3    40    130.35    9.011e-12
+4    50    123.47    2.329e-08
+
+
+Elapsed time : 0.52214 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Visualization of Conditional Volatility (Standard Deviation)</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="co"># -------------------------------------------------------------------</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract the conditional standard deviation (sigma) from the preferred model (t-dist)</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="co"># sigma(sGARCH_fit_std) returns an xts object of the conditional standard deviation.</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>sigma_t <span class="ot">&lt;-</span> <span class="fu">sigma</span>(sGARCH_fit_norm)</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a><span class="co"># sigma_t &lt;- sigma(sGARCH_fit_t)</span></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Use the previous margin settings for a clean plot</span></span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mar =</span> <span class="fu">c</span>(<span class="fl">5.1</span>, <span class="fl">4.1</span>, <span class="fl">4.1</span>, <span class="fl">2.1</span>)) </span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the Conditional Standard Deviation</span></span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(sigma_t, </span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a>  <span class="co">#   main = "Fitted Conditional Standard Deviation (Risk) of NASDAQ 100",</span></span>
+<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">""</span>,</span>
+<span id="cb28-15"><a href="#cb28-15" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">"Conditional Standard Deviation"</span>,</span>
+<span id="cb28-16"><a href="#cb28-16" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"Year"</span>,</span>
+<span id="cb28-17"><a href="#cb28-17" aria-hidden="true" tabindex="-1"></a>     <span class="at">xaxt =</span> <span class="st">'n'</span>) <span class="co"># Suppress default x-axis labels</span></span>
+<span id="cb28-18"><a href="#cb28-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-19"><a href="#cb28-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Add custom x-axis labels for the years (reusing the logic from before)</span></span>
+<span id="cb28-20"><a href="#cb28-20" aria-hidden="true" tabindex="-1"></a>yearly_indices <span class="ot">&lt;-</span> <span class="fu">endpoints</span>(sigma_t, <span class="at">on =</span> <span class="st">"years"</span>)</span>
+<span id="cb28-21"><a href="#cb28-21" aria-hidden="true" tabindex="-1"></a>yearly_indices <span class="ot">&lt;-</span> yearly_indices[yearly_indices <span class="sc">&gt;</span> <span class="dv">0</span>] </span>
+<span id="cb28-22"><a href="#cb28-22" aria-hidden="true" tabindex="-1"></a>break_points <span class="ot">&lt;-</span> <span class="fu">index</span>(sigma_t)[yearly_indices <span class="sc">+</span> <span class="dv">1</span>] </span>
+<span id="cb28-23"><a href="#cb28-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-24"><a href="#cb28-24" aria-hidden="true" tabindex="-1"></a><span class="fu">axis.Date</span>(<span class="at">side =</span> <span class="dv">1</span>,                 </span>
+<span id="cb28-25"><a href="#cb28-25" aria-hidden="true" tabindex="-1"></a>          <span class="at">x =</span> <span class="fu">index</span>(sigma_t),</span>
+<span id="cb28-26"><a href="#cb28-26" aria-hidden="true" tabindex="-1"></a>          <span class="at">at =</span> break_points,        </span>
+<span id="cb28-27"><a href="#cb28-27" aria-hidden="true" tabindex="-1"></a>          <span class="at">format =</span> <span class="st">"%Y"</span>,            </span>
+<span id="cb28-28"><a href="#cb28-28" aria-hidden="true" tabindex="-1"></a>          <span class="at">tcl =</span> <span class="sc">-</span><span class="fl">0.5</span>,               </span>
+<span id="cb28-29"><a href="#cb28-29" aria-hidden="true" tabindex="-1"></a>          <span class="at">cex.axis =</span> <span class="fl">0.9</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="TSE-ch9_files/figure-html/unnamed-chunk-1-9.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co">#===========================================================================#</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="co">#===========================================================================#</span></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a><span class="do">## ARMA(1,0)-GARCH(1,1)-M Model (Gaussian Innovations)</span></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a><span class="co"># -------------------------------------------------------------------</span></span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>arma_order <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">0</span>) <span class="co"># Use AR(1) in the mean equation as a common starting point</span></span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>sGARCH_M_spec_norm <span class="ot">&lt;-</span> <span class="fu">ugarchspec</span>(</span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">variance.model =</span> <span class="fu">list</span>(<span class="at">model =</span> <span class="st">"sGARCH"</span>, <span class="at">garchOrder =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>)),</span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">mean.model =</span> <span class="fu">list</span>(</span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">armaOrder =</span> arma_order, </span>
+<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">include.mean =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">archm =</span> <span class="cn">TRUE</span>,           <span class="co"># ENABLE GARCH-M</span></span>
+<span id="cb29-15"><a href="#cb29-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">archpow =</span> <span class="dv">1</span>             <span class="co"># Use conditional Standard Deviation (sigma_t)</span></span>
+<span id="cb29-16"><a href="#cb29-16" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb29-17"><a href="#cb29-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">distribution.model =</span> <span class="st">"norm"</span> <span class="co"># "norm" for Gaussian errors</span></span>
+<span id="cb29-18"><a href="#cb29-18" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb29-19"><a href="#cb29-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-20"><a href="#cb29-20" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">Fitting Standard ARMA(1,0)-GARCH(1,1)-M Model with Gaussian Innovations...</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Fitting Standard ARMA(1,0)-GARCH(1,1)-M Model with Gaussian Innovations...</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>sGARCH_M_fit_norm <span class="ot">&lt;-</span> <span class="fu">ugarchfit</span>(<span class="at">spec =</span> sGARCH_M_spec_norm, <span class="at">data =</span> excess_returns)</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(sGARCH_M_fit_norm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+*---------------------------------*
+*          GARCH Model Fit        *
+*---------------------------------*
+
+Conditional Variance Dynamics   
+-----------------------------------
+GARCH Model : sGARCH(1,1)
+Mean Model  : ARFIMA(1,0,0)
+Distribution    : norm 
+
+Optimal Parameters
+------------------------------------
+        Estimate  Std. Error   t value Pr(&gt;|t|)
+mu      0.000966    0.043424  0.022239 0.982257
+ar1    -0.043797    0.014146 -3.096115 0.001961
+archm   0.085662    0.041107  2.083899 0.037169
+omega   0.035116    0.004880  7.195315 0.000000
+alpha1  0.104836    0.008174 12.825626 0.000000
+beta1   0.875948    0.008990 97.440764 0.000000
+
+Robust Standard Errors:
+        Estimate  Std. Error   t value Pr(&gt;|t|)
+mu      0.000966    0.042937  0.022492 0.982056
+ar1    -0.043797    0.012596 -3.477133 0.000507
+archm   0.085662    0.040226  2.129536 0.033210
+omega   0.035116    0.006429  5.462278 0.000000
+alpha1  0.104836    0.012296  8.526344 0.000000
+beta1   0.875948    0.012702 68.958968 0.000000
+
+LogLikelihood : -9028.731 
+
+Information Criteria
+------------------------------------
+                   
+Akaike       3.1579
+Bayes        3.1649
+Shibata      3.1579
+Hannan-Quinn 3.1603
+
+Weighted Ljung-Box Test on Standardized Residuals
+------------------------------------
+                        statistic p-value
+Lag[1]                     0.2175  0.6410
+Lag[2*(p+q)+(p+q)-1][2]    0.5861  0.9403
+Lag[4*(p+q)+(p+q)-1][5]    1.6563  0.8069
+d.o.f=1
+H0 : No serial correlation
+
+Weighted Ljung-Box Test on Standardized Squared Residuals
+------------------------------------
+                        statistic p-value
+Lag[1]                      1.987  0.1587
+Lag[2*(p+q)+(p+q)-1][5]     4.523  0.1956
+Lag[4*(p+q)+(p+q)-1][9]     6.715  0.2242
+d.o.f=2
+
+Weighted ARCH LM Tests
+------------------------------------
+            Statistic Shape Scale P-Value
+ARCH Lag[3]    0.1205 0.500 2.000  0.7285
+ARCH Lag[5]    4.7158 1.440 1.667  0.1195
+ARCH Lag[7]    5.5140 2.315 1.543  0.1775
+
+Nyblom stability test
+------------------------------------
+Joint Statistic:  2.0765
+Individual Statistics:              
+mu     0.18140
+ar1    0.05803
+archm  0.18419
+omega  0.12958
+alpha1 0.15311
+beta1  0.30998
+
+Asymptotic Critical Values (10% 5% 1%)
+Joint Statistic:         1.49 1.68 2.12
+Individual Statistic:    0.35 0.47 0.75
+
+Sign Bias Test
+------------------------------------
+                   t-value      prob sig
+Sign Bias           2.7404 6.155e-03 ***
+Negative Sign Bias  0.1819 8.557e-01    
+Positive Sign Bias  2.0326 4.214e-02  **
+Joint Effect       29.7181 1.582e-06 ***
+
+
+Adjusted Pearson Goodness-of-Fit Test:
+------------------------------------
+  group statistic p-value(g-1)
+1    20     206.1    2.061e-33
+2    30     237.4    1.416e-34
+3    40     263.9    3.472e-35
+4    50     264.0    3.115e-31
+
+
+Elapsed time : 0.6981039 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check the 'archm' coefficient (in-mean parameter)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+</div>
+<p>&nbsp;</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./TSE-ch8.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Forecasting ARMA processes</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./TSE-ch10.html" class="pagination-link">
+        <span class="nav-page-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Multivariate time series models</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+</body></html>

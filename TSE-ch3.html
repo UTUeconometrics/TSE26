@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Time Series Econometrics (TSE) - 3&nbsp; Stationary processes</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./TSE-ch4.html" rel="next">
+<link href="./TSE-ch2.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<!-- Lisätään jokaisen HTML-sivun <head>-osaan (ks. _quarto.yml). -->
+
+<!-- Omat LaTeX-makrot MathJaxille. Pidä samana kuin assets/preamble-TSE.tex. -->
+<script>
+window.MathJax = {
+  tex: {
+    macros: {
+      ubar: ["\\mkern3mu\\underline{\\mkern-3mu#1\\mkern-3mu}\\mkern3mu", 1]
+    }
+  }
+};
+</script>
+
+<!-- Estää hiiren oikean painikkeen valikon (Roopen alkuperäinen ratkaisu). -->
+<script>
+document.addEventListener('contextmenu', event => event.preventDefault());
+</script>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<link rel="stylesheet" href="assets/styles-TSE.css">
+</head>
+
+<body class="nav-sidebar docked">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./TSE-ch3.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Stationary processes</span></a></li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Time Series Econometrics (TSE)</a> 
+        <div class="sidebar-tools-main">
+    <a href="./msTSE2026.pdf" rel="" title="Download PDF" class="quarto-navigation-tool px-1" aria-label="Download PDF"><i class="bi bi-file-pdf"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./TSE-ch1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./TSE-ch2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">A primer on time series models</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./TSE-ch3.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Stationary processes</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./TSE-ch4.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Linear process</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./TSE-ch5.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">ARMA processes</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./TSE-ch6.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Parameter estimation</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./TSE-ch7.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">ARMA model selection</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./TSE-ch8.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Forecasting ARMA processes</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./TSE-ch9.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Volatility modelling: AR-GARCH model</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./TSE-ch10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Multivariate time series models</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./TSE-ch11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Basics of vector autoregression</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./TSE-ch12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Nonstationary processes</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./TSE-ch13.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Linear regressions with <span class="math inline">\(I(1)\)</span> variables</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#basic-concepts" id="toc-basic-concepts" class="nav-link active" data-scroll-target="#basic-concepts"><span class="header-section-number">3.1</span> Basic concepts</a></li>
+  <li><a href="#stochastic-processes" id="toc-stochastic-processes" class="nav-link" data-scroll-target="#stochastic-processes"><span class="header-section-number">3.2</span> Stochastic processes</a></li>
+  <li><a href="#weak-stationarity" id="toc-weak-stationarity" class="nav-link" data-scroll-target="#weak-stationarity"><span class="header-section-number">3.3</span> Weak stationarity</a></li>
+  <li><a href="#autocorrelation-function" id="toc-autocorrelation-function" class="nav-link" data-scroll-target="#autocorrelation-function"><span class="header-section-number">3.4</span> Autocorrelation function</a></li>
+  <li><a href="#sample-autocorrelation-function" id="toc-sample-autocorrelation-function" class="nav-link" data-scroll-target="#sample-autocorrelation-function"><span class="header-section-number">3.5</span> Sample autocorrelation function</a></li>
+  <li><a href="#weakWN" id="toc-weakWN" class="nav-link" data-scroll-target="#weakWN"><span class="header-section-number">3.6</span> White noise process</a></li>
+  <li><a href="#strictstationarity" id="toc-strictstationarity" class="nav-link" data-scroll-target="#strictstationarity"><span class="header-section-number">3.7</span> Strictly stationary process</a></li>
+  <li><a href="#iid-and-nid-processes" id="toc-iid-and-nid-processes" class="nav-link" data-scroll-target="#iid-and-nid-processes"><span class="header-section-number">3.8</span> IID and NID processes</a></li>
+  <li><a href="#r-lab" id="toc-r-lab" class="nav-link" data-scroll-target="#r-lab"><span class="header-section-number">3.9</span> R Lab</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span id="part-ch3" class="quarto-section-identifier"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Stationary processes</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="basic-concepts" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="basic-concepts"><span class="header-section-number">3.1</span> Basic concepts</h2>
+<p>The aim is to build a statistical model for the observed time series <span class="math inline">\(y_{1},\ldots,y_{T}\)</span>. At this stage, and in Sections 3–9 and 12, we assume that we have one, univariate, time series. Multiple time series and multivariate models will be briefly considered later in Sections 10–11 and 13.</p>
+<p>On a rather general level, the observed time series can be interpreted as the observed value of the random vector <span class="math inline">\(\boldsymbol{y}=\left(y_{1},\ldots,y_{T}\right)^{\prime}\)</span> or, in other words, the <strong>realization</strong> of this random vector.</p>
+<ul>
+<li>Recall the notation: Here the random vector interpretation emphasizes the fact that <span class="math inline">\(y_t\)</span> will be interpreted as a random variable. Notice that we do not make a distinction between random variables and their realizations; the difference should be clear from the context.</li>
+</ul>
+<p>When building a statistical model, we would attempt to specify the probability distribution of the <span class="math inline">\(T\)</span>–dimensional random vector <span class="math inline">\(\boldsymbol{y}=\left(y_{1},\ldots,y_{T}\right)^{\prime}\)</span> that produced the observed time series.</p>
+<ul>
+<li><p>Note and recall that in a time series, the observations are (typically) not independent as in the conventional linear regression, and therefore it is not enough to specify the marginal distributions of the components <span class="math inline">\(y_{t}\)</span> <span class="math inline">\(\left(t=1,\ldots,T\right)\)</span>.</p></li>
+<li><p>Instead, we indeed need to specify the <span class="math inline">\(T\)</span>–dimensional joint distribution.</p></li>
+</ul>
+<p>A concrete and often used way to specify the joint distribution of <span class="math inline">\(\boldsymbol{y}\)</span> in time series analysis is to:</p>
+<ul>
+<li><p>Specify a model equation that characterises the dependence structure of consecutive observations, and</p></li>
+<li><p>combine this with a suitable distributional assumption.</p></li>
+</ul>
+<p>Before we proceed to such concrete model equations, it is useful to first briefly study some basic concepts of probability theory that form the foundation of time series analysis.</p>
+<p>&nbsp;</p>
+</section>
+<section id="stochastic-processes" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="stochastic-processes"><span class="header-section-number">3.2</span> Stochastic processes</h2>
+<p>In statistical and econometric modelling of time series, one concentrates on the observed time series. That is, the realization of a random vector <span class="math inline">\(\boldsymbol{y}=\left(y_{1},\ldots,y_{T}\right)^{\prime}\)</span>.</p>
+<p>From a mathematical point of view, however, it is more convenient to consider an “extension” of this vector to all time indices when defining time series models. This leads us to the concept of (a discrete time) <strong>stochastic process</strong> (or just simply <strong>process</strong>), which is a collection of random variables <span class="math inline">\(\left\{y_{t};t=0,\pm1,\pm2,\ldots\right\}\)</span>.</p>
+<ul>
+<li><p>Occasionally, the cases <span class="math inline">\(t=0,1,2,\ldots\)</span> or <span class="math inline">\(t=1,2,\ldots\)</span> are also considered.</p></li>
+<li><p>Because the set of values the time index takes is usually known, it does not need to be emphasized, and often we can simply denote the stochastic process by <span class="math inline">\(y_{t}\)</span>, or <span class="math inline">\(\left\{y_{t}\right\}\)</span> if one wants to emphasize the distinction to a single component of the process.</p></li>
+<li><p>The terms “<strong>process</strong>” and “<strong>model</strong>” are often used interchangeably. In this material, however, “process” refers specifically to the underlying theoretical mechanism—namely, the stochastic process—that we aim to represent (learn) when specifying an empirical time series “model” for the observed empirical data.</p></li>
+</ul>
+<p>From a practical point of view, it is <strong>important to understand that we have only a single realization available</strong>, the observations <span class="math inline">\(\left(y_{1},\ldots,y_{T}\right)\)</span>, of the process <span class="math inline">\(\left\{y_{t}\right\}\)</span>.</p>
+<ul>
+<li>In other words, <strong>we have only one realization from the process and that is only partial</strong>, that is, observations are available only for the time periods <span class="math inline">\(t=1,\ldots,T\)</span>.</li>
+</ul>
+<p>These above-mentioned remarks imply that in order to investigate the properties of <span class="math inline">\(y_t\)</span> by making use of the observed data <span class="math inline">\(y_{1},\ldots,y_{T}\)</span> only, one must make some restrictive assumptions about <span class="math inline">\(y_t\)</span> for this to be possible.</p>
+<p>&nbsp;</p>
+</section>
+<section id="weak-stationarity" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="weak-stationarity"><span class="header-section-number">3.3</span> Weak stationarity</h2>
+<p>To illustrate the final remarks in the previous section, consider the <strong>expected value function</strong> of the process <span class="math inline">\(y_{t}\)</span> (assume here <span class="math inline">\(\mathsf{E}\left(y_{t}^{2}\right)&lt;\infty\)</span> for all <span class="math inline">\(t\)</span>) <span class="math display">\[\begin{equation*}
+\mu_{t}=\mathsf{E}\left(y_{t}\right),\quad t=0,\pm1,\pm2,\ldots
+\end{equation*}\]</span> as well as the <strong>covariance function</strong> of <span class="math inline">\(y_{t}\)</span> <span class="math display">\[\begin{equation*}
+\gamma_{s,t}=\mathsf{Cov}\left(y_{s},y_{t}\right)=\mathsf{E}\left[\left(y_{s}-\mu_{s}\right)\left(y_{t}-\mu_{t}\right)\right], \quad s,t=0,\pm1,\pm2,\ldots\text{.}
+\end{equation*}\]</span></p>
+<p>Estimating these functions by making use of one realization <span class="math inline">\(y_{1},\ldots,y_{T}\)</span> only is of course impossible, unless we somehow restrict/limit their dependence on time. <strong>The situation simplifies if it is assumed that these quantities do not depend on time</strong>. Indeed, it is common to assume that such a dependence on time does not (in a particular sense) exist.</p>
+<p>A process <span class="math inline">\(y_{t}\)</span> is called <strong>weakly stationary</strong>, or <strong>covariance stationary</strong>, if <span class="math display">\[\begin{equation*}
+\mathsf{E}\left(y_{t}\right)=\mu &lt; \infty \quad \mathrm{for\,\, all} \quad t=0,\pm1,\pm2,\ldots
+\end{equation*}\]</span> and <span class="math display">\[\begin{equation*}
+\mathsf{Cov}\left(y_{t},y_{t+h}\right)=\gamma_{t,t+h}=\gamma_{0,h} &lt; \infty \,\, \text{for all }\,\, h,\text{ }t=0,\pm1,\pm2,\ldots
+\end{equation*}\]</span> In other words, <strong>a form of time invariance holds</strong>: The expected value function <span class="math inline">\(\mu_{t}\)</span> is constant over time, and the covariance function <span class="math inline">\(\gamma_{s,t}\)</span> does not depend on the time indices <span class="math inline">\(s\)</span> and <span class="math inline">\(t\)</span> but only on their distance <span class="math inline">\(t-s\)</span>.</p>
+<ul>
+<li><p>For brevity, denote <span class="math inline">\(\gamma_{0,h} \equiv \gamma_{h}\)</span>.</p></li>
+<li><p>When <span class="math inline">\(h\)</span> is fixed, <span class="math inline">\(\gamma_{h}\)</span> is called the <strong>autocovariance (coefficient)</strong> of <span class="math inline">\(y_{t}\)</span> at lag <span class="math inline">\(h\)</span>. As a function of <span class="math inline">\(h\)</span>, <span class="math inline">\(\gamma_{h}\)</span> is called the <strong>autocovariance function</strong> of <span class="math inline">\(y_{t}\)</span>.</p></li>
+<li><p>The parameter <span class="math inline">\(\mu\)</span> is called the <strong>expected value</strong> or the <strong>mean</strong>.</p></li>
+</ul>
+<p>To summarize, a characteristic feature of a weakly stationary process is that the first and second moments are finite and independent of time. Unless otherwise mentioned, in what follows in this and coming few sections, <strong>we assume that weak stationarity holds</strong>.</p>
+<p>&nbsp;</p>
+<p>A useful <strong>practical aspect</strong> of weak stationarity is that the plausibility of this assumption can be easily investigated by looking at a graph of the observed time series: If the observations vary with constant variance around a fixed level, then weak stationarity appears a plausible assumption.</p>
+<p><strong>Empirical example</strong>. Let us consider an example related to the U.S. real GDP growth during the period 1985:Q1–2007:Q2, commonly referred to as the <em>Great Moderation</em> time period.</p>
+<ul>
+<li><p>For more on the Great Moderation, see <a href="https://www.federalreservehistory.org/essays/great-moderation" class="uri">https://www.federalreservehistory.org/essays/great-moderation</a>.</p></li>
+<li><p>Real Gross Domestic Product (GDP) is the total value of a country’s goods and services produced in a specific period, adjusted for inflation.</p></li>
+<li><p>This is the dataset GDPC1-qdata.xlsx (source: FRED).</p></li>
+</ul>
+<p>The figure below illustrates that the time series fluctuates around a relatively stable mean and exhibits approximately constant variance over time. As discussed, this behavior is typical for a weakly stationary process.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/USrgdpGM.png" class="img-fluid figure-img" style="width:75.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><span class="fig-caption">Figure: (Annualized) quarterly U.S. real GDP growth rate (1985:Q1–2007:Q2) (ggplot2 figure).</span></p>
+<p>It is important to note that <strong>weak stationarity does not imply the absence of variability</strong>. Even in a weakly stationary process, individual observations can vary substantially due to random shocks. What matters is that the statistical properties, the mean, variance, and autocovariance structure, remain constant over time. So, <strong>occasional higher volatility</strong>, with high or low values in the series, is entirely consistent with weak stationarity, as long as they are the result of random variation and not due to major structural changes in the process.</p>
+<ul>
+<li><p>We will soon see more examples of weakly stationary time series through simulations.</p></li>
+<li><p>In Section 1, the time series depicting the U.S. inflation rate can also be interpreted as a realization from a weakly stationary process.</p></li>
+</ul>
+<p>&nbsp;</p>
+<p><strong>More on autocovariance coefficients</strong>. Because <span class="math inline">\(\gamma_{0}=\mathsf{Var}\left(y_{t}\right)\)</span>, it holds that <span class="math inline">\(\gamma_{0}\geq0\)</span>. Furthermore, the familiar properties of the covariance function imply that</p>
+<ul>
+<li><p><span class="math inline">\(\left\vert \gamma_{h}\right\vert \leq\gamma_{0}\)</span>.</p></li>
+<li><p>In this univariate (single time series) case, we have (under weak stationarity) <span class="math display">\[\begin{equation*}
+\mathsf{Cov}\left(y_{t},y_{t+h}\right)=\mathsf{Cov}\left(  y_{t-h},y_{t}\right) = \mathsf{Cov}\left(y_t, y_{t-h}\right),
+\end{equation*}\]</span> which also implies that <span class="math inline">\(\gamma_{h}=\gamma_{-h}\)</span>. This expression shows where the term “lag” (“lag length”) <span class="math inline">\(h\)</span> is coming from.</p></li>
+</ul>
+<p>Putting the above properties together, the autocovariance function has the properties <span class="math display">\[\begin{equation*}
+\gamma_{0}\geq0, \,\, \left\vert \gamma_{h}\right\vert \leq\gamma_{0} \quad \mathrm{and} \quad \gamma_{h}=\gamma_{-h}.
+\end{equation*}\]</span> The case <span class="math inline">\(\gamma_{0}=0\)</span> is obviously not of interest, and in what follows we assume that <span class="math inline">\(\gamma_{0}&gt;0\)</span>.</p>
+<p>&nbsp;</p>
+</section>
+<section id="autocorrelation-function" class="level2" data-number="3.4">
+<h2 data-number="3.4" class="anchored" data-anchor-id="autocorrelation-function"><span class="header-section-number">3.4</span> Autocorrelation function</h2>
+<p>In practice, a more convenient concept than the autocovariance function is the <strong>autocorrelation function</strong> <span class="math display">\[\begin{equation*}
+\rho_{h}=\mathsf{Cor}\left(y_{t},y_{t+h}\right)= \mathsf{Cor}\left(y_t, y_{t-h}\right)=\gamma_{h}/\gamma_{0}.
+\end{equation*}\]</span> The <strong>autocorrelation coefficients</strong> <span class="math inline">\(\rho_{h}\)</span> obviously then have the properties <span class="math display">\[\begin{equation*}
+\rho_{0}=1, \,\, \left\vert \rho_{h}\right\vert \leq1, \, \text{and} \,\,  \rho_{h}=\rho_{-h}.
+\end{equation*}\]</span> Therefore, it suffices to consider the autocovariance and autocorrelation functions only for the lag lengths <span class="math inline">\(h\geq 0\)</span>.</p>
+<ul>
+<li>The latter just for the lags <span class="math inline">\(h&gt;0\)</span>, because <span class="math inline">\(\rho_{0}=1\)</span> always.</li>
+</ul>
+<p>Due to the time invariance guaranteed by weak stationarity, it now seems evident that <span class="math inline">\(\mathsf{E}\left(y_{t}\right)=\mu\)</span> and <span class="math inline">\(\mathsf{Cov}\left(y_{t},y_{t+h}\right)=\gamma_{h}\)</span> can be estimated. One more problem remains: The autocorrelation function, in general, has an infinite number of quantities to be estimated. In practice, all of these cannot be estimated (without further restrictions). However, typically we can assume that <span class="math display">\[\begin{equation*}
+\gamma_{h}\rightarrow0, \,\, \mathrm{when} \,\, h\rightarrow\infty.
+\end{equation*}\]</span> <!-- (#eq:Acfdecay) --> In this case, the random variables <span class="math inline">\(y_{t}\)</span> and <span class="math inline">\(y_{t+h}\)</span> become <strong>nearly uncorrelated when the distance <span class="math inline">\(h\)</span> is “large”</strong>.</p>
+<ul>
+<li><p>That is, when <span class="math inline">\(y_{t}\)</span> and <span class="math inline">\(y_{t+h}\)</span> are “far” from each other in time, we assume that they are (nearly) uncorrelated.</p></li>
+<li><p>Therefore, in practice, it suffices to estimate the autocorrelation function <span class="math inline">\(\rho_{h}\)</span>, when <span class="math inline">\(h=1,\ldots,H\)</span>, and <span class="math inline">\(H\)</span> is so large that <span class="math inline">\(\rho_{h}\approx0\)</span> for <span class="math inline">\(h&gt;H\)</span>.</p></li>
+</ul>
+<p>&nbsp;</p>
+</section>
+<section id="sample-autocorrelation-function" class="level2" data-number="3.5">
+<h2 data-number="3.5" class="anchored" data-anchor-id="sample-autocorrelation-function"><span class="header-section-number">3.5</span> Sample autocorrelation function</h2>
+<p><strong>Assume that the process <span class="math inline">\(y_{t}\)</span> is weakly stationary</strong>. Then <span class="math inline">\(\mathsf{E}\left(y_{1}\right)=\cdots=\mathsf{E}\left(y_{T}\right)=\mu\)</span>. Therefore, a natural estimator of the (population) mean is the <strong>sample mean</strong> <span class="math display">\[\begin{equation*}
+\bar{y}=\frac{1}{T}\sum_{t=1}^{T}y_{t}.
+\end{equation*}\]</span></p>
+<p>Because (under weak stationarity) <span class="math inline">\(\mathsf{Cov}\left(y_{1},y_{1+h}\right)=\cdots=\mathsf{Cov}\left(y_{T-h},y_{T}\right)=\gamma_{h}\)</span> <span class="math inline">\(\left(h\geq0\right)\)</span>, it also seems natural to estimate the population autocovariance coefficient <span class="math inline">\(\gamma_{h}\)</span> using the sample covariance of the observations <span class="math inline">\(\left(y_{1},y_{1+h}\right),\ldots,\left(y_{T-h},y_{T}\right)\)</span>. Because <span class="math inline">\(\mathsf{E}\left(y_{t}\right)=\mathsf{E}\left(y_{t+h}\right)\)</span> (under weak stationarity), a commonly used estimator is <span class="math display">\[\begin{equation*}
+\mathsf{c}_{h}=\frac{1}{T-h}\sum_{t=1}^{T-h}(y_{t}-\bar{y})\left(y_{t+h}-\bar{y}\right), \quad 0\leq h&lt;T,
+\end{equation*}\]</span> which is called the (<span class="math inline">\(h\)</span>th) <strong>sample autocovariance coefficient</strong>.</p>
+<ul>
+<li><p>Sometimes, the denominator <span class="math inline">\(T-h\)</span> is replaced by <span class="math inline">\(T\)</span>.</p></li>
+<li><p>When <span class="math inline">\(\mathsf{c}_{h}\)</span> is interpreted as a function of <span class="math inline">\(h\)</span> (i.e.&nbsp;<span class="math inline">\(\mathsf{c}_{1}, \mathsf{c}_{2},\ldots\)</span>), it is called the <strong>sample autocovariance function</strong>.</p></li>
+</ul>
+<p>A natural estimator of the autocorrelation coefficient <span class="math inline">\(\rho_{h}\)</span> is hence <span class="math display">\[\begin{equation*}
+\mathsf{r}_{h}=\mathsf{c}_{h}/\mathsf{c}_{0}, \qquad 0\leq h&lt;T,
+\end{equation*}\]</span> which is called the <strong>sample autocorrelation coefficient</strong> and <span class="math inline">\(\mathsf{r}_1, \mathsf{r}_2, \ldots\)</span> define the <strong>sample autocorrelation function</strong>.</p>
+<!-- - Note that the condition $\left\vert \mathsf{r}_{h}\right\vert \leq1$\ does not necessarily always hold for certain processes for which $\mathsf{r}_{h}$ will be constructed in a different way. -->
+<ul>
+<li>Notice that by definition <span class="math inline">\(\mathsf{r}_0=1\)</span>. Some statistical program packages report this uninteresting case.</li>
+</ul>
+<p>&nbsp;</p>
+<p><strong>As an example on sample autocorrelations</strong>, consider the quarterly U.S. real GDP growth rate (1985:Q1–2007:Q2) as depicted. Its sample autocorrelation function is plotted below for the lags <span class="math inline">\(h=1,\ldots,20\)</span>. The two horizontal lines represent certain “confidence bands”.</p>
+<ul>
+<li><p>If <span class="math inline">\(\rho_{h}=0\)</span> for all <span class="math inline">\(h&gt;0\)</span>, then any individual estimator <span class="math inline">\(\mathsf{r}_{h}\)</span> has an approximately 95% probability of lying between the confidence bands <span class="math inline">\((-1.96/\sqrt{T}, 1.96/\sqrt{T})\)</span> where <span class="math inline">\(T\)</span> is the number of observations. These confidence bands are depicted below and typically in corresponding figures.</p></li>
+<li><p>If the individual sample autocorrelation coefficient <span class="math inline">\(\mathsf{r}_h\)</span> does not fall between these bands, there is statistically significant autocorrelation at the 5% significance level at the lag <span class="math inline">\(h\)</span>.</p></li>
+</ul>
+<!-- - We will return to a more detailed discussion of these confidence bands later on.  -->
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/ACF_usrealgdp.png" class="img-fluid figure-img" style="width:75.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><span class="fig-caption">Figure: Sample autocorrelation function (ACF) of the quarterly U.S. real GDP growth rate (<span class="math inline">\(T=90\)</span>, and hence <span class="math inline">\(1.96/\sqrt{T} \approx 0.207\)</span>).</span></p>
+<p>&nbsp;</p>
+<p>This time series exhibits clear autocorrelation, which generally dampens (slowly) as the lag length <span class="math inline">\(h\)</span> increases.</p>
+<ul>
+<li><p>This dampening effect depends on the time series (process) considered.</p></li>
+<li><p>Notice that above the first depicted lag (in this R function) is <span class="math inline">\(\mathsf{r}_1\)</span>. At times in different functions and packages <span class="math inline">\(\mathsf{r}_0=1\)</span> is depicted, but that is of course not of interest.</p></li>
+<li><p>If there is some (remaining) seasonal variation, say in monthly time series after seasonal adjustment (if applicable), it causes rather strong autocorrelations at lags <span class="math inline">\(h=12,\)</span> <span class="math inline">\(24\)</span> and <span class="math inline">\(36\)</span>. Similar behaviour can also happen if the time series contain some other cyclical pattern.</p></li>
+</ul>
+<p>&nbsp;</p>
+</section>
+<section id="weakWN" class="level2" data-number="3.6">
+<h2 data-number="3.6" class="anchored" data-anchor-id="weakWN"><span class="header-section-number">3.6</span> White noise process</h2>
+<p>Weak stationarity is not a strong enough assumption to allow statistical analysis of time series. It alone does not suffice for the construction of a likelihood function, nor is it enough to derive distributions of estimators or test statistics. For this reason, we need to define another concept of stationarity that is stronger than weak stationarity, <strong>strict stationarity</strong>. We will consider that in the next section.</p>
+<p>Before that, let us consider first a <strong>white noise process</strong>, which is the simplest possible example of a weakly stationary process. Let <span class="math inline">\(u_{t}\)</span> be a process for which it holds that</p>
+<ul>
+<li><p><span class="math inline">\(\mathsf{E}\left(u_{t}\right) =\mu &lt; \infty\)</span>, often <span class="math inline">\(\mathsf{E}(u_t)=0\)</span>,</p></li>
+<li><p><span class="math inline">\(\mathsf{Var}\left(u_{t}\right)=\sigma^{2}&lt;\infty\)</span>, and</p></li>
+<li><p><span class="math inline">\(\mathsf{Cov}\left(u_{s},u_{t}\right)=0\)</span>, when <span class="math inline">\(s\neq t\)</span>.</p></li>
+</ul>
+<p>This process is often called a <strong>(weak) white noise</strong> process and denoted by <span class="math inline">\(u_{t}\sim\mathsf{wn}(\mu,\sigma^{2})\)</span>.</p>
+<ul>
+<li><p>By definition, it is clear that a white noise process is weakly stationary.</p></li>
+<li><p>Despite their simplicity, as we will see later on, white noise processes play a central role because they can be used to construct more complicated processes and eventually realistic models for empirical data.</p></li>
+</ul>
+<p>&nbsp;</p>
+</section>
+<section id="strictstationarity" class="level2" data-number="3.7">
+<h2 data-number="3.7" class="anchored" data-anchor-id="strictstationarity"><span class="header-section-number">3.7</span> Strictly stationary process</h2>
+<p>Let us now define the above-mentioned more stringent form of stationarity. A process <span class="math inline">\(\left\{y_{t};t=0,\pm1,\pm2,\ldots\right\}\)</span> is called <strong>strictly stationary</strong> (sometimes strongly stationary) if the collections of random variables <span class="math inline">\(y_{t_{1}},\ldots,y_{t_{m}}\)</span> and <span class="math inline">\(y_{t_{1}+h},\ldots,y_{t_{m}+h}\)</span> have the same <span class="math inline">\(m\)</span>–dimensional joint distribution for all integers <span class="math inline">\(t_{1},\ldots,t_{m}\)</span>, <span class="math inline">\(h\)</span> and <span class="math inline">\(m\)</span> <span class="math inline">\(\left( m&gt;0\right)\)</span>.</p>
+<ul>
+<li>That is, <strong>the entire probability structure of the process <span class="math inline">\(y_{t}\)</span> is time-invariant</strong>, not just the first and second-order moments.</li>
+</ul>
+<p><strong>Properties</strong>. A strictly stationary stochastic process has the following properties (that follow straightforwardly from the definition):</p>
+<ul>
+<li><p><strong>SS1</strong>: The random variables <span class="math inline">\(y_{t}\)</span> have the same distribution for all <span class="math inline">\(t\)</span>.</p></li>
+<li><p><strong>SS2</strong>: The random vectors <span class="math inline">\((y_{t},y_{t+h})\)</span> and <span class="math inline">\((y_{s},y_{s+h})\)</span> have the same distribution for all <span class="math inline">\(t\)</span> and <span class="math inline">\(s\)</span> and all (fixed) <span class="math inline">\(h\)</span>.</p></li>
+<li><p><strong>SS3</strong>: <span class="math inline">\(y_{t}\)</span> is weakly stationary if <span class="math inline">\(\mathsf{E}\left(y_{t}^{2}\right)&lt;\infty\)</span> holds.</p></li>
+</ul>
+<p>It is clear that weak stationarity does not, in general, imply strict stationarity.</p>
+<ul>
+<li>For instance, weak stationarity says nothing about moments of order 3 and above.</li>
+</ul>
+<p>&nbsp;</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Extra: Gaussian processes
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>In the case of so-called Gaussian processes, weak stationarity implies strict stationarity. A process <span class="math inline">\(y_{t}\)</span> (not necessarily stationary in any sense) is called <em>normal</em> or <em>Gaussian</em>, if the <span class="math inline">\(m\)</span>–dimensional probability distribution of the random variables <span class="math inline">\(y_{t_{1}},\ldots,y_{t_{m}}\)</span> is multivariate normal (Gaussian) for all integers <span class="math inline">\(t_{1},\ldots,t_{m}\)</span> and <span class="math inline">\(m\)</span> <span class="math inline">\(\left(m&gt;0\right)\)</span> (for simplicity, occasionally we will simply say normal when meaning multivariate normal distribution). Recall that a multivariate normal distribution is fully determined by its first and second moments. Therefore, weak stationarity and normality together do imply strict stationarity.</p>
+</div>
+</div>
+</div>
+<p>&nbsp;</p>
+<p>A very useful property of strict (but not weak) stationarity is that it is conserved in transformations. In other words,</p>
+<ul>
+<li><strong>SS4</strong>: If <span class="math inline">\(x_{t}\)</span> is a strictly stationary process, then so is also the process <span class="math inline">\(y_{t}=g\left(x_{t+m},\ldots,x_{t-n}\right), m,n\geq0\)</span>, for any “well-behaving” (e.g.&nbsp;continuous or, more generally, measurable) function <span class="math inline">\(g\)</span>. Moreover, <span class="math inline">\(m\)</span>, <span class="math inline">\(n\)</span>, or both can be replaced with <span class="math inline">\(\infty\)</span>.</li>
+</ul>
+<p>&nbsp;</p>
+<p><strong>“Stationarity” in this material</strong>. Unless otherwise stated, stationarity will be interpreted as strict stationarity from now on.</p>
+<ul>
+<li>From a practical time series analysis perspective, as introduced above, visual inspection of the time series is of interest, because it relates directly to the theoretical implications of weak stationarity (i.e.&nbsp;the mean, variance and autocovariances of the series do not depend on time).</li>
+</ul>
+<p>&nbsp;</p>
+</section>
+<section id="iid-and-nid-processes" class="level2" data-number="3.8">
+<h2 data-number="3.8" class="anchored" data-anchor-id="iid-and-nid-processes"><span class="header-section-number">3.8</span> IID and NID processes</h2>
+<p>Let <span class="math inline">\(u_{t}\)</span> be a sequence of <strong>independent and identically distributed</strong> (IID) random variables.</p>
+<ul>
+<li>The strict stationarity of this process is easy to check.</li>
+</ul>
+<p>&nbsp;</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Extra: Some further results
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The cumulative distribution function of the random vector <span class="math inline">\(\left(u_{t_{1}},\ldots,u_{t_{m}}\right)\)</span> evaluated at <span class="math inline">\(\left(x_{1},\ldots,x_{m}\right)\)</span> is <span class="math inline">\(F\left(x_{1}\right) \cdots F\left(x_{m}\right)\)</span>. Clearly, this is also the cumulative distribution function of the random vector <span class="math inline">\((u_{t_{1}+h},\ldots,u_{t_{m}+h})\)</span> evaluated at <span class="math inline">\(\left(x_{1},\ldots,x_{m}\right)\)</span>.</p>
+<p>If <span class="math inline">\(\mathsf{E}\left(u_{t}^{2}\right)&lt;\infty\)</span>, then <span class="math inline">\(u_{t}\)</span> is also weakly stationary, and in this case it has the same moment properties as the (weak) white noise process above.</p>
+</div>
+</div>
+</div>
+<p>&nbsp;</p>
+<p>This IID process is also called white noise, or sometimes <strong>strong white noise</strong>. We will use the shorthand notation <span class="math display">\[\begin{equation*}
+u_{t}\sim\mathsf{iid}(\mu,\sigma^{2}) \quad \mathrm{or} \quad u_{t}\sim\mathsf{IID}(\mu,\sigma^{2}),
+\end{equation*}\]</span> where <span class="math inline">\(\mathsf{iid}\)</span> refers to “independent and identically distributed”, <span class="math inline">\(\mu=\mathsf{E}\left(u_{t}\right)\)</span> and <span class="math inline">\(\sigma^{2}=\mathsf{Var}\left(u_{t}\right)\)</span> (in what follows, most often <span class="math inline">\(\mu=0\)</span>).</p>
+<p>If it is additionally assumed that <span class="math inline">\(u_{t}\sim\mathsf{N}(\mu,\sigma^{2})\)</span>, one denotes <span class="math display">\[\begin{equation*}
+u_{t}\sim\mathsf{nid}(\mu,\sigma^{2}) \quad \mathrm{or} \quad u_{t}\sim\mathsf{NID}(\mu,\sigma^{2}),
+\end{equation*}\]</span> where <span class="math inline">\(\mathsf{nid}\)</span> refers to <strong>normally and independently distributed</strong>.</p>
+<p>&nbsp;</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Extra: Some (somewhat peculiar) example cases
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The first example demonstrates that the mathematical definition of weak stationarity allows for processes that may feel awkward and surprising. Define the process <span class="math display">\[\begin{equation*}
+y_{t}=A\cos\left(\lambda t\right)+B\sin\left(\lambda t\right),
+\end{equation*}\]</span> where <span class="math inline">\(\lambda\in\lbrack0,\pi)\)</span> is a constant and the random variables <span class="math inline">\(A\)</span> and <span class="math inline">\(B\)</span> satisfy <span class="math inline">\(\mathsf{E}\left(A\right)=\mathsf{E}\left(B\right)=0\)</span>, <span class="math inline">\(\mathsf{Var}\left(A\right)=\mathsf{Var}\left(B\right)=\sigma^{2}\)</span> and <span class="math inline">\(\mathsf{Cov}\left(A,B\right)=0\)</span>. Obviously, <span class="math inline">\(\mathsf{E}\left(y_{t}\right)=0\)</span> holds. Using properties of trigonometric functions, straightforward calculation can be used to establish that <span class="math display">\[\begin{equation*}
+\mathsf{Cov}\left(y_{t},y_{t+h}\right)=\sigma^{2}\cos\left(\lambda h\right).
+\end{equation*}\]</span> Therefore, <span class="math inline">\(y_{t}\)</span> is weakly stationary (details are left as an exercise). This process is peculiar in that its realizations are quite regular functions of time (linear combinations of <span class="math inline">\(\cos\left( \lambda t\right)\)</span> and <span class="math inline">\(\sin\left(\lambda t\right)\)</span>). Note also that for this process, the condition <span class="math inline">\(\gamma_{h}\rightarrow0\)</span> as <span class="math inline">\(h\rightarrow\infty\)</span> does not hold. <span class="math inline">\(\square\)</span></p>
+<p>&nbsp;</p>
+<p>The second example: Define the process <span class="math inline">\(y_{t}=u_{t}\sqrt{\omega+\alpha u_{t-1}^{2}}\)</span>, where <span class="math inline">\(\omega&gt;0\)</span>, <span class="math inline">\(\alpha\geq0\)</span> and <span class="math inline">\(u_{t}\sim\mathsf{iid}\left(0,\sigma^{2}\right)\)</span> with <span class="math inline">\(\mathsf{E}\left(u_{t}^{2}\right)=\sigma^{2}&lt;\infty\)</span> (independence, not just uncorrelatedness, is needed here). It is easy to see that <span class="math inline">\(y_{t}\)</span> is weak white noise (justification as an exercise). Because <span class="math inline">\(y_{t-1}=u_{t-1}\sqrt{\omega+\alpha u_{t-2}^{2}}\)</span>, it is clear that <span class="math inline">\(y_{t}\)</span> is not strong white noise (unless <span class="math inline">\(\alpha=0\)</span>). <span class="math inline">\(\square\)</span></p>
+</div>
+</div>
+</div>
+<p>&nbsp;</p>
+<p>As an illustration of an NID process, below we depict a simulated realization from the <span class="math inline">\(\mathsf{nid}(0,1)\)</span> process. The length of the time series is 300 observations (<span class="math inline">\(T=300\)</span>). In other words, we can state that <span class="math inline">\(u_t \sim \mathsf{nid}(0,1), \, t=1,\ldots,300\)</span>. The simulated time series exhibits completely random variation. As we can see, there are occasionally higher and lower values due to sampling variation.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/nidsimul.png" class="img-fluid figure-img" style="width:75.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><span class="fig-caption">Figure: A simulated realization of <span class="math inline">\(\mathsf{nid}(0,1)\)</span> process (<span class="math inline">\(T=300\)</span>).</span></p>
+<p>&nbsp;</p>
+</section>
+<section id="r-lab" class="level2" data-number="3.9">
+<h2 data-number="3.9" class="anchored" data-anchor-id="r-lab"><span class="header-section-number">3.9</span> R Lab</h2>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+R Lab, Section 3
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-4" class="callout-4-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">#  LOAD LIBRARIES</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># -------------------------------------------------------------------</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>packages_to_load <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"tseries"</span>, <span class="st">"forecast"</span>, <span class="st">"ggplot2"</span>, <span class="st">"readxl"</span>, <span class="st">"dplyr"</span>, </span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>                      <span class="st">"lubridate"</span>, <span class="st">"astsa"</span>, <span class="st">"TSA"</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (pkg <span class="cf">in</span> packages_to_load) {</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">require</span>(pkg, <span class="at">character.only =</span> <span class="cn">TRUE</span>)) {</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="co">#install.packages(pkg) # uncomment this</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">library</span>(pkg, <span class="at">character.only =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co">#  DATA ACQUISITION AND PREPARATION</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="co"># -------------------------------------------------------------------</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>start_date <span class="ot">&lt;-</span> <span class="st">"1984-10-01"</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>end_date   <span class="ot">&lt;-</span> <span class="st">"2007-04-01"</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>full_data <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(<span class="st">"GDPC1-qdata.xlsx"</span>)</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>raw_data <span class="ot">&lt;-</span> full_data <span class="sc">%&gt;%</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">date =</span> Date, <span class="at">value =</span> GDPC1) <span class="sc">%&gt;%</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(date <span class="sc">&gt;=</span> <span class="fu">as.Date</span>(start_date) <span class="sc">&amp;</span> date <span class="sc">&lt;=</span> <span class="fu">as.Date</span>(end_date))</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>gdp_ts <span class="ot">&lt;-</span> <span class="fu">ts</span>(raw_data<span class="sc">$</span>value, </span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>             <span class="at">start =</span> <span class="fu">c</span>(<span class="fu">year</span>(raw_data<span class="sc">$</span>date[<span class="dv">1</span>]), <span class="fu">quarter</span>(raw_data<span class="sc">$</span>date[<span class="dv">1</span>])), </span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>             <span class="at">frequency =</span> <span class="dv">4</span>)</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>gdp_growth <span class="ot">&lt;-</span> <span class="fu">diff</span>(<span class="fu">log</span>(gdp_ts)) <span class="sc">*</span> <span class="dv">400</span>  <span class="co"># Annualized growth rate</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>gdp_growth <span class="ot">&lt;-</span> <span class="fu">na.omit</span>(gdp_growth)</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a><span class="co">#  VISUALIZATION AND MANUAL IDENTIFICATION</span></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="co"># -------------------------------------------------------------------</span></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(gdp_growth) <span class="sc">+</span> <span class="fu">ggtitle</span>(<span class="st">"(Annualized) quarterly U.S. real GDP growth rate (1985:Q1-2007:Q2)"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="TSE-ch3_files/figure-html/r-code-chunk-3-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Sample autocorrelations</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">Acf</span>(gdp_growth, <span class="at">main=</span><span class="st">"ACF of GDP Growth"</span>)  <span class="co"># forecast package</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="TSE-ch3_files/figure-html/r-code-chunk-3-2.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Simulate nid(0,1) process</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>u <span class="ot">=</span> <span class="fu">rnorm</span>(<span class="dv">300</span>)   <span class="co"># the shocks u_t</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(u, <span class="at">type=</span><span class="st">"l"</span>, <span class="at">xlab=</span><span class="st">"Time"</span>, <span class="at">ylab=</span><span class="st">"u_t"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="TSE-ch3_files/figure-html/r-code-chunk-3-3.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>&nbsp;</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./TSE-ch2.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">A primer on time series models</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./TSE-ch4.html" class="pagination-link">
+        <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Linear process</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+</body></html>

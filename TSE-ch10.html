@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Time Series Econometrics (TSE) - 10&nbsp; Multivariate time series models</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./TSE-ch11.html" rel="next">
+<link href="./TSE-ch9.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<!-- Lisätään jokaisen HTML-sivun <head>-osaan (ks. _quarto.yml). -->
+
+<!-- Omat LaTeX-makrot MathJaxille. Pidä samana kuin assets/preamble-TSE.tex. -->
+<script>
+window.MathJax = {
+  tex: {
+    macros: {
+      ubar: ["\\mkern3mu\\underline{\\mkern-3mu#1\\mkern-3mu}\\mkern3mu", 1]
+    }
+  }
+};
+</script>
+
+<!-- Estää hiiren oikean painikkeen valikon (Roopen alkuperäinen ratkaisu). -->
+<script>
+document.addEventListener('contextmenu', event => event.preventDefault());
+</script>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<link rel="stylesheet" href="assets/styles-TSE.css">
+</head>
+
+<body class="nav-sidebar docked">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./TSE-ch10.html"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Multivariate time series models</span></a></li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Time Series Econometrics (TSE)</a> 
+        <div class="sidebar-tools-main">
+    <a href="./msTSE2026.pdf" rel="" title="Download PDF" class="quarto-navigation-tool px-1" aria-label="Download PDF"><i class="bi bi-file-pdf"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./TSE-ch1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./TSE-ch2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">A primer on time series models</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./TSE-ch3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Stationary processes</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./TSE-ch4.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Linear process</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./TSE-ch5.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">ARMA processes</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./TSE-ch6.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Parameter estimation</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./TSE-ch7.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">ARMA model selection</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./TSE-ch8.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Forecasting ARMA processes</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./TSE-ch9.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Volatility modelling: AR-GARCH model</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./TSE-ch10.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Multivariate time series models</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./TSE-ch11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Basics of vector autoregression</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./TSE-ch12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Nonstationary processes</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./TSE-ch13.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Linear regressions with <span class="math inline">\(I(1)\)</span> variables</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#predictive-regressions-background-and-starting-point" id="toc-predictive-regressions-background-and-starting-point" class="nav-link active" data-scroll-target="#predictive-regressions-background-and-starting-point"><span class="header-section-number">10.1</span> Predictive regressions: Background and starting point</a></li>
+  <li><a href="#stationary-variables" id="toc-stationary-variables" class="nav-link" data-scroll-target="#stationary-variables"><span class="header-section-number">10.2</span> Stationary variables</a></li>
+  <li><a href="#forecasting-with-predictive-variables" id="toc-forecasting-with-predictive-variables" class="nav-link" data-scroll-target="#forecasting-with-predictive-variables"><span class="header-section-number">10.3</span> Forecasting with predictive variables</a></li>
+  <li><a href="#extra-regularized-predictive-regressions" id="toc-extra-regularized-predictive-regressions" class="nav-link" data-scroll-target="#extra-regularized-predictive-regressions"><span class="header-section-number">10.4</span> Extra: Regularized predictive regressions</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span id="part-ch10" class="quarto-section-identifier"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Multivariate time series models</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<p>So far, we have considered univariate models, such as AR and ARMA models, where only a single time series is analyzed.</p>
+<ul>
+<li>This represents the “pure time series approach” as formulated at the beginning of the material.</li>
+</ul>
+<p>Modelling multiple time series simultaneously is, however, of greater interest in different applications. Multivariate time series models can provide richer dynamics and predictive information, potentially improving the accuracy of empirical analyses such as forecasting.</p>
+<p>We will next briefly introduce three important extensions to the univariate models that have been widely used in the econometric (statistics) literature:</p>
+<ul>
+<li><p>Linear (predictive) regressions with time series variables</p></li>
+<li><p>Vector autoregressive (VAR) models</p></li>
+<li><p>Cointegration (in connection to nonstationary time series)</p></li>
+</ul>
+<p>&nbsp;</p>
+<section id="predictive-regressions-background-and-starting-point" class="level2" data-number="10.1">
+<h2 data-number="10.1" class="anchored" data-anchor-id="predictive-regressions-background-and-starting-point"><span class="header-section-number">10.1</span> Predictive regressions: Background and starting point</h2>
+<p>Let us assume, for simplicity, that throughout this section we are working with two sets of variables: <span class="math inline">\(y_t\)</span> remains the dependent variable and either one (<span class="math inline">\(M=1\)</span>) or, more generally, multiple (<span class="math inline">\(M &gt; 1\)</span>) additional predictive variables <span class="math inline">\((x_{1t}, \ldots, x_{Mt})\)</span>. We are mainly interested in a linear regression model, but now with time series, where the lags of predictive variables are used as regressors (predictors). For example, one possible model specification is <span class="math display">\[\begin{equation*}
+y_t= \beta_0 + x_{1, t-1} \beta_1 + \cdots + x_{M, t-1} \beta_M + u_t \equiv \boldsymbol{x}^{\prime}_t \boldsymbol{\beta} + u_t,
+\end{equation*}\]</span> where <span class="math inline">\(\boldsymbol{x}_t = (1, x_{1,t-1},\ldots,x_{M,t-1})^{\prime}\)</span> collects the constant and the predictors, <span class="math inline">\(\boldsymbol{\beta}=(\beta_{0},\beta_{1},\ldots,\beta_{M})^{\prime}\)</span>, and <span class="math inline">\(u_t\)</span> is an <span class="math inline">\(\mathsf{iid}\)</span> error term or at least serially uncorrelated and uncorrelated with the regressors <span class="math inline">\(\boldsymbol{x}_t\)</span>, with <span class="math inline">\(\mathsf{Var}(u_t) = \sigma^2\)</span>. The parameters of this type of model, contained in <span class="math inline">\(\boldsymbol{\beta}\)</span>, can be estimated by (conditional) least squares in a similar fashion as discussed, e.g., in connection with the AR(<span class="math inline">\(p\)</span>) model in Section 6. That is, by minimizing the OLS criterion (with the required initial values) <span class="math display">\[\begin{equation*}
+\widehat{\boldsymbol{\beta}} = \mathrm{arg}\,\underset{\boldsymbol{\beta}}{\mathrm{min}} \sum_{t=1}^{T} (y_t -\boldsymbol{x}^{\prime}_t \boldsymbol{\beta})^2,
+\end{equation*}\]</span> resulting in the OLS estimator (and estimates) <span class="math display">\[\begin{equation*}
+\widehat{\boldsymbol{\beta}} = \Big(\sum_{t=1}^{T} \boldsymbol{x}_t \boldsymbol{x}^{\prime}_t \Big)^{-1}  \sum_{t=1}^{T} \boldsymbol{x}_t y_{t}.
+\end{equation*}\]</span></p>
+<p>In contrast to the model specification above, at times we are also considering other linear regressions:</p>
+<ul>
+<li><p>Simultaneous values of the predictive variables—rather than their lags—can be used as regressors in certain circumstances and applications. As an example, and for simplicity, let us assume <span class="math inline">\(M = 1\)</span>. In this case, the model can be specified as: <span class="math display">\[\begin{equation*}
+y_t= \beta_0 + x_{1t} \beta_1 + u_t.
+\end{equation*}\]</span></p></li>
+<li><p>Including also the lags of <span class="math inline">\(y_t\)</span> on the right hand side of the model equation. These are then autoregressive models with additional predictive variables, often denoted by ARX or ADL (Autoregressive Distributed Lag) models. One example of such a model is <span class="math display">\[\begin{equation*}
+y_t= \beta_0 + \phi_1 y_{t-1} + \beta_1 x_{1, t-1} + u_t,
+\end{equation*}\]</span> which can be straightforwardly extended by allowing more lags of <span class="math inline">\(y_t\)</span> and <span class="math inline">\(x_{1t}\)</span>.</p></li>
+<li><p>Including an autocorrelated error term is also possible. This alternative, particularly common in the earlier econometric literature, allows us to specify, e.g., <span class="math display">\[\begin{equation*}
+u_t = \phi u_{t-1} + \varepsilon_t, \, \varepsilon_t \thicksim \mathsf{iid}(0,\sigma^2)
+\end{equation*}\]</span> (see, e.g., Verbeek, Chapters 4.6-4.7). Note that by including lags of <span class="math inline">\(y_t\)</span> in the model, we can attempt to account for the possible autocorrelation in the error term.</p></li>
+</ul>
+<p>Subsequent (sub)sections are organized as follows:</p>
+<ul>
+<li><p>We consider the case where all the (dependent and predictive/explanatory) variables are stationary variables.</p></li>
+<li><p>At end of this section, we also briefly introduce the case where <span class="math inline">\(M\)</span> is high-dimensional. That is, the number of predictive variables can be very large. In contrast, throughout the rest of this section, we restrict ourselves to the case where there is only one or only a few predictive variables (i.e.&nbsp;<span class="math inline">\(M\)</span> is relatively small).</p></li>
+<li><p>When there are also nonstationary variables present (Section 13).</p></li>
+</ul>
+<p>&nbsp;</p>
+</section>
+<section id="stationary-variables" class="level2" data-number="10.2">
+<h2 data-number="10.2" class="anchored" data-anchor-id="stationary-variables"><span class="header-section-number">10.2</span> Stationary variables</h2>
+<p>Let us start with the case (assumption) that all variables <span class="math inline">\(y_t\)</span> and <span class="math inline">\(x_{1t}, \ldots, x_{Mt}\)</span> are stationary, which means that their respective time series plots do not contain strong stochastic or deterministic trends. Broadly speaking then, under the following two conditions <span class="math inline">\(\mathrm{(i)}\)</span> and <span class="math inline">\(\mathrm{(ii)}\)</span>, the OLS estimator <span class="math inline">\(\widehat{\boldsymbol{\beta}}\)</span> of the parameters of interest in a linear regression model <span class="math display">\[\begin{equation*}
+y_t= \boldsymbol{x}^{\prime}_t \boldsymbol{\beta} + u_t,
+\end{equation*}\]</span> where <span class="math inline">\(\boldsymbol{x}_t = (x_{1t}, \ldots, x_{Mt})^{\prime}\)</span> or, for example, <span class="math inline">\(\boldsymbol{x}_t = (x_{1, t-1}, \ldots, x_{M, t-1})^{\prime}\)</span>, is consistent and asymptotically normal when</p>
+<ul>
+<li><p><span class="math inline">\(\mathrm{(i)}\)</span> The error term <span class="math inline">\(u_t\)</span> is uncorrelated with the regressors included in <span class="math inline">\(\boldsymbol{x}_t\)</span>, that is, <span class="math inline">\(\mathsf{E}(\boldsymbol{x}_t u_t)=\boldsymbol{0}\)</span>, and it is serially uncorrelated,</p></li>
+<li><p><span class="math inline">\(\mathrm{(ii)}\)</span> All the regressors in <span class="math inline">\(\boldsymbol{x}_t\)</span> are either deterministic or stationary random variables.</p></li>
+</ul>
+<p>If not otherwise mentioned, we assume that <span class="math inline">\(\mathrm{(i)}\)</span> and <span class="math inline">\(\mathrm{(ii)}\)</span> are valid.</p>
+<ul>
+<li>The essential condition for consistency is the orthogonality <span class="math inline">\(\mathsf{E}(\boldsymbol{x}_t u_t)=\boldsymbol{0}\)</span> in <span class="math inline">\(\mathrm{(i)}\)</span>. Serial uncorrelatedness of <span class="math inline">\(u_{t}\)</span> is, in addition, needed for the <em>conventional</em> covariance matrix of <span class="math inline">\(\widehat{\boldsymbol{\beta}}\)</span> to be valid (see the discussion below).</li>
+</ul>
+<p>After estimating the model, the same residual diagnostic methods used for ARMA models can be applied to assess the residuals and, consequently, the adequacy of the model. The resulting asymptotic distribution result for the OLS estimator is <span class="math display">\[\begin{equation*}
+\sqrt{T} (\widehat{\boldsymbol{\beta}}  - \boldsymbol{\beta}) \underset{d}{\longrightarrow} \mathsf{N}\Big(\boldsymbol{0}, \sigma^2 \boldsymbol{\mathrm{Q}}^{-1}\Big), \quad \boldsymbol{\mathrm{Q}} = \underset{T \rightarrow \infty}{\mathrm{plim}} \, \frac{1}{T}\sum_{t=1}^{T} \boldsymbol{x}_t \boldsymbol{x}^{\prime}_t,
+\end{equation*}\]</span> where <span class="math inline">\(\underset{d}{\longrightarrow}\)</span> denotes convergence in distribution.</p>
+<ul>
+<li>In practice the result is used in the “unscaled” form familiar from Section 6, that is, <span class="math inline">\(\mathsf{Cov}(\widehat{\boldsymbol{\beta}}) \approx \widehat{\sigma}^{2}\big(\sum_{t=1}^{T} \boldsymbol{x}_t \boldsymbol{x}^{\prime}_t\big)^{-1}\)</span>, whose diagonal elements give the (squared) approximate standard errors, and <span class="math inline">\(t\)</span>-ratios and confidence intervals are formed exactly as before.</li>
+</ul>
+<p>It turns out that, in fact, even (mild) autocorrelation of the residuals can be accepted without losing many of the useful asymptotic properties of the (conditional) OLS estimator: the estimator remains consistent and asymptotically normal, only the covariance matrix above is no longer valid. If autocorrelation occurs after the initial formation of the model, we can proceed in essentially two different ways (see detailed discussion below):</p>
+<ul>
+<li><p>form a (linear) model where the error term is autocorrelated.</p></li>
+<li><p>(preferable alternative) adjust the covariance matrix of the estimated parameters <span class="math inline">\(\widehat{\boldsymbol{\beta}}\)</span> (see below)</p></li>
+<li><p>An important exception: the above tolerance of autocorrelation requires that <span class="math inline">\(\boldsymbol{x}_{t}\)</span> does <em>not</em> contain lagged values of <span class="math inline">\(y_{t}\)</span>. In an ARX or ADL model (see above), an autocorrelated <span class="math inline">\(u_{t}\)</span> is correlated with the lagged <span class="math inline">\(y_{t}\)</span> included in <span class="math inline">\(\boldsymbol{x}_{t}\)</span>, condition <span class="math inline">\(\mathrm{(i)}\)</span> fails, and the OLS estimator becomes <strong>inconsistent</strong>. Then HAC standard errors do not help, and the model has to be respecified (e.g., by adding lags), exactly as discussed in the case of the AR(<span class="math inline">\(p\)</span>) model in Section 6.</p></li>
+</ul>
+<p>&nbsp;</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Extra: Remaining autocorrelation in the linear (predictive) regression
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Consider a linear regression (as above), but this time we specify an ARMA structure, such as an MA(1) structure, for the error term. This would lead to the model <span class="math display">\[\begin{equation*}
+y_t = \boldsymbol{x}^{\prime}_t \boldsymbol{\beta} + u_t, \quad u_t = a_t + \theta_1 a_{t-1},
+\end{equation*}\]</span> where <span class="math inline">\(a_t\)</span> is now an <span class="math inline">\(\mathsf{iid}\)</span> or white noise (<span class="math inline">\(\mathsf{wn}\)</span>) process. However, in macro and especially financial econometrics, it is typical to proceed using the latter option, which is discussed next.</p>
+<p>As stated, and provided that <span class="math inline">\(\boldsymbol{x}_{t}\)</span> contains no lags of <span class="math inline">\(y_{t}\)</span>, the OLS estimator can be shown to be still consistent and asymptotically normal even if the error term is autocorrelated and possibly also (conditionally) heteroskedastic. Only the covariance matrix of the estimator changes. The logic is the same as with the quasi-maximum likelihood estimator (QMLE): the estimates are retained, but the inference is based on a robust covariance matrix.</p>
+<ul>
+<li>Cf., for example, the section concerning the AR-GARCH model.</li>
+</ul>
+<p>In such a situation, a heteroskedasticity-autocorrelation consistent (HAC) covariance matrix estimator is used, indicating that the usual standard errors of the parameter estimates it produces can be replaced with HAC counterparts.</p>
+<ul>
+<li><p>Without this adjustment, the standard errors are often too small, which correspondingly increases the absolute value of the <span class="math inline">\(t\)</span>-test statistics testing the statistical significance of individual regression coefficients (reducing the <span class="math inline">\(p\)</span>-values).</p></li>
+<li><p>One formulation is based on the Newey and West (1987) estimator.</p></li>
+</ul>
+<p>Formally, let’s consider the OLS estimator and the usual covariance matrix <span class="math display">\[\begin{equation*}
+\widehat{\boldsymbol{\beta}} = \Big(\sum_{t=1}^{T} \boldsymbol{x}_t \boldsymbol{x}_t^{\prime} \Big)^{-1} \sum_{t=1}^{T} \boldsymbol{x}_t y_t, \quad \mathsf{Cov}(\widehat{\boldsymbol{\beta}}) = \sigma^2 \Big(\sum_{t=1}^{T} \boldsymbol{x}_t \boldsymbol{x}_t^{\prime} \Big)^{-1},
+\end{equation*}\]</span> where <span class="math inline">\(\mathsf{Var}(u_t) = \sigma^2\)</span>. The general HAC estimator can be written as <span class="math display">\[\begin{equation*}
+\mathsf{Cov}(\widehat{\boldsymbol{\beta}})_{HAC} = \Big(\sum_{t=1}^{T} \boldsymbol{x}_t \boldsymbol{x}_t^{\prime} \Big)^{-1} \widehat{\boldsymbol{C}}_{HAC} \Big(\sum_{t=1}^{T} \boldsymbol{x}_t \boldsymbol{x}_t^{\prime} \Big)^{-1},
+\end{equation*}\]</span> where different choices for the middle term <span class="math inline">\(\widehat{\boldsymbol{C}}_{HAC}\)</span> lead to different estimators. For example, in the case of the Newey and West (1987) estimator <span class="math display">\[\begin{equation*}
+\widehat{\boldsymbol{C}}_{HAC} = \sum_{t=1}^{T} \widehat{u}^2_t \boldsymbol{x}_t \boldsymbol{x}_t^{\prime} + \sum_{j=1}^{l} w_j \sum_{s=j+1}^{T} \left(\boldsymbol{x}_s \widehat{u}_s \widehat{u}_{s-j} \boldsymbol{x}^{\prime}_{s-j} + \boldsymbol{x}_{s-j} \widehat{u}_{s-j} \widehat{u}_s \boldsymbol{x}^{\prime}_{s}\right),
+\end{equation*}\]</span> where <span class="math inline">\(l\)</span> is the so-called bandwidth parameter and <span class="math inline">\(w_j\)</span> is an appropriate weighting function.</p>
+<ul>
+<li><p>For example, in the case of the so-called Bartlett kernel function<br>
+<span class="math display">\[\begin{equation*} w_j = 1- j/l.
+\end{equation*}\]</span></p></li>
+<li><p>Newey and West recommended choosing the parameter <span class="math inline">\(l\)</span> as the integer part of the expression <span class="math inline">\(4(T/100)^{2/9}\)</span>.</p></li>
+</ul>
+<p>Furthermore, occasionally <span class="math inline">\(\widehat{\boldsymbol{C}}_{HAC}\)</span> may also be specified (only) allowing for heteroskedasticity (but not autocorrelation, “HC” vs.&nbsp;“HAC”) with the alternative (this is the so-called White estimator) <span class="math display">\[\begin{equation*}
+\widehat{\boldsymbol{C}}_{HC} = \sum_{t=1}^{T} \widehat{u}^2_t \boldsymbol{x}_t \boldsymbol{x}_t^{\prime}.
+\end{equation*}\]</span></p>
+</div>
+</div>
+</div>
+<p>&nbsp;</p>
+</section>
+<section id="forecasting-with-predictive-variables" class="level2" data-number="10.3">
+<h2 data-number="10.3" class="anchored" data-anchor-id="forecasting-with-predictive-variables"><span class="header-section-number">10.3</span> Forecasting with predictive variables</h2>
+<p>Let us consider forecast construction in more detail. When attempting to predict the value of <span class="math inline">\(y_{t+h}\)</span> using external predictive variables, additional complications arise especially when the forecast horizon <span class="math inline">\(h\)</span> lengthens. As an example, consider a simple model (the main arguments generalize to more general models) containing only two lags of one predictive variable <span class="math inline">\(x_t\)</span> <span class="math display">\[\begin{equation*}
+y_t= \beta_0 + \beta_1 x_{1, t-1} + \beta_2 x_{1, t-2} + u_t.
+\end{equation*}\]</span> As in the ARMA case, one-step forecast is the conditional expectation given the information set at time <span class="math inline">\(t\)</span>. <!-- denoted by $\mathcal{F}_t =\{y_t, y_{t-1},\ldots, x_{1t}, x_{1, t-1},\ldots\}$. 
+--> That is <span class="math display">\[\begin{equation*}
+\mathsf{E}_t(y_{t+1}) = \beta_0 + \beta_1 x_{1t} + \beta_2 x_{1,t-1}.
+\end{equation*}\]</span> From this, it is immediately apparent that additional challenges arise if the forecast horizon lengthens beyond one period. In other words, multi-step forecasts (<span class="math inline">\(h&gt;1\)</span>) seem to require forecasts for <span class="math inline">\(x_{1t}\)</span> as well.</p>
+<ul>
+<li>Vector autoregressive models provide one alternative to solve this problem by building a joint (multiple-equation) model for <span class="math inline">\(y_t\)</span> and <span class="math inline">\(x_{1t}\)</span> (see the next section).</li>
+</ul>
+<p>An alternative approach is to use predictive models that are specific to each forecast horizon. In this case, when utilizing the predictive information available at time <span class="math inline">\(t\)</span>, we can specify <span class="math display">\[\begin{equation*}
+y_{t+h}= \beta_0 + \beta_1 x_{1t} + \beta_2 x_{1,t-1} + e_{t+h},
+\end{equation*}\]</span> where <span class="math inline">\(e_t\)</span> is a zero-mean error term and the forecast can then be constructed “directly” as <span class="math display">\[\begin{equation*}
+\mathsf{E}_t(y_{t+h})= \beta_0 + \beta_1 x_{1t} + \beta_2 x_{1,t-1}.
+\end{equation*}\]</span> Naturally the parameters <span class="math inline">\(\boldsymbol{\beta} = (\beta_0, \beta_1, \beta_2)^{\prime}\)</span>, and finally their estimates, are then specific to the forecast horizon <span class="math inline">\(h\)</span>. This is often called the <strong>direct</strong> forecasting approach, as opposed to the <strong>iterated</strong> one based on a one-step model.</p>
+<ul>
+<li><p>The properties of the error term <span class="math inline">\(e_{t+h}\)</span> can be complicated due to the overlapping nature of the forecast horizon, from the forecast origin at time <span class="math inline">\(t\)</span> to <span class="math inline">\(t+h\)</span>. Specifically, with <span class="math inline">\(h&gt;1\)</span> the error term is autocorrelated by construction (an MA(<span class="math inline">\(h-1\)</span>) structure), even when the model is correctly specified. The parameters can still be estimated consistently by OLS, but the standard errors have to be computed with the HAC methods described above.</p></li>
+<li><p>What is introduced above for a simple model containing only one predictive variable can be generalized straightforwardly to the case of <span class="math inline">\(M\)</span> predictors, which may also include lags of <span class="math inline">\(y_t\)</span>.</p></li>
+</ul>
+<p>&nbsp;</p>
+<p>Overall, this same principle of <span class="math inline">\(h\)</span>-period predictive models can be viewed as a building block for various extended predictive regressions, particularly those incorporating elements of <strong>machine learning and statistical learning</strong>.</p>
+<p>&nbsp;</p>
+</section>
+<section id="extra-regularized-predictive-regressions" class="level2" data-number="10.4">
+<h2 data-number="10.4" class="anchored" data-anchor-id="extra-regularized-predictive-regressions"><span class="header-section-number">10.4</span> Extra: Regularized predictive regressions</h2>
+<p>Let us briefly focus on predicting <span class="math inline">\(y_{t+h}\)</span> at time <span class="math inline">\(t\)</span> (that is the forecast origin) given the collection of <span class="math inline">\(M\)</span> predictive variables in <span class="math inline">\(\boldsymbol{x}_t = (x_{1t},\ldots,x_{Mt})^{\prime}\)</span>, which may also contain some lagged values of <span class="math inline">\(y_t\)</span> (as discussed above).</p>
+<ul>
+<li>This is the same predictive regression we briefly considered earlier, but now extended to the case of high-dimensional predictors.</li>
+</ul>
+<p><strong>The challenge of big dependent data</strong>. The focus here is on big dependent data, meaning we’re dealing with a large collection of potential predictors where the number of variables, <span class="math inline">\(M\)</span>, can be substantial.</p>
+<ul>
+<li><p>In some cases, <span class="math inline">\(M\)</span> might even be greater than the sample length <span class="math inline">\(T\)</span> (<span class="math inline">\(M &gt; T\)</span>) used for estimating the model parameters.</p></li>
+<li><p>Here for “big dependent data” we mean that the number of (predictive) time series is large. “Dependent” refers to autocorrelation (serial correlation) in the data. In this section, our dependent variable <span class="math inline">\(y_t\)</span> is still scalar-valued (i.e.&nbsp;only one time series) and hence we consider single-equation models.</p></li>
+</ul>
+<p><strong>Traditional limitation</strong>. When <span class="math inline">\(M\)</span> is large relative to <span class="math inline">\(T\)</span>, traditional estimation techniques, like Ordinary Least Squares (OLS), as introduced above, fail or produce highly unstable and unreliable results.</p>
+<ul>
+<li><p>The classic OLS estimator is not well defined if <span class="math inline">\(M &gt; T\)</span>; the conventional asymptotic results assume <span class="math inline">\(M \ll T\)</span>.</p></li>
+<li><p>Even if <span class="math inline">\(M\)</span> is less than <span class="math inline">\(T\)</span> but still large, the resulting model can suffer from overfitting, where it fits the noise in the historical data too closely, leading to poor out-of-sample forecasting performance.</p></li>
+</ul>
+<p><strong>Need for structure</strong>: To overcome <strong>the curse of dimensionality</strong>, the problems that arise when the number of variables grows, we need methods that can impose structure or constraints on the predictive relationship. This is essential for selecting the most relevant predictors and stabilizing the parameter estimates in a data-rich environment.</p>
+<p><strong>Regularized estimation and sparsity</strong>. To enable effective predictive regressions in this high-dimensional setting, where the predictor space can be very large, a class of techniques known as regularized estimators is employed. Regularization involves adding a penalty term to the standard loss function (like the sum of squared errors) that we aim to minimize. This penalty discourages the model from assigning large values to the coefficients, effectively shrinking them towards zero. Key examples (briefly without details in this course):</p>
+<ul>
+<li><p><strong>Ridge estimator</strong>: This technique adds a penalty proportional to the sum of the squared coefficients. It stabilizes the estimates by shrinking all coefficients but doesn’t set any exactly to zero.</p></li>
+<li><p><strong>LASSO</strong> (Least Absolute Shrinkage and Selection Operator): This method uses a penalty based on the sum of the absolute values of the coefficients. Crucially, the LASSO has the ability to perform automatic variable selection by setting the coefficients of irrelevant predictors from <span class="math inline">\(\boldsymbol{x}_t\)</span> exactly to zero. This produces a sparse model, meaning that only a few (the most important) predictors are ultimately used.</p></li>
+<li><p><strong>Elastic Net</strong>: This is a hybrid that combines the penalties of both ridge and LASSO. It’s often used to leverage the variable selection of LASSO while retaining the grouping effect and stability of Ridge, especially when predictors are highly correlated.</p></li>
+</ul>
+<p><strong>Relevance</strong>: These estimators are foundational in modern forecasting and (statistical) machine learning, particularly when integrating vast amounts of data, such as financial indicators, survey data, or text-based predictors, into an economic forecasting model. They provide a principled way to manage the trade-off between bias (from shrinkage) and variance (from the large number of predictors) to achieve superior out-of-sample forecasting accuracy.</p>
+<p>A more detailed treatment of this topic and these estimators is reserved for the <strong>Advanced Time Series Econometrics course</strong>.</p>
+<!-- &nbsp; ## R Lab
+All the R codes considered in this section are compiled in the following link: -->
+<p>&nbsp;</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./TSE-ch9.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Volatility modelling: AR-GARCH model</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./TSE-ch11.html" class="pagination-link">
+        <span class="nav-page-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Basics of vector autoregression</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+</body></html>

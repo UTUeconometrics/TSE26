@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Time Series Econometrics (TSE) - 12&nbsp; Nonstationary processes</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./TSE-ch13.html" rel="next">
+<link href="./TSE-ch11.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<!-- Lisätään jokaisen HTML-sivun <head>-osaan (ks. _quarto.yml). -->
+
+<!-- Omat LaTeX-makrot MathJaxille. Pidä samana kuin assets/preamble-TSE.tex. -->
+<script>
+window.MathJax = {
+  tex: {
+    macros: {
+      ubar: ["\\mkern3mu\\underline{\\mkern-3mu#1\\mkern-3mu}\\mkern3mu", 1]
+    }
+  }
+};
+</script>
+
+<!-- Estää hiiren oikean painikkeen valikon (Roopen alkuperäinen ratkaisu). -->
+<script>
+document.addEventListener('contextmenu', event => event.preventDefault());
+</script>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<link rel="stylesheet" href="assets/styles-TSE.css">
+</head>
+
+<body class="nav-sidebar docked">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./TSE-ch12.html"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Nonstationary processes</span></a></li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Time Series Econometrics (TSE)</a> 
+        <div class="sidebar-tools-main">
+    <a href="./msTSE2026.pdf" rel="" title="Download PDF" class="quarto-navigation-tool px-1" aria-label="Download PDF"><i class="bi bi-file-pdf"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./TSE-ch1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./TSE-ch2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">A primer on time series models</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./TSE-ch3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Stationary processes</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./TSE-ch4.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Linear process</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./TSE-ch5.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">ARMA processes</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./TSE-ch6.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Parameter estimation</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./TSE-ch7.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">ARMA model selection</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./TSE-ch8.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Forecasting ARMA processes</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./TSE-ch9.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Volatility modelling: AR-GARCH model</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./TSE-ch10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Multivariate time series models</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./TSE-ch11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Basics of vector autoregression</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./TSE-ch12.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Nonstationary processes</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./TSE-ch13.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Linear regressions with <span class="math inline">\(I(1)\)</span> variables</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#integrated-process" id="toc-integrated-process" class="nav-link active" data-scroll-target="#integrated-process"><span class="header-section-number">12.1</span> Integrated process</a></li>
+  <li><a href="#arimapdq-process" id="toc-arimapdq-process" class="nav-link" data-scroll-target="#arimapdq-process"><span class="header-section-number">12.2</span> ARIMA(<span class="math inline">\(p\)</span>,<span class="math inline">\(d\)</span>,<span class="math inline">\(q\)</span>) process</a></li>
+  <li><a href="#unit-root-process" id="toc-unit-root-process" class="nav-link" data-scroll-target="#unit-root-process"><span class="header-section-number">12.3</span> Unit root process</a></li>
+  <li><a href="#adf-unit-root-test" id="toc-adf-unit-root-test" class="nav-link" data-scroll-target="#adf-unit-root-test"><span class="header-section-number">12.4</span> ADF unit root test</a></li>
+  <li><a href="#r-lab" id="toc-r-lab" class="nav-link" data-scroll-target="#r-lab"><span class="header-section-number">12.5</span> R Lab</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span id="part-ch12" class="quarto-section-identifier"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Nonstationary processes</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="integrated-process" class="level2" data-number="12.1">
+<h2 data-number="12.1" class="anchored" data-anchor-id="integrated-process"><span class="header-section-number">12.1</span> Integrated process</h2>
+<p>In some application fields, such as economics and finance, the existence of trends in the analyzed time series is common.</p>
+<ul>
+<li>Here the term “trend” is used quite generally.</li>
+</ul>
+<p>Earlier in this material, it was discussed that nonstationary time series containing a trend can be investigated using methods developed for stationary time series if the trend is first removed using a suitable transformation. The most popular of such transformations is taking differences, which amounts to modelling the differenced series <span class="math inline">\(\Delta y_t = y_t-y_{t-1}\)</span></p>
+<ul>
+<li><p>These series might seem stationary and thus be modelled with stationary models reasonably well.</p></li>
+<li><p>If the differences still include some sort of trend, it is natural to extend this procedure to the difference of these differences <span class="math inline">\(\Delta^2 y_{t}\)</span>, and so on. This, however, is very rare in practice, and typically only first differences are considered when differencing data.</p></li>
+</ul>
+<p>&nbsp;</p>
+<p>Based on the aforementioned, let us introduce the following definition (here for univariate time series processes):</p>
+<p><strong>Integrated process</strong>. A stochastic process <span class="math inline">\(\{y_t, t=1,2,\dots\}\)</span> is said to be <strong>an integrated process of order <span class="math inline">\(d\)</span></strong>, or an <span class="math inline">\(I(d)\)</span> <strong>process</strong>, if the <span class="math inline">\(d\)</span> times differenced process <span class="math display">\[\begin{equation*}
+\Delta^d y_t
+\end{equation*}\]</span> is stationary (or asymptotically stationary), but the <span class="math inline">\((d-1)\)</span> differenced process <span class="math inline">\(\Delta^{d-1} y_t\)</span> is not.</p>
+<ul>
+<li>In some definitions, the process is first centered by subtracting its mean, that is <span class="math inline">\(\Delta^d(y_t-\mathsf{E}(y_t)), \quad t=1,2,\dots,\)</span> is stationary, while <span class="math inline">\(\Delta^{d-1}(y_t-\mathsf{E}(y_t))\)</span> is not. <!-- This form accounts for the deterministic component of the process. --></li>
+</ul>
+<p>If <span class="math inline">\(y_t\)</span> is an <span class="math inline">\(I(d)\)</span> <strong>process</strong>, we denote <span class="math display">\[\begin{equation*}
+y_t\sim \mathrm{I}(d) \,\,\, (d\geq 1).
+\end{equation*}\]</span> In this course, we will consider only <span class="math inline">\(d=1\)</span> and <span class="math inline">\(d=0\)</span>.</p>
+<p>&nbsp;</p>
+<p><strong>Random walk</strong>. The simplest example of an <span class="math inline">\(I(1)\)</span> process is <strong>random walk</strong>, which was briefly covered already in connection to the AR(1) process. Here the random walk is defined with a drift term <span class="math inline">\(\nu\)</span>: <span class="math display">\[\begin{equation*}
+    \Delta y_t = \nu + u_t, \,\, t=1,2,\ldots,
+\end{equation*}\]</span> where <span class="math inline">\(u_t\sim \mathsf{iid}(0,\sigma^2)\)</span>. By recursive substitutions, we get <span class="math display">\[\begin{equation*}
+    y_t=y_0+\nu t + \sum_{j=1}^{t}u_j, \,\,\, t=1,2,\dots
+\end{equation*}\]</span></p>
+<ul>
+<li>Sometimes, depending on the time series and application that we are considering, it is assumed that <span class="math inline">\(\nu=0\)</span>, that is, we have a <strong>random walk without drift</strong>, and hence the term <span class="math inline">\(\nu t\)</span> above vanishes.</li>
+</ul>
+<!-- - Differences $y_t-y_{t-1}=u_t$ from the process $y_t=y_0+\sum_{j=0}^{t-1}u_{t-j}$ are stationary, and this holds even if instead of $u_t\sim\mathsf{iid}(0,\sigma^2)$ we only assume $u_t$ is stationary. -->
+<p>Assuming the initial (starting) value <span class="math inline">\(y_0\)</span> as constant, for the random walk we get (details are left as an exercise) <span class="math display">\[\begin{equation*}
+    \mathsf{E}(y_t)=y_0+\nu t,
+\end{equation*}\]</span> <span class="math display">\[\begin{equation*}
+    \mathsf{Var}(y_t)=\mathsf{Var}\left(\sum_{j=1}^{t}u_j\right)=\sigma^2t,
+\end{equation*}\]</span> <span class="math display">\[\begin{equation*}
+    \mathsf{Cor}(y_t,y_{t+k})=\frac{1}{\sqrt{1+k/t}}, \,\, k\geq 0.
+\end{equation*}\]</span> Here we can observe that random walk is not stationary even if the value of <span class="math inline">\(y_0\)</span> is altered.</p>
+<ul>
+<li><p>As <span class="math inline">\(\Delta y_t\sim\mathsf{iid}(\nu,\sigma^2)\)</span> is stationary, we can conclude that the random walk is an <span class="math inline">\(I(1)\)</span> process.</p></li>
+<li><p>From the calculations above, we can observe that for random walk <span class="math inline">\(\mathsf{Var}(y_t)\rightarrow\infty\)</span> and <span class="math inline">\(\mathsf{Cor}(y_t,y_{t+k})\rightarrow 1\)</span> with any <span class="math inline">\(k&gt;0\)</span> as <span class="math inline">\(t\rightarrow\infty\)</span>. Therefore, random walk processes are strongly autocorrelated, and due to their wandering nature, they exhibit trend-like features.</p></li>
+</ul>
+<p>In other words, we can summarize:</p>
+<ul>
+<li><p>An <span class="math inline">\(I(0)\)</span> process is stationary: it fluctuates around a constant mean, has constant variance, and autocorrelations decay relatively quickly (depending on the persistence). It is often described as mean-reverting and has short memory.</p></li>
+<li><p>An <span class="math inline">\(I(1)\)</span> process is non-stationary: it exhibits a <strong>stochastic trend</strong> (see below) and <strong>wanders</strong> over time. Each innovation has a permanent effect, and autocorrelations decay slowly, indicating long memory.</p></li>
+</ul>
+<p>&nbsp;</p>
+<p><strong>ARIMA processes and trends in time series</strong>. Random walk is the simplest example of so-called <strong>ARIMA processes</strong>, as we already briefly discussed in Section 5.</p>
+<ul>
+<li>The acronym stands for AutoRegressive Integrated Moving Average, where the letter <span class="math inline">\(I\)</span> refers to integration, the idea that the process is formed by summing (or “integrating”) past innovations, <span class="math inline">\(y_t = y_0 + \sum_{j=1}^{t} u_{j}\)</span>.</li>
+</ul>
+<p>Many economic and financial time series exhibit trends, and these trends are of two fundamentally different types. The distinction matters, because it determines which transformation makes the series stationary.</p>
+<ul>
+<li><p>A <strong>deterministic trend</strong> is a fixed, non-random function of time (typically linear, <span class="math inline">\(\beta t\)</span>), around which the series fluctuates due to stationary noise. A process of the form <span class="math display">\[\begin{equation*}
+y_t = \alpha + \beta t + \psi(B) u_t,
+\end{equation*}\]</span> where <span class="math inline">\(\psi(B)\)</span> is the MA(<span class="math inline">\(\infty\)</span>) representation of a stationary ARMA process (including the special case <span class="math inline">\(\psi(B) = 1\)</span>), is called <strong>trend stationary</strong>: removing the deterministic trend <span class="math inline">\(\alpha + \beta t\)</span> leaves a stationary process, shocks have only temporary effects, and the series reverts to the trend.</p></li>
+<li><p>A <strong>stochastic trend</strong> results from the accumulation of random shocks, as in the random walk above. Such a process is <strong>difference stationary</strong>: stationarity is achieved by differencing, not by removing a deterministic function of time. Shocks have permanent effects, and the series wanders without reverting to any fixed path.</p></li>
+<li><p>The two can also appear together. In the random walk with drift, <span class="math inline">\(y_t = y_0 + \nu t + \sum_{j=1}^{t}u_j\)</span>, the stochastic trend <span class="math inline">\(\sum_{j=1}^{t}u_j\)</span> is superimposed on the deterministic trend <span class="math inline">\(y_0 + \nu t\)</span>.</p></li>
+</ul>
+<p>Choosing the wrong one matters in practice: removing a deterministic trend does not make a difference-stationary series stationary, and differencing a trend-stationary series creates the artificial patterns discussed below (overdifferencing, see below). Empirical evidence suggests that stochastic trends are often more appropriate for modelling macroeconomic and financial time series.</p>
+<p>&nbsp;</p>
+</section>
+<section id="arimapdq-process" class="level2" data-number="12.2">
+<h2 data-number="12.2" class="anchored" data-anchor-id="arimapdq-process"><span class="header-section-number">12.2</span> ARIMA(<span class="math inline">\(p\)</span>,<span class="math inline">\(d\)</span>,<span class="math inline">\(q\)</span>) process</h2>
+<p>If the process <span class="math inline">\(y_t, \, t=0,1,\dots\)</span>, is non-stationary, but the difference <span class="math inline">\(\Delta y_t\)</span> is stationary and follows an invertible ARMA(<span class="math inline">\(p,q\)</span>) process, <span class="math inline">\(y_t\)</span> is called an <strong>ARIMA(<span class="math inline">\(p,1,q\)</span>) process</strong>.</p>
+<ul>
+<li><p>The order in the middle refers to the fact, that stationarity is achieved by differencing the process once.</p></li>
+<li><p>If the process is non-stationary after being differenced once, but the second differences <span class="math inline">\(\Delta^2y_t\)</span> follow a stationary and invertible ARMA(<span class="math inline">\(p,q\)</span>) process, <span class="math inline">\(y_t\)</span> is called an ARIMA(<span class="math inline">\(p,2,q\)</span>) process.</p></li>
+</ul>
+<p>In general, <span class="math inline">\(y_t\)</span> is called an <strong>ARIMA(<span class="math inline">\(p,d,q\)</span>) process</strong> if it becomes a stationary and invertible ARMA(<span class="math inline">\(p,q\)</span>) process after differencing <span class="math inline">\(d\)</span> times.</p>
+<ul>
+<li><p>That is, <span class="math inline">\(\Delta^d y_t \sim \mathrm{ARMA}(p,q)\)</span>.</p></li>
+<li><p>In practice, <span class="math inline">\(d=1\)</span> is by far the most common case, <span class="math inline">\(d=2\)</span> can be encountered quite rarely, and <span class="math inline">\(d&gt;2\)</span> can be safely ignored.</p></li>
+<li><p>With <span class="math inline">\(d=0\)</span>, we obtain the special case of an ARMA(<span class="math inline">\(p,q\)</span>) process.</p></li>
+</ul>
+<!-- - It is worth noting that the ARIMA($p,d,q$) process ($d>0$) has to be defined by fixing the starting point $t=1$, so that $y_1$ can be generated from the starting values $y_0,\dots, y_{1-p-d}$ and innovations $u_1,\dots,u_{1-q}$.  -->
+<p>The typical properties of an ARIMA(<span class="math inline">\(p\)</span>,1,<span class="math inline">\(q\)</span>) process are generally the same as for random walk. The realizations exhibit a wandering nature explained by the variance growing as a function of <span class="math inline">\(t\)</span> and strong autocorrelation even though the autocorrelation function cannot be defined like with stationary processes.</p>
+<p>&nbsp;</p>
+<p><strong>A warning on overdifferencing</strong>. While differencing is a fundamental tool for making a nonstationary time series stationary, applying it too many times, a problem known as <strong>overdifferencing</strong>, can be counterproductive. It is a common pitfall to assume that if one difference helps, a second one might help more. Even more often, <strong>you should not mechanically difference a time series that is already “stationary enough”</strong>.</p>
+<ul>
+<li>Doing so without a strong theoretical justification (e.g., an economic model suggesting a process is integrated of order two, I(2)), is highly unlikely and can even harm your statistical/econometric analysis.</li>
+</ul>
+<p>Overdifferencing does not make a series “more stationary”. Instead, it introduces new artificial patterns into the data that were not present in the original process. This complicates model building and can lead to poor analyses and forecasts.</p>
+<ul>
+<li>The most significant problem is that overdifferencing creates a specific, predictable correlation structure.</li>
+</ul>
+<p><strong>Illustration: Overdifferencing white noise</strong>. Let us see what happens when we difference a series that is already stationary: a white noise process, <span class="math inline">\(y_t = u_t\)</span>, where <span class="math inline">\(u_t \sim \mathsf{wn}(0, \sigma^2)\)</span>. This series has by definition zero autocorrelation at all lags. If we mistakenly difference it, we create a new series, <span class="math inline">\(z_t= \Delta y_t = y_t - y_{t-1} = u_t - u_{t-1}\)</span>. This new series, <span class="math inline">\(z_t\)</span>, is no longer white noise. Let’s examine its properties:</p>
+<ul>
+<li><p><span class="math inline">\(\mathsf{Var}(z_t) = \mathsf{Var}(u_t - u_{t-1}) \stackrel{wn}{=} \mathsf{Var}(u_t) + \mathsf{Var}(u_{t-1}) = 2\sigma^2\)</span>. We have doubled the variance!</p></li>
+<li><p>Autocorrelation: The autocovariance at lag 1 is <span class="math display">\[\begin{equation*}
+\mathsf{Cov}(z_t, z_{t-1}) = \mathsf{Cov}(u_t - u_{t-1}, u_{t-1} - u_{t-2}) = -\mathsf{Var}(u_{t-1}) = -\sigma^2.
+\end{equation*}\]</span> The autocorrelation at lag 1 is therefore: <span class="math display">\[\begin{equation*}
+\rho_1 = \frac{\mathsf{Cov}(z_t, z_{t-1})}{\sqrt{\mathsf{Var}(z_t)\mathsf{Var}(z_{t-1})}} = \frac{-\sigma^2}{\sqrt{2\sigma^2 \cdot 2\sigma^2}} = \frac{-\sigma^2}{2\sigma^2} = -0.5.
+\end{equation*}\]</span></p></li>
+</ul>
+<p>By differencing a series with zero autocorrelation, we created a new series with a perfectly defined negative autocorrelation of <span class="math inline">\(-0.5\)</span> at lag 1. In fact, <span class="math inline">\(z_{t}=u_{t}-u_{t-1}\)</span> is an MA(1) process with <span class="math inline">\(\theta_{1}=-1\)</span>, that is, a <strong>non-invertible</strong> MA process (a unit root in the MA polynomial). Such a process cannot be approximated with a finite-order AR model, which is a further reason why overdifferencing complicates the subsequent model building.</p>
+<p>As we will discuss later on, always check for stationarity using tools like the ACF plot and unit root tests (e.g., ADF test, see the coming section), and visual inspection, before applying another round of differencing. If the series already appears stationary enough, stop!</p>
+<p>&nbsp;</p>
+</section>
+<section id="unit-root-process" class="level2" data-number="12.3">
+<h2 data-number="12.3" class="anchored" data-anchor-id="unit-root-process"><span class="header-section-number">12.3</span> Unit root process</h2>
+<p>Let’s consider the (univariate) AR(<span class="math inline">\(p\)</span>) process <span class="math display">\[\begin{equation*}
+a(B)z_t=u_t,
+\end{equation*}\]</span> where <span class="math inline">\(a(B)=1-a_1 B-\dots-a_p B^p\)</span>.</p>
+<ul>
+<li>Here notation <span class="math inline">\(z_t\)</span>, as in Section 2, will be used when the unit root process is not assumed to have a constant or other deterministic trends.</li>
+</ul>
+<p>It can be shown (see the Extra tag below) that the polynomial <span class="math inline">\(a(B)\)</span> can be rewritten as <span class="math display">\[\begin{equation*}
+a\left(B\right) =\Delta -\phi B - \phi _{1}\Delta B -\cdots -\phi _{p-1}\Delta B^{p-1}, \quad  \phi =-a\left( 1\right),
+\end{equation*}\]</span> so the process <span class="math inline">\(z_t\)</span> can be represented as <span class="math display">\[\begin{equation*}
+\Delta z_{t}=\phi z_{t-1}+\phi _{1}\Delta z_{t-1}+\cdots +\phi _{p-1}\Delta z_{t-p+1}+ u _{t}, \quad t=1,2,\ldots,
+\end{equation*}\]</span> where <span class="math inline">\(u _{t}\sim \mathsf{iid}(0,\sigma ^{2})\)</span> (or that <span class="math inline">\(u_t\)</span> is white noise).</p>
+<p>Let’s assume that for <span class="math inline">\(a(z)\)</span> the following holds: <span class="math display">\[\begin{equation*}
+    \text{If} \,\, a(z)=0, \,\, \mathrm{then} \,\, |z|&gt;1 \,\, \mathrm{or} \,\, |z|=1.
+\end{equation*}\]</span> In other words, the roots of the polynomial <span class="math inline">\(a(z)\)</span> lie outside or at the unit circle on the complex plane.</p>
+<ul>
+<li>If all the roots lie outside the unit circle, <span class="math inline">\(z_t\)</span> is (at least) asymptotically stationary (as meeting the stationarity condition of the AR(<span class="math inline">\(p\)</span>) process).</li>
+</ul>
+<p>Let us now assume there is exactly one <strong>unit root</strong>. From the known properties of polynomials, it follows that <span class="math display">\[\begin{equation*}
+a(z)=(1-z)b(z),
+\end{equation*}\]</span> where <span class="math inline">\(b(z)\)</span> is a polynomial of the degree (at most) <span class="math inline">\(p-1\)</span> with its roots inevitably lying outside the unit circle (see the Extra tag below).</p>
+<ul>
+<li>It is clear that this is equivalent to <span class="math inline">\(\phi=0\)</span> above. When <span class="math inline">\(\phi=0\)</span>, the above-mentioned polynomial becomes <span class="math inline">\(b(z) =1-\phi _{1}z-\cdots -\phi_{p-1}z^{p-1}:=\phi(z)\)</span>.</li>
+</ul>
+<p>Thus, <span class="math inline">\(\Delta z_t\)</span> is <span class="math inline">\(I(0)\)</span> and as the roots of the polynomial <span class="math inline">\(\phi(z)\)</span> lie outside the unit circle, such initial values <span class="math inline">\(\Delta z_{t-1},...,\Delta z_{t-p+1}\)</span> can be found that <span class="math inline">\(\Delta z_t\)</span> is stationary.</p>
+<ul>
+<li>Therefore, the process <span class="math inline">\(\Delta z_t\)</span> can be written as <span class="math inline">\(\Delta z_{t}=\phi(B)^{-1}u _{t}\)</span>, which is a special case of the random walk we looked at earlier but with the stationary AR(<span class="math inline">\(p-1\)</span>) process <span class="math inline">\(\phi(B) ^{-1}u _{t}\)</span> replacing the innovation <span class="math inline">\(u_t\)</span>.</li>
+</ul>
+<p>&nbsp;</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Extra: Polynomials and power series
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Consider polynomial function of power <span class="math inline">\(m\)</span> <span class="math display">\[\begin{equation*}
+    p\left(z\right)=\sum_{k=0}^{m}a_{k}z^{k},
+\end{equation*}\]</span> where <span class="math inline">\(a_k\)</span> and <span class="math inline">\(z\)</span> are real or complex numbers and <span class="math inline">\(a_m\neq 0\)</span>. In the case of complex numbers <span class="math inline">\(z\in\mathbb{C}\)</span>, by the the polynomial <span class="math inline">\(p(z)\)</span> can be given the form <span class="math display">\[\begin{equation*}
+    p\left(z\right)=a_{m}\left(z-\zeta_{1}\right) \cdots \left(z-\zeta_{m}\right) ,
+\end{equation*}\]</span> where <span class="math inline">\(\zeta _{1},...,\zeta_{m}\)</span> are the roots of <span class="math inline">\(p\left(z\right)\)</span> and thus <span class="math inline">\(p\left(\zeta _{k}\right) =0\)</span>. The case <span class="math inline">\(\zeta_{k}=\zeta _{l}\)</span> <span class="math inline">\(\left(k\neq l\right)\)</span> is possible and in the case of a real coefficient <span class="math inline">\(a_k\in\mathbb{R}\)</span> the roots occur as complex conjugates for all <span class="math inline">\(k\)</span>; that is if <span class="math inline">\(\zeta_{k}=x_{k}+iy_{k}\)</span> <span class="math inline">\(\left(i^{2}=-1\right)\)</span>, for some <span class="math inline">\(l\neq k\)</span> it holds <span class="math inline">\(\zeta_{l}=x_{k}-iy_{k}=:\bar{\zeta}_{k}\)</span>.</p>
+<p>Let’s return to a normal polynomial <span class="math inline">\(p\left(z\right)=\sum_{k=0}^{m}a_{k}z^{k}\)</span>. It is easy to conclude that <span class="math inline">\(p(z)\)</span> can be written as <span class="math display">\[\begin{equation*}
+    p\left(z\right)=p\left(1\right)+\left(1-z\right)q\left(z\right),
+\end{equation*}\]</span> where <span class="math display">\[\begin{equation*}
+    q\left(z\right)=\sum_{k=0}^{m-1}b_{k}z^{k}, \quad b_{k}=-\sum_{j=k+1}^{m}a_{j}, \quad k=0,1,...,m-1.
+\end{equation*}\]</span> A corresponding alternative way to present this would be <span class="math display">\[\begin{equation*}
+    p\left(z\right)=p\left(1\right) z+\left(1-z\right) r\left(z\right),
+\end{equation*}\]</span> where <span class="math display">\[\begin{equation*}
+    r\left(z\right)=\sum_{k=0}^{m-1}c_{k}z^{k}, \quad c_{0}=a_{0} \quad \mathrm{and} \quad c_{k}=-\sum_{j=k+1}^{m}a_{j}, \, k=1,...,m-1
+\end{equation*}\]</span> These can be generalized to the power series, that is to say to the case <span class="math display">\[\begin{equation*}
+    p\left(z\right)=\sum_{k=0}^{\infty }a_{k}z^{k} \quad \left(\left\vert z\right\vert \leq 1\right) .
+\end{equation*}\]</span> If we assume <span class="math display">\[\begin{equation*}
+    \sum_{k=1}^{\infty}k\left\vert a_{k}\right\vert&lt;\infty ,
+\end{equation*}\]</span> it can be easily concluded that the above equations hold when <span class="math inline">\(\left\vert z\right\vert \leq 1\)</span> and <span class="math inline">\(m\)</span> are replaced with <span class="math inline">\(\infty\)</span>. In addition <span class="math inline">\(\sum_{k=1}^{\infty}\left\vert b_{k}\right\vert&lt;\infty\)</span> and <span class="math inline">\(\sum_{k=1}^{\infty}\left\vert c_{k}\right\vert&lt;\infty\)</span>.</p>
+</div>
+</div>
+</div>
+<p>&nbsp;</p>
+<p>As discussed above in connection to integrated and ARIMA processes, the presence of a unit root is a particularly interesting question from an economic point of view. In unit root processes, shocks (such as policy or technological interventions and disruptions) have persistent effects that last forever, whereas with stationary cases such shocks have only a temporary effect. Therefore, it is of particular interest to test the unit root hypothesis in <span class="math inline">\(y_t\)</span>.</p>
+<p>&nbsp;</p>
+</section>
+<section id="adf-unit-root-test" class="level2" data-number="12.4">
+<h2 data-number="12.4" class="anchored" data-anchor-id="adf-unit-root-test"><span class="header-section-number">12.4</span> ADF unit root test</h2>
+<p>Let us continue to work with unit root processes and examine how the unit root can be tested. Among various alternatives, we focus on the Augmented Dickey-Fuller (ADF) test, which is the most commonly used unit root test.</p>
+<p>Additional background and motivation for unit root testing are provided below in the Extra tab before proceeding to the ADF test.</p>
+<p>&nbsp;</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Extra: Background and details on the unit root test statistics
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Let us continue with the autoregressive unit root process from the previous section <span class="math display">\[\begin{equation*}
+    \Delta z_{t}=\phi z_{t-1}+u _{t}, \quad t=1,2,\ldots,
+\end{equation*}\]</span> where for the sake of simplicity <span class="math inline">\(z_0=0\)</span> and <span class="math inline">\(u_t \sim \mathsf{iid}(0,\sigma^2)\)</span>. The question of interest is to <strong>test the unit root hypothesis</strong> <span class="math display">\[\begin{equation*}
+    \mathsf{H}_0:\phi =0
+\end{equation*}\]</span> against the stationary (or stable) alternative <span class="math inline">\(\phi&lt;0\)</span>. Recall that <span class="math inline">\(\phi = -a(1)\)</span>, where <span class="math inline">\(a(B)\)</span> is the autoregressive polynomial, so that <span class="math inline">\(\phi=0\)</span> corresponds to a unit root (<span class="math inline">\(a(1)=0\)</span>) and <span class="math inline">\(\phi&lt;0\)</span> is a necessary (though in the general AR(<span class="math inline">\(p\)</span>) case not sufficient) condition for stability.</p>
+<p>It seems natural to base the test on the least squares estimator of <span class="math inline">\(\phi\)</span>: <span class="math display">\[\begin{equation*}
+\widehat{\phi}=\left(\sum_{t=1}^{T} z_{t-1}^{2}\right)^{-1} \sum_{t=1}^{T} z_{t-1} \Delta z_{t} \overset{\mathsf{H}_0}{=} \left(\sum_{t=1}^{T} z_{t-1}^{2}\right)^{-1} \sum_{t=1}^{T} z_{t-1} u_{t},
+\end{equation*}\]</span> where <span class="math inline">\(T\)</span> is the number of observations. The unit root test can be based directly on the estimator <span class="math inline">\(\widehat{\phi}\)</span>, but it is more common to use the “t-ratio” printed by different statistical programs <span class="math display">\[\begin{equation*}
+    \tau :=\frac{\widehat{\phi}}{\mathrm{s.e.}(\widehat{\phi})} = \frac{\sqrt{\sum_{t=1}^{T}z_{t-1}^{2}}}{\widehat{\sigma}}\,\widehat{\phi},
+\end{equation*}\]</span> which follows, under the null (unit root) hypothesis, a <strong>nonstandard</strong> asymptotic distribution.</p>
+<ul>
+<li><p>The limiting distribution is free of the unknown parameters (in particular of <span class="math inline">\(\sigma^2\)</span>) and can therefore be tabulated; tables are presented in books and computer programs.</p></li>
+<li><p>The percentage points of the limiting distributions have no closed form and are obtained by numerical integration or simulation. Both the (suitably normalized) estimator and the “t-ratio” <span class="math inline">\(\tau\)</span> have a non-Gaussian, left-skewed asymptotic distribution. For example, for the <span class="math inline">\(\tau\)</span> statistic the asymptotic 5% percentage point is about <span class="math inline">\(-1.94\)</span>, while for a <span class="math inline">\(\mathsf{N}(0,1)\)</span> distribution it would be <span class="math inline">\(-1.645\)</span>. Since the rejection region is of the form <span class="math inline">\(\tau &lt; \text{critical value}\)</span>, using standard normal critical values would reject the unit root hypothesis far too easily.</p></li>
+<li><p>Note that <span class="math inline">\(\widehat{\phi}\)</span> is <em>superconsistent</em> under <span class="math inline">\(\mathsf{H}_0\)</span>: it converges at the rate <span class="math inline">\(T\)</span> rather than the usual <span class="math inline">\(\sqrt{T}\)</span>, so it is <span class="math inline">\(T\widehat{\phi}\)</span>, and not <span class="math inline">\(\sqrt{T}\widehat{\phi}\)</span>, that has a nondegenerate limiting distribution.</p></li>
+</ul>
+<p>The above unit root test can be generalized to a case with a deterministic constant and trend (if appropriate due to the shape of the time series or background information on it). A common model for this is <span class="math display">\[\begin{equation*}
+    y_{t}=\mu_{t}+z_{t}, \quad t=1,2,\ldots,
+\end{equation*}\]</span> where <span class="math inline">\(z_t\)</span> is as determined above and the deterministic term is <span class="math display">\[\begin{equation*}
+\mu_{t}=\mu  \quad \mathrm{or} \quad \mu_{t}=\mu _{1}+\mu _{2}t.
+\end{equation*}\]</span> Indicator variables can also be used to account for seasonal variation if necessary.</p>
+<ul>
+<li><p>The limiting distribution of the “t-ratio” can again be tabulated. It deviates from the one with no constant and is located further to the left (the asymptotic 5% percentage point is now about <span class="math inline">\(-2.86\)</span>).</p></li>
+<li><p>The limiting distribution shifts still further to the left when the “t-ratio”-based test is generalized to the linear trend case <span class="math inline">\(\mu_{t}=\mu _{1}+\mu_{2}t\)</span> (the asymptotic 5% percentage point is then about <span class="math inline">\(-3.41\)</span>; further details are skipped here).</p></li>
+<li><p>The critical values above are asymptotic. In finite samples the appropriate percentage points are somewhat further to the left, and modern software (and the tables of MacKinnon) reports critical values or <span class="math inline">\(p\)</span>-values interpolated as a function of the sample size.</p></li>
+</ul>
+<p><strong>The asymptotic distributions.</strong> Under the null hypothesis <span class="math inline">\(z_{t}=\sum_{j=1}^{t}u _{j}\)</span> is a random walk, so the usual limit theorems for stationary processes do not apply and the analysis instead relies on functional central limit theory. It can be shown that <span class="math display">\[\begin{equation*}
+    T\widehat{\phi} \overset{d}{\rightarrow} \left( \int_{0}^{1}W\left( u\right) ^{2}du\right)^{-1}\int_{0}^{1}W\left( u\right) dW(u)
+\end{equation*}\]</span> and that the “t-ratio” follows the (non-standard) asymptotic distribution <span class="math display">\[\begin{equation*}
+    \tau :=\frac{\sqrt{\sum_{t=1}^{T}z_{t-1}^{2}}}{\widehat{\sigma}}\widehat{\phi}
+    \overset{d}{\rightarrow }\left( \int_{0}^{1}W\left( u\right) ^{2}du\right)^{-1/2}\int_{0}^{1}W\left( u\right) dW(u),
+\end{equation*}\]</span> where <span class="math inline">\(\widehat{\sigma}^{2}=(T-1)^{-1}\sum_{t=1}^{T}(\Delta z_{t}-\widehat{\phi}z_{t-1})^{2}\)</span> is the usual regression estimator for the error variance <span class="math inline">\(\sigma^2\)</span> (<span class="math inline">\(T\)</span> can also be used as the denominator) and <span class="math inline">\(W(u)\)</span> is standard Brownian motion. Note that normality of <span class="math inline">\(u_t\)</span> is <em>not</em> needed for these results; the Brownian motion arises from a functional central limit theorem.</p>
+<p>In the case with a constant term, applying the operator <span class="math inline">\(\Delta -\phi B\)</span> to both sides of the equation <span class="math inline">\(y_{t}=\mu +z_{t}\)</span> (and using <span class="math inline">\((\Delta - \phi B)z_t = u_t\)</span> and <span class="math inline">\((\Delta - \phi B)\mu = -\phi\mu\)</span>), we get <span class="math display">\[\begin{equation*}
+    \Delta y_{t}=\nu +\phi y_{t-1}+u _{t},\quad t=1,2,\ldots,
+\end{equation*}\]</span> where <span class="math inline">\(u_{t}\sim \mathsf{iid}\left( 0,\sigma^{2}\right)\)</span> and <span class="math inline">\(\nu =-\phi \mu\)</span>. When the unit root hypothesis holds, for the “t-ratio” <span class="math inline">\(\tau_\mu\)</span> of the parameter <span class="math inline">\(\phi\)</span> it holds that <span class="math display">\[\begin{equation*}
+    \tau _{\mu }\overset{d}{\rightarrow }\left( \int_{0}^{1}\bar{W}\left(
+    u\right) ^{2}du\right) ^{-1/2}\int_{0}^{1}\bar{W}\left( u\right) dW(u),
+\end{equation*}\]</span> where <span class="math inline">\(\bar{W}(u) = W(u) - \int_0^1 W(s)ds\)</span> is the centered (demeaned) version of the standard Brownian motion. In the linear trend case the corresponding result holds with <span class="math inline">\(\bar{W}\)</span> replaced by the residual of the projection of <span class="math inline">\(W\)</span> on a constant and a linear trend; this is what shifts the distribution still further to the left.</p>
+<p>An important practical implication of the parameterization <span class="math inline">\(\nu = -\phi\mu\)</span> is that <strong>under <span class="math inline">\(\mathsf{H}_0\)</span> the intercept vanishes</strong>, <span class="math inline">\(\nu = 0\)</span>: the constant-only test regression corresponds to a random walk <em>without drift</em> under the null. This is why software also reports joint tests of <span class="math inline">\(\phi\)</span> and the deterministic parameters (see below).</p>
+</div>
+</div>
+</div>
+<p>&nbsp;</p>
+<p><strong>Augmented Dickey-Fuller (ADF) test</strong>. Based on the discussion in the previous section, assume (for simplicity) that <span class="math inline">\(y_t = \mu + z_t\)</span>, where <span class="math inline">\(z_t \sim \text{AR}(p)\)</span>, and hence <span class="math inline">\(y_t\)</span> also follows an AR(<span class="math inline">\(p\)</span>) process. To test for a unit root in <span class="math inline">\(y_t\)</span>, we use the following test regression model <span class="math display">\[\begin{equation*}
+\Delta y_t = \nu + \phi y_{t-1} + \sum_{j=1}^{p-1} \phi_j \Delta y_{t-j} + u_t, \quad u_t \sim \mathsf{iid}(0, \sigma^2), \quad t = 1, 2, \ldots
+\end{equation*}\]</span> This is simply a reparameterization of the AR(<span class="math inline">\(p\)</span>) model, obtained from the autoregressive polynomial <span class="math inline">\(a(B)\)</span> with <span class="math inline">\(\phi = -a(1)\)</span>; the lagged differences <span class="math inline">\(\Delta y_{t-j}\)</span> (“augmentation”) are what allow the errors <span class="math inline">\(u_t\)</span> to be serially uncorrelated even though <span class="math inline">\(y_t\)</span> is autocorrelated.</p>
+<p>The null hypothesis is <span class="math inline">\(\mathsf{H}_0: \phi = 0\)</span>, which implies that <span class="math inline">\(y_t\)</span> has a unit root and is non-stationary. Under the alternative hypothesis <span class="math inline">\(\mathsf{H}_1: \phi &lt; 0\)</span>, the process is stationary around a deterministic mean.</p>
+<ul>
+<li><p>The interpretation of <span class="math inline">\(\mathsf{H}_0\)</span> as “a unit root” rests on a <strong>maintained assumption</strong>: the remaining roots of <span class="math inline">\(a(B)\)</span> are assumed to lie outside the unit circle, i.e.&nbsp;<span class="math inline">\(y_t\)</span> has at most one unit root and no explosive or seasonal unit roots. If <span class="math inline">\(y_t\)</span> were, say, <span class="math inline">\(\mathsf{I}(2)\)</span>, the test would be applied to <span class="math inline">\(\Delta y_t\)</span> first (testing “from the top down”).</p></li>
+<li><p>Here in the ADF test the intercept term <span class="math inline">\(\nu\)</span> is related to the mean of the process via <span class="math inline">\(\nu = -\phi \mu\)</span>. Consequently <span class="math inline">\(\nu = 0\)</span> under <span class="math inline">\(\mathsf{H}_0\)</span>, so that the constant-only specification treats the null as a driftless random walk. In practice <span class="math inline">\(\nu\)</span> is nevertheless left unrestricted in the test regression, which is what makes the test statistic invariant to the value of <span class="math inline">\(\mu\)</span>.</p></li>
+<li><p>The test statistic is the <strong>t-ratio</strong> of the estimated coefficient <span class="math inline">\(\widehat{\phi}\)</span>, often denoted <span class="math inline">\(\tau_\phi = \frac{\widehat{\phi}}{\mathrm{s.e.} (\widehat{\phi})}\)</span>. Its asymptotic distribution under the null is non-standard but known, and critical values are tabulated in the literature. The relevant table depends on which deterministic terms are included in the test regression, not on the true data generating process. Note that the test is one-sided: the null hypothesis is rejected only for sufficiently large <em>negative</em> values of <span class="math inline">\(\tau_{\phi}\)</span>.</p></li>
+<li><p>Importantly, the asymptotic properties of the test hold even without assuming normality of the errors; it is sufficient that <span class="math inline">\(u_t\)</span> are independent and identically distributed with finite variance (a martingale difference sequence with finite variance would in fact suffice).</p></li>
+</ul>
+<p>If the null hypothesis of a unit root (<span class="math inline">\(\mathsf{H}_0: \phi=0\)</span>) cannot be rejected, according to the above equation an AR(<span class="math inline">\(p-1\)</span>) model can be built on the differences <span class="math inline">\(\Delta y_t\)</span>.</p>
+<ul>
+<li><p>In other words, this implies the need to take first differences to get a stationary time series.</p></li>
+<li><p>Note also that failing to reject <span class="math inline">\(\mathsf{H}_0\)</span> is <em>not</em> evidence in favour of a unit root. Unit root tests have low power against stationary alternatives with a root close to unity, especially in short samples, and the conclusion should be supported by graphical inspection, economic reasoning, and possibly a stationarity test such as KPSS, in which stationarity is the null hypothesis.</p></li>
+</ul>
+<p>&nbsp;</p>
+<p><strong>Determining the lag length <span class="math inline">\(p\)</span> and deterministic terms in the ADF test</strong>. Executing the ADF test regression requires specifying the lag length <span class="math inline">\(p\)</span>, which can be selected using information criteria (such as AIC or BIC), sequential testing (covered in the next section), or based on common fixed choices related to the data frequency.</p>
+<ul>
+<li><p>The choice involves a trade-off: too few lags leave the errors autocorrelated, which invalidates the asymptotic distribution and distorts the size of the test, whereas too many lags reduce the power of the test.</p></li>
+<li><p>Whichever rule is used, the residuals of the chosen test regression should be checked for remaining autocorrelation.</p></li>
+<li><p>It is generally advisable to try a few different values of <span class="math inline">\(p\)</span> and compare the resulting test outcomes for robustness.</p></li>
+<li><p>Be careful with the terminology used by software: in the R function <code>ur.df</code>, the argument <code>lags</code> is the number of <strong>lagged differences</strong> <span class="math inline">\(\Delta y_{t-j}\)</span> in the test regression, that is, <span class="math inline">\(p-1\)</span> in the notation above. The default is <code>lags = 1</code> together with <code>selectlags = "Fixed"</code>; setting <code>selectlags = "AIC"</code> or <code>"BIC"</code> selects the number of lagged differences automatically up to the value given in <code>lags</code>. The default <code>type = "none"</code> includes no deterministic terms at all, which is rarely what one wants with economic data.</p></li>
+</ul>
+<p>The ADF test regression can also be extended to include a trend (together with the constant). In this case, the test regression includes the term <span class="math inline">\(\delta_0 + \delta_1 t\)</span>, allowing for a deterministic trend in the data: <span class="math display">\[\begin{equation*}
+\Delta y_t = \delta_0 + \delta_1 t + \phi y_{t-1} + \sum_{j=1}^{p-1} \phi_j \Delta y_{t-j} + u_t.
+\end{equation*}\]</span> The null hypothesis remains <span class="math inline">\(\mathsf{H}_0:\phi = 0\)</span>, indicating a unit root.</p>
+<ul>
+<li><p>As in the constant-only case, the coefficients of the test regression are linked to the deterministic terms of the process. Writing <span class="math inline">\(y_t = \mu_1 + \mu_2 t + z_t\)</span> gives <span class="math inline">\(\delta_1 = -\phi\mu_2\)</span> and <span class="math inline">\(\delta_0 = \mu_2 - \phi\mu_1 + \phi\mu_2\)</span>. Hence under <span class="math inline">\(\mathsf{H}_0\)</span> we have <span class="math inline">\(\delta_1 = 0\)</span> and <span class="math inline">\(\delta_0 = \mu_2\)</span>: the null model is a random walk <strong>with drift</strong>, and the trend term drops out. Including <span class="math inline">\(t\)</span> in the regression nonetheless makes the test invariant to the values of <span class="math inline">\(\mu_1\)</span> and <span class="math inline">\(\mu_2\)</span>.</p></li>
+<li><p>In <code>ur.df</code> (with <code>type = "drift"</code> or <code>"trend"</code>) the summary also reports joint F-type statistics <code>phi1</code>, <code>phi2</code> and <code>phi3</code> for hypotheses that restrict <span class="math inline">\(\phi\)</span> <em>and</em> the deterministic parameters simultaneously (e.g.&nbsp;<code>phi1</code>: <span class="math inline">\(\nu = \phi = 0\)</span>; <code>phi3</code>: <span class="math inline">\(\delta_1 = \phi = 0\)</span>). These have their own non-standard distributions and their own tables — the usual <span class="math inline">\(F\)</span> critical values do not apply.</p></li>
+</ul>
+<p>Deciding which deterministic terms to include is a crucial step, and the decision matters in both directions.</p>
+<ul>
+<li><p>A constant term is typically included by default, while the inclusion of a trend term depends on whether a trending pattern is evident in the data. This decision can be guided by graphical inspection or theoretical considerations relevant to the application.</p></li>
+<li><p>Omitting a needed trend makes the test badly biased towards non-rejection (the test is then inconsistent against trend-stationary alternatives), whereas including an unnecessary trend shifts the critical values to the left and costs power.</p></li>
+<li><p>A practical rule of thumb: include the deterministic terms that would be needed to describe the series under the <em>alternative</em> hypothesis.</p></li>
+<li><p>Finally, note that a structural break in the level or slope of a stationary series makes the ADF test strongly favour the unit root hypothesis. If a break is suspected, tests that explicitly allow for it (e.g.&nbsp;Zivot-Andrews) should be used instead.</p></li>
+</ul>
+<p>&nbsp;</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Extra: Some other unit root tests
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Other widely used unit root tests include the Phillips-Perron test, which handles serial correlation non-parametrically instead of by augmentation, and the DF-GLS (Elliott-Rothenberg-Stock) test, which detrends the series by GLS and has better power than the ADF test. They are not discussed further here.</p>
+</div>
+</div>
+</div>
+<p>&nbsp;</p>
+<p><strong>Empirical examples</strong>. Let us consider unit root testing for the few time series considered above in different parts. As discussed, the first thing in the ADF test is to determine which deterministic terms to include in the test regression. Basically you should always include a constant term, but whether the deterministic trend component should be included as well should be determined based on visual inspection and background knowledge on the time series at hand.</p>
+<p>In the following illustrations, for simplicity, we fix the number of lagged differences in the ADF test regression to 6, 8 or 10. The lag length could and should be varied to examine whether the testing results are intact for this selection.</p>
+<ol type="i">
+<li>Consider <strong>log</strong> of the CPI time series (Introduction): In this case, there is clearly an upward trend present. It seems reasonable to argue that due to different (economic) reasons we can think that price level is steadily going up and a deterministic trend seems reasonable to be included in the ADF test.</li>
+</ol>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/logCPI_levels_diff.png" class="img-fluid figure-img" style="width:90.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<center>
+<span style="color: #0069d9;">Figure: Monthly log(CPI) time series (left) and its first difference <span class="math inline">\(\Delta \log(CPI_t)\)</span> (right), 1990:1–2025:6.</span>
+</center>
+<p>&nbsp;</p>
+<p>The first difference is shown next to the level series for comparison: the level series trends upwards throughout the sample, whereas the differenced series fluctuates around a constant (positive) level without any trend. This is exactly the visual signature of an <span class="math inline">\(I(1)\)</span> series, and it anticipates the test results reported in part (iii) below.</p>
+<p>&nbsp;</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>ADF-test (deterministic terms: constant and trend)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>p=8: Test statistic: -1.113, p-value: 0.925 </span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>p=6: Test statistic: -1.517, p-value: 0.823 </span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>p=10: Test statistic: -1.451, p-value: 0.845</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>&nbsp;</p>
+<ol start="2" type="i">
+<li>Log of the S&amp;P 500 index. Rising stock prices illustrate a possible stochastic trend very well, but it is difficult to argue that there is a deterministic upward trend in stock prices. Therefore, including a constant in the ADF test is surely a good choice, but for robustness we can also examine the unit root hypothesis when a deterministic trend is included as well (together with the constant) in the ADF regression.</li>
+</ol>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/logSP500_levels_diff.png" class="img-fluid figure-img" style="width:90.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<center>
+<span style="color: #0069d9;">Figure: Monthly log(S&amp;P 500) time series (left) and its first difference <span class="math inline">\(\Delta \log(P_t)\)</span> (right), 1990:1–2025:6.</span>
+</center>
+<p>&nbsp;</p>
+<p>Again the differenced series is plotted next to the level series. The first difference, that is, the monthly log-return, shows no trend and fluctuates around a constant level, although the size of the fluctuations clearly varies over time (recall the volatility clustering discussed in the AR-GARCH section).</p>
+<p>&nbsp;</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>ADF-test (deterministic terms: constant)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>p=8: Test statistic: -0.769, p-value: 0.826</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>p=6: Test statistic: -0.302, p-value: 0.922 </span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>p=10: Test statistic: -0.772, p-value: 0.825 </span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>ADF-test (deterministic terms: constant and trend)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>p=8: Test statistic: -2.193, p-value: 0.492</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>&nbsp;</p>
+<ol start="3" type="i">
+<li>The log-differences of the CPI and S&amp;P 500 indices are the series plotted on the right-hand side of the two figures above (and, up to scaling, the series previously shown in the Introduction). A visual inspection alone suggests that the unit root hypothesis is no longer reasonable for these differenced series. To confirm this, let’s examine the Augmented Dickey-Fuller (ADF) test results below. The test includes a constant, as a deterministic trend is clearly no longer present in the data.</li>
+</ol>
+<p>These conclusions are reinforced by the test results for their log-differences, which appear to be stationary (i.e., <span class="math inline">\(I(0)\)</span> variables). This provides a consistent picture: the original series are non-stationary <span class="math inline">\(I(1)\)</span>, but their first differences are stationary (<span class="math inline">\(I(0)\)</span>).</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>ADF-tests (deterministic terms: constant)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>logdiff(CPI): </span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>p=8: Test Statistic: -7.744 , p-value: 1.248e-11 </span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>p=6: Test Statistic: -4.764, p-value: 7.568e-05</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>p=10: Test Statistic: -7.886, p-value: 5.331e-12</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>logdiff(S&amp;P 500)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>p=8: Test statistic: -6.095, p-value: 1.303e-07 </span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>p=6: Test statistic: -7.011, p-value: 8.741e-10 </span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>p=10: Test statistic: -5.451, p-value: 3.299e-06</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Putting the unit root testing results together, the results show that the ADF tests fail to reject the unit root hypothesis for the original level series of both the CPI and the S&amp;P 500.</p>
+<ul>
+<li><p>For the CPI levels, even after including a constant and a linear trend in the test regression, we still cannot reject the null hypothesis of a unit root. This strongly suggests that the CPI can be treated as an <span class="math inline">\(I(1)\)</span> process (integrated of order one).</p></li>
+<li><p>A similar conclusion holds for the S&amp;P 500 index.</p></li>
+</ul>
+<p>&nbsp;</p>
+<p><strong>A critical limitation: The low power of the ADF test</strong>. An important limitation of the ADF test is its low statistical power. In practical terms, this means: <strong>The ADF test often fails to reject the null hypothesis of a unit root, even when the time series process is actually stationary</strong>.</p>
+<ul>
+<li><p>In other words, the ADF (or other) unit root test is not always very good at correctly identifying a stationary process, especially if the process is close to non-stationary (e.g., an AR(1) process where the autoregressive coefficient <span class="math inline">\(\phi_1\)</span> is close to 1).</p></li>
+<li><p>If we are unable to reject the presence of a unit root, it does not necessarily mean that it is true and the process is necessarily <span class="math inline">\(I(1)\)</span>. It could just be (but of course not always!) that there is not sufficient amount of information in the data to reject the unit root.</p></li>
+<li><p>The practical takeaway is that it’s common for a truly stationary time series to produce a p-value from the ADF test that is too high to be considered statistically significant. You can observe this phenomenon by running the following code, which simulates AR(1) processes and computes the ADF test statistic, with a varying value of the AR(1) coefficient.</p></li>
+</ul>
+<p>From an empirical point of view, the choice whether the process is a unit root process (nonstationary) or a “near” unit root process (stationary) is interesting but at times complicated.</p>
+<ul>
+<li><p>One practical remedy is to complement the ADF test with a test that reverses the roles of the hypotheses, such as the KPSS test, in which stationarity is the null hypothesis. Agreement between the two tests strengthens the conclusion; disagreement is a sign that the data are not informative enough to settle the question.</p></li>
+<li><p>Particularly ambiguous are, for example, interest rates. Interest rates are highly persistent and the unit root hypothesis cannot often be rejected, although nonstationary such as random walk interest rates do not seem to be very plausible from an economic point of view.</p></li>
+</ul>
+<div class="sourceCode" id="cb4"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu"># Simulating AR(1) process with different values of phi_1 </span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu"># - Change n_obs and phi_1</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu"># Load the libraries</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>library(urca)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>library(tseries)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>n_obs = 200     # number of observations (do not name this T: T is TRUE in R)</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>phi_1 = 0.98    </span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>adf_lags = 8    # number of lagged differences in the ADF test regression</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>epsilon = rnorm(n_obs)  # random draws from nid(0,1)</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>y = epsilon</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>y<span class="co">[</span><span class="ot">1</span><span class="co">]</span> = 0 # for simplicity and E(y_t) = 0</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>for(i in 2:n_obs) y<span class="co">[</span><span class="ot">i</span><span class="co">]</span> = phi_1*y<span class="co">[</span><span class="ot">i-1</span><span class="co">]</span>+epsilon<span class="co">[</span><span class="ot">i</span><span class="co">]</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>plot(y, type="l", main="Simulated realization")</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="fu"># The simulated process has zero mean, so the test regression needs no</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a><span class="fu"># deterministic terms: type = "none" and, correspondingly, trend = "nc".</span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>test_ur_none &lt;- ur.df(y, type = "none", lags = adf_lags)</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>stat_none &lt;- test_ur_none@teststat<span class="co">[</span><span class="ot">1, 1</span><span class="co">]</span></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>p_val_none &lt;- punitroot(q = stat_none, N = length(test_ur_none@res), trend = "nc")</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>cat("Test statistic:", stat_none, "\n")</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>cat("P-value:", p_val_none, "\n")</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>&nbsp;</p>
+</section>
+<section id="r-lab" class="level2" data-number="12.5">
+<h2 data-number="12.5" class="anchored" data-anchor-id="r-lab"><span class="header-section-number">12.5</span> R Lab</h2>
+<p>All the R codes considered in this section are compiled in the following tab:</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+R Lab: Unit root testing (ADF test)
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-4" class="callout-4-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Unit root testing (ADF test)</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Install packages if you haven't already</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co"># install.packages("urca")</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co"># install.packages("tseries")</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Load the libraries</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(urca)</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tseries)</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(zoo) <span class="co"># Used for handling year.month date formats in this Shiller data</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a reproducible non-stationary series (a random walk!)</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>non_stationary_series <span class="ot">&lt;-</span> <span class="fu">cumsum</span>(<span class="fu">rnorm</span>(<span class="dv">200</span>))</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="co"># It's always a good idea to plot the data first</span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(non_stationary_series, <span class="at">type =</span> <span class="st">'l'</span>, <span class="at">main =</span> <span class="st">"Simulated random walk (no drift)"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="TSE-ch12_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ------------------ Going back to Introduction -------------------------</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Define/select data and sample period ---</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Set the sample period. The format (for this monthly data) is "YYYY-MM".</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>start_period <span class="ot">&lt;-</span> <span class="st">"1990-01"</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>end_period <span class="ot">&lt;-</span> <span class="st">"2025-06"</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Define the data file name</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>data_file <span class="ot">&lt;-</span> <span class="st">"Shiller_data_031025.txt"</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Load and prepare data ---</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Read the data from the text file. This assumes a tab-separated file with a header.</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="co"># If your separator is different (e.g., a comma), use read.csv() instead.</span></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a><span class="fu">tryCatch</span>({</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>  shiller_data <span class="ot">&lt;-</span> <span class="fu">read.delim</span>(data_file, <span class="at">header =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>}, <span class="at">error =</span> <span class="cf">function</span>(e) {</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stop</span>(<span class="fu">paste</span>(<span class="st">"Error reading the file:"</span>, </span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>             data_file, <span class="st">". Make sure it's in the same folder as the script."</span>))</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert the 'Date' column to a proper time series date object</span></span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>shiller_data<span class="sc">$</span>Date_ts <span class="ot">&lt;-</span> <span class="fu">as.yearmon</span>(<span class="fu">as.character</span>(shiller_data<span class="sc">$</span>Date), <span class="st">"%Y.%m"</span>)</span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter the data to the desired sample period</span></span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>data_subset <span class="ot">&lt;-</span> <span class="fu">subset</span>(shiller_data, Date_ts <span class="sc">&gt;=</span> <span class="fu">as.yearmon</span>(start_period) <span class="sc">&amp;</span> </span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>                        Date_ts <span class="sc">&lt;=</span> <span class="fu">as.yearmon</span>(end_period))</span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Create Time Series Objects for Base R plotting ---</span></span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a><span class="co"># Get the start year and month from the first data point in our subset</span></span>
+<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a>start_year <span class="ot">&lt;-</span> <span class="fu">floor</span>(<span class="fu">as.numeric</span>(data_subset<span class="sc">$</span>Date_ts[<span class="dv">1</span>]))</span>
+<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a>start_month <span class="ot">&lt;-</span> <span class="fu">cycle</span>(data_subset<span class="sc">$</span>Date_ts[<span class="dv">1</span>])</span>
+<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a><span class="co"># Create 'ts' (time series) objects, here monthly data</span></span>
+<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a>cpi_ts <span class="ot">&lt;-</span> <span class="fu">ts</span>(data_subset<span class="sc">$</span>CPI, <span class="at">start =</span> <span class="fu">c</span>(start_year, start_month), <span class="at">frequency =</span> <span class="dv">12</span>)</span>
+<span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a>p_ts <span class="ot">&lt;-</span> <span class="fu">ts</span>(data_subset<span class="sc">$</span>P, <span class="at">start =</span> <span class="fu">c</span>(start_year, start_month), <span class="at">frequency =</span> <span class="dv">12</span>)</span>
+<span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-42"><a href="#cb6-42" aria-hidden="true" tabindex="-1"></a><span class="co"># --- First differences of the log-series ---</span></span>
+<span id="cb6-43"><a href="#cb6-43" aria-hidden="true" tabindex="-1"></a><span class="co"># diff() on a 'ts' object keeps the time series attributes and shifts</span></span>
+<span id="cb6-44"><a href="#cb6-44" aria-hidden="true" tabindex="-1"></a><span class="co"># the starting date by one period automatically.</span></span>
+<span id="cb6-45"><a href="#cb6-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-46"><a href="#cb6-46" aria-hidden="true" tabindex="-1"></a>dlog_cpi_ts <span class="ot">&lt;-</span> <span class="fu">diff</span>(<span class="fu">log</span>(cpi_ts))   <span class="co"># 1. difference of log(CPI)</span></span>
+<span id="cb6-47"><a href="#cb6-47" aria-hidden="true" tabindex="-1"></a>dlog_p_ts   <span class="ot">&lt;-</span> <span class="fu">diff</span>(<span class="fu">log</span>(p_ts))     <span class="co"># 1. difference of log(S&amp;P 500)</span></span>
+<span id="cb6-48"><a href="#cb6-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-49"><a href="#cb6-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-50"><a href="#cb6-50" aria-hidden="true" tabindex="-1"></a><span class="co"># (i) CPI: the level series and its first difference NEXT TO EACH OTHER</span></span>
+<span id="cb6-51"><a href="#cb6-51" aria-hidden="true" tabindex="-1"></a><span class="co"># Uncomment the png()/dev.off() lines to save the figure used in the text;</span></span>
+<span id="cb6-52"><a href="#cb6-52" aria-hidden="true" tabindex="-1"></a><span class="co"># with them commented out the plot is drawn on screen as usual.</span></span>
+<span id="cb6-53"><a href="#cb6-53" aria-hidden="true" tabindex="-1"></a><span class="co"># png("logCPI_levels_diff.png", width = 1000, height = 400)</span></span>
+<span id="cb6-54"><a href="#cb6-54" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>), <span class="at">mar =</span> <span class="fu">c</span>(<span class="fl">4.5</span>, <span class="fl">4.5</span>, <span class="dv">3</span>, <span class="dv">1</span>))</span>
+<span id="cb6-55"><a href="#cb6-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-56"><a href="#cb6-56" aria-hidden="true" tabindex="-1"></a><span class="fu">plot.ts</span>(<span class="fu">log</span>(cpi_ts), <span class="at">col =</span> <span class="st">"blue"</span>, <span class="at">lwd =</span> <span class="dv">2</span>, <span class="at">main =</span> <span class="st">"log(CPI)"</span>,</span>
+<span id="cb6-57"><a href="#cb6-57" aria-hidden="true" tabindex="-1"></a>        <span class="at">xlab =</span> <span class="st">"Date"</span>, <span class="at">ylab =</span> <span class="st">"log(CPI)"</span>)</span>
+<span id="cb6-58"><a href="#cb6-58" aria-hidden="true" tabindex="-1"></a><span class="fu">plot.ts</span>(dlog_cpi_ts, <span class="at">col =</span> <span class="st">"red"</span>, <span class="at">lwd =</span> <span class="fl">1.5</span>,</span>
+<span id="cb6-59"><a href="#cb6-59" aria-hidden="true" tabindex="-1"></a>        <span class="at">main =</span> <span class="st">"1. difference of log(CPI)"</span>,</span>
+<span id="cb6-60"><a href="#cb6-60" aria-hidden="true" tabindex="-1"></a>        <span class="at">xlab =</span> <span class="st">"Date"</span>, <span class="at">ylab =</span> <span class="fu">expression</span>(Delta<span class="sc">*</span><span class="fu">log</span>(CPI)))</span>
+<span id="cb6-61"><a href="#cb6-61" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h =</span> <span class="dv">0</span>, <span class="at">lty =</span> <span class="dv">2</span>)   <span class="co"># the differenced series fluctuates around a constant level</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="TSE-ch12_files/figure-html/unnamed-chunk-1-2.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>))</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="co"># dev.off()</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="co"># (ii) S&amp;P 500: the level series and its first difference NEXT TO EACH OTHER</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="co"># png("logSP500_levels_diff.png", width = 1000, height = 400)</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>), <span class="at">mar =</span> <span class="fu">c</span>(<span class="fl">4.5</span>, <span class="fl">4.5</span>, <span class="dv">3</span>, <span class="dv">1</span>))</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="fu">plot.ts</span>(<span class="fu">log</span>(p_ts), <span class="at">col =</span> <span class="st">"blue"</span>, <span class="at">lwd =</span> <span class="dv">2</span>, <span class="at">main =</span> <span class="st">"log(S&amp;P 500)"</span>,</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>        <span class="at">xlab =</span> <span class="st">"Date"</span>, <span class="at">ylab =</span> <span class="st">"log(S&amp;P 500)"</span>)</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="fu">plot.ts</span>(dlog_p_ts, <span class="at">col =</span> <span class="st">"red"</span>, <span class="at">lwd =</span> <span class="fl">1.5</span>,</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>        <span class="at">main =</span> <span class="st">"1. difference of log(S&amp;P 500)"</span>,</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>        <span class="at">xlab =</span> <span class="st">"Date"</span>, <span class="at">ylab =</span> <span class="fu">expression</span>(Delta<span class="sc">*</span><span class="fu">log</span>(P)))</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h =</span> <span class="dv">0</span>, <span class="at">lty =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="TSE-ch12_files/figure-html/unnamed-chunk-1-3.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>))</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co"># dev.off()</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="co"># --- The scaled versions of the same differences used in the Introduction ---</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="co"># (annualized inflation and monthly percentage returns; only the scale differs)</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>data_subset<span class="sc">$</span>cpi_log_diff_1m <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="cn">NA</span>, <span class="dv">1200</span><span class="sc">*</span><span class="fu">diff</span>(<span class="fu">log</span>(data_subset<span class="sc">$</span>CPI))) <span class="co"># annualized</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>data_subset<span class="sc">$</span>p_log_diff <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="cn">NA</span>, <span class="dv">100</span><span class="sc">*</span><span class="fu">diff</span>(<span class="fu">log</span>(data_subset<span class="sc">$</span>P)))</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>cpi_log_diff_1m_ts <span class="ot">&lt;-</span> <span class="fu">ts</span>(data_subset<span class="sc">$</span>cpi_log_diff_1m, <span class="at">start =</span> <span class="fu">c</span>(start_year, </span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>                                                                start_month), <span class="at">frequency =</span> <span class="dv">12</span>)</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>p_log_diff_ts <span class="ot">&lt;-</span> <span class="fu">ts</span>(data_subset<span class="sc">$</span>p_log_diff, <span class="at">start =</span> <span class="fu">c</span>(start_year, </span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>                                                      start_month), <span class="at">frequency =</span> <span class="dv">12</span>)</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a><span class="fu">plot.ts</span>(cpi_log_diff_1m_ts, <span class="at">col =</span> <span class="st">"blue"</span>, <span class="at">lwd =</span> <span class="dv">2</span>, </span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>        <span class="at">main =</span> <span class="st">"Annualized monthly inflation"</span>, <span class="at">xlab =</span> <span class="st">"Date"</span>,</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>        <span class="at">ylab =</span> <span class="st">"(Annualized) 1. log-difference of U.S. CPI"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="TSE-ch12_files/figure-html/unnamed-chunk-1-4.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot.ts</span>(p_log_diff_ts,<span class="at">col =</span> <span class="st">"blue"</span>,<span class="at">lwd =</span> <span class="dv">2</span>, <span class="at">main =</span> <span class="st">"S&amp;P 500 monthly returns"</span>,</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>        <span class="at">xlab =</span> <span class="st">"Date"</span>,</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>        <span class="at">ylab =</span> <span class="st">"log-difference of P"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="TSE-ch12_files/figure-html/unnamed-chunk-1-5.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ----------------- Select the time series to be tested --------------------</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="co"># </span><span class="al">NOTE</span><span class="co">: activate exactly ONE of the following lines at a time (the others</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="co"># must stay commented out), otherwise the last one overwrites the others.</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">log</span>(cpi_ts)              <span class="co"># level series, log(CPI)</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="co"># y &lt;- log(p_ts)              # level series, log(S&amp;P 500)</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="co"># y &lt;- dlog_cpi_ts            # first difference of log(CPI)</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="co"># y &lt;- dlog_p_ts              # first difference of log(S&amp;P 500)</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="co"># y &lt;- non_stationary_series  # the simulated random walk</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Manually set the number of lags in the ADF test</span></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>adf_lags <span class="ot">&lt;-</span> <span class="dv">8</span></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a><span class="co"># --- 2. ur.df() EXAMPLES ---</span></span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a><span class="co"># # Case 1: No constant, no trend (not typically used)</span></span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a><span class="co">#cat("--- ur.df() | type = 'none' ---\n")</span></span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a><span class="co">#test_ur_none &lt;- ur.df(y, type = "none", lags = adf_lags)</span></span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a><span class="co">#stat_none &lt;- test_ur_none@teststat[1, 1]</span></span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a><span class="co">#p_val_none &lt;- punitroot(q = stat_none, N = length(test_ur_none@res), trend = "nc")</span></span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a><span class="co">#cat("Test Statistic:", stat_none, "\n")</span></span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a><span class="co">#cat("P-value:", p_val_none, "\n")</span></span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a><span class="co"># Case 2: Constant (drift) only</span></span>
+<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">--- ur.df() | type = 'drift' ---</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+--- ur.df() | type = 'drift' ---</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>test_ur_drift <span class="ot">&lt;-</span> <span class="fu">ur.df</span>(y, <span class="at">type =</span> <span class="st">"drift"</span>, <span class="at">lags =</span> adf_lags)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>stat_drift <span class="ot">&lt;-</span> test_ur_drift<span class="sc">@</span>teststat[<span class="dv">1</span>, <span class="dv">1</span>]</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>p_val_drift <span class="ot">&lt;-</span> <span class="fu">punitroot</span>(<span class="at">q =</span> stat_drift, <span class="at">N =</span> <span class="fu">length</span>(test_ur_drift<span class="sc">@</span>res), <span class="at">trend =</span> <span class="st">"c"</span>)</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Test Statistic:"</span>, stat_drift, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Test Statistic: 0.3561225 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"P-value:"</span>, p_val_drift, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>P-value: 0.9808625 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Case 3: Constant and trend</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">--- ur.df() | type = 'trend' ---</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+--- ur.df() | type = 'trend' ---</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>test_ur_trend <span class="ot">&lt;-</span> <span class="fu">ur.df</span>(y, <span class="at">type =</span> <span class="st">"trend"</span>, <span class="at">lags =</span> adf_lags)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>stat_trend <span class="ot">&lt;-</span> test_ur_trend<span class="sc">@</span>teststat[<span class="dv">1</span>, <span class="dv">1</span>]</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>p_val_trend <span class="ot">&lt;-</span> <span class="fu">punitroot</span>(<span class="at">q =</span> stat_trend, <span class="at">N =</span> <span class="fu">length</span>(test_ur_trend<span class="sc">@</span>res), <span class="at">trend =</span> <span class="st">"ct"</span>)</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Test Statistic:"</span>, stat_trend, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Test Statistic: -1.1129 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"P-value:"</span>, p_val_trend, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>P-value: 0.924528 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># --- adf.test() ---</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="co"># ?adf.test</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Manually set the number of lags to adf_lags</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Note: This function has no argument to control for constant/trend.</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a><span class="co"># - This procedure contains the constant and trend</span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>k <span class="ot">&lt;-</span> adf_lags</span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">--- adf.test() | Deterministic terms are implicit ---</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+--- adf.test() | Deterministic terms are implicit ---</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>test_adf <span class="ot">&lt;-</span> <span class="fu">adf.test</span>(y, <span class="at">k =</span> adf_lags)</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(test_adf)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Augmented Dickey-Fuller Test
+
+data:  y
+Dickey-Fuller = -1.1129, Lag order = 8, p-value = 0.92
+alternative hypothesis: stationary</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>&nbsp;</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./TSE-ch11.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Basics of vector autoregression</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./TSE-ch13.html" class="pagination-link">
+        <span class="nav-page-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Linear regressions with <span class="math inline">\(I(1)\)</span> variables</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+</body></html>

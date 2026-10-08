@@ -1,0 +1,152 @@
+/* === Layout basics === */
+body {
+  margin-right: 50px;
+  margin-left: 50px;
+  text-align: left; /* ensure all text aligns left */
+}
+
+/* === Math sizing === */
+.math.inline {
+  font-size: 0.9em;
+}
+.math.display {
+  font-size: 0.85em;
+}
+
+
+
+/* === Toggle buttons === */
+.toggle-button {
+  border: 1px solid #333;
+  border-radius: 5px;
+  padding: 5px;
+  cursor: pointer;
+  margin-bottom: 10px;
+  text-align: center;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: fit-content;
+}
+
+.toggle-button-r {
+  background-color: white;
+  color: black;
+  position: relative;
+  padding-left: 35px;
+  border: 1px solid #333;
+}
+
+.toggle-button-r::before {
+  content: "R";
+  color: white;
+  background-color: #4682B4;
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  font-weight: bold;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Toggle content */
+.toggle-content {
+  display: none;
+  margin-top: 10px;
+  padding: 10px;
+  border-left: 3px solid #4682B4;
+  background-color: #f9f9f9;
+}
+
+.toggle-content hr {
+  margin-top: 15px;
+  border: none;
+  border-top: 1px solid #ccc;
+}
+
+.toggle-button-example {
+  background-color: #4CAF50;
+  color: white;
+}
+.toggle-button-extra {
+  background-color: #FF9800;
+  color: white;
+}
+.toggle-button-exercises {
+  background-color: #8A2BE2;
+  color: white;
+}
+
+.toggle-link {
+  color: #007bff;
+  cursor: pointer;
+  text-decoration: underline;
+}
+.toggle-link:hover {
+  color: #0056b3;
+}
+
+/* === Main content === */
+.main-content {
+  position: relative;
+}
+
+/* === Chapter titles === */
+h1 {
+  border-top: 3px solid #007bff;
+  border-bottom: 3px solid #007bff;
+  padding-top: 0.5em;
+  padding-bottom: 0.3em;
+  margin-top: 2em;
+  margin-bottom: 1em;
+  color: #007bff;
+  font-weight: 700;
+}
+
+/* Make section (h2, h3...) titles match but lighter */
+h2 {
+  border-bottom: 2px solid #007bff33; /* transparent blue line */
+  padding-bottom: 0.2em;
+  margin-top: 1.5em;
+  color: #007bff;
+  font-weight: 600;
+}
+
+
+/* === Figure captions === */
+.fig-caption {
+  text-align: center;
+  color: #0069d9;
+  display: block;
+  margin-top: 5px;
+  margin-bottom: 20px;
+}
+
+/* === Hidden sections (like Foreword/Notation) === */
+div[style*="display:none"] {
+  text-align: left !important;
+}
+
+/* Remove blue underline bars in sidebar TOC */
+.sidebar nav a {
+  border-bottom: none !important;
+  text-decoration: none !important;
+  box-shadow: none !important;
+  font-size: 0.95em;
+  color: #222 !important;
+}
+
+.sidebar nav a:hover {
+  text-decoration: underline !important;
+}
+
+
+.sidebar nav .active > a {
+  color: #007bff !important;
+  font-weight: 600;
+}
+

@@ -1,0 +1,104 @@
+# Preface {.unnumbered}
+
+<!-- # Preface {-} -->
+
+
+
+::: {.callout-note collapse="true"}
+## Foreword
+
+
+&nbsp;
+
+This material is compiled from various sources. It is largely based on the Aikasarja-analyysi (Time Series Analysis) course taught at the University of Turku from 2016 to 2025. That course material was, in turn, heavily based on the numerous time series analysis courses taught by Professor Emeritus Pentti Saikkonen at the University of Helsinki. My/our sincere thanks to him for providing access to his course materials, particularly for the course "Stationaariset aikasarjat" (2015). Thanks also to Professor Mika Meitz, whose lecture notes, "Lecture Notes on Time Series Econometrics" were valuable reference for the English translation and terminology.
+
+Special thanks to Professor Markku Lanne for sharing his lecture notes on linear regressions with time series variables, originally part of the "Econometrics 2" course at the University of Helsinki. I also wish to thank MSocSc and doctoral researcher Roope Rihtamo for setting up the Quarto and GitHub documents of this material. 
+
+All remaining errors are solely the responsibility of the author.
+
+Other sources and potential references include the following:
+
+- Brockwell, P.J. \& R.A. Davis (1996 or 2002). Introduction to Time Series and Forecasting. Springer (2002, 2nd ed.).
+
+- Franses, P.H. \& D. van Dijk (2000). Non-linear time series models in empirical finance. Cambridge University Press.
+
+- Hamilton, J. (1994). Time Series Analysis. Princeton University Press.
+
+- Lütkepohl, H. & Krätzig, M. (2004). Applied Time Series Econometrics. Cambridge University Press.
+
+- Tsay, R.S. (2010). Analysis of Financial Time Series. Wiley
+
+- Verbeek, M. (2008). A Guide To Modern Econometrics. John Wiley \& Sons. Third Edition
+
+This lecture manuscript primarily focus on univariate time series models. However, we will also briefly cover key aspects of multiple time series analysis, particularly vector autoregressive (VAR) models and cointegration. In addition, we will introduce some fundamental concepts of machine learning techniques relevant to time series econometrics.
+
+The empirical examples, implemented using RStudio, serve to illustrations to theoretical concepts. While most examples are drawn from (macro)economic and financial applications, the methods are broadly applicable across various fields.
+
+Some of the empirical examples and materials are based on well-known journal articles:
+
+- Hall, R.E. (1978). Stochastic implications of the life cycle-permanent income hypothesis: Theory and evidence. Journal of Political Economy, 86(6), 971--987.
+
+- Stock, J.H. & M.W. Watson (1988). Variable trends in economic time series. Journal of Economic Perspectives, 2(3), 147--174
+
+- Stock, J.H. & M.W. Watson (2001). Vector autoregressions. Journal of Economic Perspectives, 15(4), 101--115.
+
+More background information (journal articles and their references)
+
+- Engle, R.F., Lilien, D.M. & Robins, R.P. (1987). Estimating time varying risk premia in the term structure: The ARCH-M model. Econometrica, 55, 391--407.
+
+- Glosten, L.R., Jagannathan, R. & Runkle, D.E. (1993). On the relation between the expected value of the volatility of the nominal excess return on stocks. Journal of Finance, 48 , 1779--1801.
+
+- Lanne, M. & Saikkonen, P. (2006). Why is it so difficult to uncover the risk-return tradeoff in stock returns? Economics Letters, 92, 118--125.
+
+- Newey, W.K., & West, K. D. (1987). A simple, positive semi-definite, heteroskedasticity and autocorrelation consistent covariance matrix. Econometrica, 55(3), 703--708.
+
+- Nyberg, H. (2012). Risk-return tradeoff in U.S. stock returns over the business cycle. Journal of Financial and Quantitative Analysis, 47, 137–158.
+
+- Scruggs, J. (1998). Resolving the puzzling intertemporal relation between the market risk premium and conditional market variance: A two-factor approach. Journal of Finance, 53, 575--603.
+
+
+Datasets and data sources used in this lecture manuscript:
+
+- "Shiller data" refers to Robert Shiller's updated data on Irrational Exuberance: http://www.econ.yale.edu/~shiller/data.htm. 
+  - See Shiller, R. (2005). Irrational Exuberance. 2nd Edition. Currency Books.
+
+- FRED data (Federal Reserve Bank of St. Louis): https://fred.stlouisfed.org/. 
+
+  - Hereafter "FRED" ("FRED data") refers to the Federal Reserve Economic Data (FRED) database, maintained by the Federal Reserve Bank of St. Louis.
+
+- quantmod R package: https://cran.r-project.org/web/packages/quantmod/index.html. 
+
+  - Data retrieved via the quantmod R package is seemingly often from Yahoo Finance (https://finance.yahoo.com)
+  
+  - This package provides tools for quantitative financial modeling and data retrieval. Note that when     using financial data in more "serious analyses", like in your thesis work, ensure always that you     have the appropriate license and permission to access and use the data sources, such as possibly      integrated via quantmod.
+
+:::
+
+&nbsp;
+
+::: {.callout-note collapse="true"}
+## Notation
+
+
+On this course, we follow, for example, the following key notational selections:
+
+- We will use the same notation for random quantities and their realized values. The context should make the difference clear.
+
+- In vector and matrix calculations, vectors are interpreted as column vectors and we might also denote, for example, $\boldsymbol{y} = \left[y_{1} \, \cdots \, y_T \right]^{\prime}$, where the superscripted comma denotes transpose of a vector (here $T \times 1$ vector), or elsewhere also of a matrix. Vectors (column vectors) are also at times denoted as $\boldsymbol{y}=(y_1,\ldots,y_T)^{\prime}$, indicating the same vector as above (a change made in 2026 vs. 2025 notation).
+
+Concerning different (stochastic/time series) processes, we use mainly notations $y_t$, $x_t$ and $z_t$.
+
+- $z_t$ is typically a zero mean process and denoting often a demeaned process. That is $z_t = y_t- \mathsf{E}(y_t)$, where $y_t$ is the "original" time series.
+
+- $x_t$, or $\boldsymbol{x}_t$ in the case of multiple time series, is used for a general time series or a vector of time series for different notational purposes, but most often they are in the role of explanatory (predictive) variables.
+
+:::
+
+&nbsp;
+
+
+
+
+::: {.content-visible when-format="pdf"}
+*The R code of the course (the R Lab sections at the end of the chapters) is included only in the online version of this material.*
+:::

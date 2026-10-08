@@ -1,0 +1,523 @@
+# Linear regressions with $I(1)$ variables {#part-ch13 .chapter-title}
+
+Instead of stationary variables, as considered earlier in Section 10, let us now assume that there are two variables, $y_t$ and $x_t$, and either of them or both are nonstationary and specifically $I(1)$ variables. 
+
+- $y_t$ is again the dependent variable and $x_t$ is the predictive/explanatory variable.
+
+Before continuing to examine linear (predictive) regressions between $y_t$ and $x_t$ in different cases, let us introduce an important concept of cointegration.
+
+&nbsp;
+
+## Basics of cointegration
+
+An important special case of the linear regression between $y_t$ and $x_t$, where $y_t$ and $x_t$ are nonstationary $I(1)$ variables, arises when there is a common stochastic trend in both series. 
+
+In other words, suppose that there is a linear relationship between variables so that there exists some value $\delta$ such that $y_t - \delta x_t$ is stationary ($I(0)$) although $y_t$ and $x_t$ are nonstationary ($I(1)$).
+
+- In such case, it is said that $y_t$ and $x_t$ are **cointegrated** and they share the common trend. 
+
+In principle, an alternative way to construct a linear regression model, when $y_t$ and $x_t$ are $I(1)$, is based on the differences $\Delta y_t$ and $\Delta x_t$ which are then stationary ($I(0)$).
+
+- This is not an optimal strategy if there is indeed a cointegration relationship between the variables. Cf. the discussion on overdifferencing in Section 12.
+
+&nbsp;
+
+Let us examine cointegration more detail. **If $y_t$ and $x_t$ are $I(1)$ and cointegrated**, then 
+\begin{equation*}
+z_t= y_t - \delta x_t = [y_t \quad x_t] [1 \quad -\delta]^{\prime} \thicksim I(0).
+\end{equation*}
+The vector $[1 \quad -\delta]^{\prime}$ is called the **cointegration vector**. 
+
+- Cointegration is often interpreted as a long-run relationship between the variables. Assume that the equilibrium of the variables $y_t$ and $x_t$ is defined by the relationship $y_t= \tilde{\delta} x_t$ for some fixed $\tilde{\delta}$. Then $\widehat{z}_t= y_t - \widehat{\delta} x_t$ is the "equilibrium error" which measures the extent $y_t$ deviates from its "equilibrium value". 
+
+- As $z_t$ is $I(0)$, the equilibrium error is stationary and fluctuating around zero. In other words, on average, the system is in equilibrium.  
+&nbsp;
+
+Notice that we can also use a slightly modified and general definition of cointegration for the above, especially when there will be more than two variables involved. 
+
+- We will consider this definition, and cointegration in connection to the VAR model more detail in the **Advanced Time Series Econometrics course**.  
+
+- **General definition of cointegration**: The situation described above can be formalized for $\boldsymbol{y}_t = (y_{1t},\ldots, y_{Kt})^{\prime}$. If $\boldsymbol{y}_{t} \sim I(1)$, but there is a linear combination $\boldsymbol{\beta}^{\prime} \boldsymbol{y}_{t}$, which is $I(0)$, then an $I(1)$ process $\{\boldsymbol{y}_{t},\ t=1,2,...\}$ $(K\times 1)$ is said to be cointegrated if there exists a nonzero parameter vector $\boldsymbol{\beta}$ $(K \times 1)$ such that:
+\begin{equation*}
+\boldsymbol{\beta}^{\prime } \boldsymbol{y}_{t}\sim I(0).
+\end{equation*}
+The parameter $\boldsymbol{\beta}$ is called the cointegrating (cointegration) vector. This definition allows for trivial cases (like the overdifferencing example above) where $\boldsymbol{\beta} =(0,...,1,...0)$, meaning one variable is already stationary.
+
+<!-- - There can be several linearly independent CI-vectors. If there are $r$ such vectors, they form a **cointegrating matrix** $\boldsymbol{\beta} = [\boldsymbol{\beta}_{1}\ \cdots \ \boldsymbol{\beta}_{r}]$, and $r$ is the **cointegration rank**. -->
+
+
+
+&nbsp;
+
+
+## Testing cointegration between two variables
+
+From the discussion above, it is obvious that it is important to distinguish whether there is a cointegration relationship between the variables. 
+
+Consider a "cointegration regression" between two $I(1)$ variables $y_t$ and $x_t$:
+\begin{equation*}
+y_t= \alpha + \delta x_t + u_t.
+\end{equation*}
+If $y_t$ and $x_t$ are cointegrated, then $u_t$ is $I(0)$. If not, $u_t$ will be $I(1)$. Therefore, after the model is estimated by OLS, the presence of a possible cointegration relationship can be evaluated by testing for a unit root in the residuals $\widehat{u}_t$.
+
+&nbsp;
+
+**Testing for cointegration with a known coefficient**. In some applications, the cointegration coefficient $\delta$ (and the intercept $\alpha$) is known in advance due to economic theory or other application-specific knowledge. When the coefficient is known, the cointegration relationship can be tested as follows. For the sake of simplicity, we will assume $\alpha=0$ in the procedure described below
+
+- Construct the series $z_t = y_{t} - \delta x_t$.
+
+- Use the ADF test for the null hypothesis of unit root, which implies $z_t \thicksim I(1)$. If $H_0$ is rejected, then there is a cointegration relationship.
+
+&nbsp;
+
+**Testing for cointegration with unknown coefficients**. If $\delta$ (and $\alpha$) are unknown, then we can proceed as follows (Engle-Granger ADF-test):
+
+- Estimate the following model by using OLS
+\begin{equation*}
+y_t = \alpha + \delta x_t + u_t.
+\end{equation*}
+
+- Construct the series $\widehat{u}_t= y_t - \widehat{\alpha} - \widehat{\delta} x_t$, which is the residual of the regression.
+
+- Test the null hypothesis implying $\widehat{u}_t \thicksim I(1)$.
+
+- Critical values are now different than in the above case, and in the ADF test, as unit root testing is based on the (estimated) residuals.
+
+Notice that if $y_t$ and $x_t$ are indeed cointegrated, OLS yields a consistent estimator for the cointegration coefficient $\delta$. However, the OLS estimator of $\delta$ has a non-normal asymptotic distribution, and the inferences based on the standard $t$-test statistic can be misleading.  
+
+&nbsp;
+
+**Emprirical example: Consumption and income**. Let us consider an important empirical question derived from Hall's (1978) Permanent Income Hypothesis (PIH) in the context of cointegration. 
+
+- R. E. Hall (1978). Stochastic implications of the life cycle-permanent income hypothesis: Theory and evidence. Journal of Political Economy, 86(6), 971--987.
+
+- Source of data: FRED.
+
+The testable hypothesis is that there is a stable long-run relationship exist between real consumption and real income (that is for inflation adjusted consumption and income), such that the difference between them (the cointegration residual) is stationary.
+
+- In other words, the cointegration theory predicts that since consumption $c_t$ is proportional to permanent income $y_t$ so that $c_t=a \, y_t, \, 0 \le a \le 1$ (the present value of expected future income), and both are driven by a common stochastic trend (permanent income shocks), they should be cointegrated. That is there is a long-term equilibrium between $c_t$ and $y_t$, and if $c_t$ and $y_t$ are now $I(1)$ processes, then there should be a cointegration relationship between the variables.
+
+So, let us test the prediction of the PIH that real per capita consumption (log($c_t$)) and real per capita disposable income (log($y_t$)) share a single cointegrating relationship.
+
+- Hypothesis: The two variables ($\log(c_t)$ and $\log(y_t)$) are $I(1)$ and cointegrated.
+
+- Long-run equation: $\log(c_t) = \alpha + \delta \log(y_t) + u_t$ 
+
+- PIH implication: The cointegrating vector should be $(1,-\delta)$, where $\delta$ is theoretically close to 1 (or exactly 1 in the simplest PIH model) because, in the long run, consumption should grow proportionally with permanent income. The error term $u_t$ and the resulting residuals $\widehat{u}_t$ must be $I(0)$ (stationary).
+
+```{r, PIHdata, echo=FALSE, out.width="75%", fig.align = "center", fig.cap=""}
+knitr::include_graphics("images/PIHdata.png")
+```
+<center>
+<span style="color: #0069d9;">Figure: Monthly U.S. data (sample period 1959:1--2025:8) on (log) consumption and income. (Source: FRED)</span>
+</center>
+
+&nbsp;
+
+Check first the unit root hypothesis for the two time series. In these ADF tests, a constant and linear trend component is included in the test regression and the number lagged differences $p$ is 4:
+```markdown
+ADF tests (deterministic terms: constant and trend)
+
+log(c_t):
+p=4: Test Statistic: -2.005, p-value: 0.595
+p=6: Test Statistic: -2.160, p-value: 0.510 
+
+log(y_t)
+p=4: Test Statistic: -2.583, p-value: 0.289 
+p=6: Test Statistic: -2.473, p-value: 0.341
+```
+
+Estimation result of the cointegration regression:
+
+```markdown
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept) 0.383122   0.044448    8.62 6.29e-16 ***
+ln_Y        1.048293   0.004244  246.99  < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.02692 on 264 degrees of freedom
+Multiple R-squared:  0.9957,	Adjusted R-squared:  0.9957 
+F-statistic: 6.1e+04 on 1 and 264 DF,  p-value: < 2.2e-16
+```
+
+&nbsp;
+
+Based on the Engle-Granger two-step procedure, the null hypothesis of no cointegration can be rejected at 5\% level (see testing result below). Despite one large outlier related to the Covid-10, the cointegration residual series seems to fluctuate as stationary I(0) variable.
+
+- In the ADF test below, we are using the critical values of the ADF test even though, as discussed above, that is not completely correct.
+
+&nbsp;
+
+
+```{r, PIHresidual, echo=FALSE, out.width="65%", fig.align = "center", fig.cap=""}
+knitr::include_graphics("images/PIH_residuals.png")
+```
+<center>
+<span style="color: #0069d9;">Figure: PIH residual time series (from the estimated cointegrated model).</span>
+</center>
+
+&nbsp;
+
+```markdown
+Test Statistic: -4.561388 
+> cat("P-value:", p_val_drift, "\n")
+P-value: 0.000197051 
+```
+
+
+&nbsp;
+
+
+## Linear regressions containing I(1) variables
+
+Recall the linear regression 
+\begin{equation*}
+y_t= \boldsymbol{x}^{\prime}_t \boldsymbol{\beta} + u_t,
+\end{equation*}
+and the two assumptions $\mathrm{(i)}$--$\mathrm{(ii)}$ set in Section 10:
+
+- $\mathrm{(i)}$ The error term $u_t$ is serially uncorrelated and uncorrelated with the regressors included in $\boldsymbol{x}_t$.
+
+- $\mathrm{(ii)}$ All the regressors in $\boldsymbol{x}_t$ are either deterministic or stationary random variables.
+
+**Assume now that only $\mathrm{(i)}$ holds**, that is the error term $u_t$ is serially uncorrelated and uncorrelated with the regressors included in $\boldsymbol{x}_t$.
+
+- Even if the model cannot be written in this way, the OLS estimator of the coefficients of the $I(1)$ regressors $\boldsymbol{x}_t$ is consistent. However, its asymptotic distribution is, in general, nonstandard such that usual inference does not apply.
+
+- If the model can be written such that all the parameters of interest are coefficients of mean zero stationary variables, their OLS estimator is consistent and asymptotically normal.
+
+To examine these points more detail, let us consider again the following relatively simple regression model
+\begin{equation*} 
+y_t= \beta_0 + \beta_1 x_{t-1} + \beta_2 x_{t-2} + u_t, 
+\end{equation*} 
+where $x_t \thicksim I(1)$. The model can be rewritten as
+\begin{equation*} 
+y_t= \beta_0 + (\beta_1+\beta_2) x_{t-1} - \beta_2 (x_{t-1} - x_{t-2}) + u_t, 
+\end{equation*}
+or
+\begin{equation*} 
+y_t= \beta_0 + \beta_1 (x_{t-1}-x_{t-2}) + (\beta_1 + \beta_2) x_{t-2} + u_t.
+\end{equation*}
+As $(x_{t-1} - x_{t-2}) \thicksim I(0)$, and hence, standard inference on $\beta_2$ (or $\beta_1$) holds. Therefore, both $\beta_1$ and $\beta_2$ cannot simultaneously be written as coefficients of $I(0)$ variables (unless higher lags are included in the model).
+
+- The OLS estimator of $\beta_1$ and $\beta_2$ is not, in general, jointly asymptotically normal.
+
+- The test statistic on a hypothesis concerning both coefficients (for instance $H_0: \beta_1 = \beta_2$), in general, does not have the usual asymptotic $\chi^2$ distribution.
+
+These remarks are compiled to the next figure. 
+
+```{r, RegInteg, echo=FALSE, out.width="99%", fig.align = "center", fig.cap=""}
+knitr::include_graphics("images/OLSregI1variables2.png")
+```
+
+&nbsp;
+
+<center>
+<span style="color: #0069d9;">Figure: Cheat sheet on inference in OLS regression models with $I(1)$ variables (References: Stock and Watson (1988) and lecture notes by Markku Lanne).</span>
+</center>
+
+&nbsp;
+
+Let us continue with linear regression where now also the assumption $\mathrm{(i)}$ does not hold and the dependent variable is $I(1)$.
+
+- If the dependent variable is not cointegrated with any of the regressors, the OLS estimator of the coefficients of the $I(1)$ regressors is inconsistent.
+
+- If the dependent variable is cointegrated with at least one of the regressors, the OLS estimator of the parameters of interest
+ 
+  -  that can be written as coefficients of stationary variables, is inconsistent.
+
+  - that cannot be written as coefficients of stationary variables, is consistent, but not asymptotically normal.
+
+
+For instance, consider the following regression model:
+\begin{equation*}
+y_t = \beta_0 + \beta_1 x_{1t} + \beta_2 x_{2t} + u_t, 
+\end{equation*}
+where all variables are $I(1)$, and $y_t$ and $x_{2t}$ are cointegrated and assumption $\mathrm{(i)}$ does not hold.
+
+- If $x_{1t}$ and $x_{2t}$ are cointegrated such that $(x_{1t} - \gamma x_{2t}) \thicksim ~ I(0)$, the model can be written as
+\begin{equation*}
+y_t = \beta_0 + \beta_1 (x_{1t} - \gamma x_{2t}) + (\beta_1 \gamma + \beta_2) x_{2t} + u_t,
+\end{equation*}
+and the OLS estimator of $\beta_1$ is inconsistent.
+
+- If $x_{1t}$ is not cointegrated with $x_{2t}$, $\beta_1$ cannot be written as a coefficient of an $I(0)$ variable, and hence, its OLS estimator is consistent, but not asymptotically normal.
+
+&nbsp;
+
+The complete *cheat sheet* on linear regression with $I(0)$ and $I(1)$ variables is summarized hereby:
+
+
+```{r, RegIntegcomplete, echo=FALSE, out.width="90%", fig.align = "center", fig.cap=""}
+knitr::include_graphics("images/OLSregI1variables.png")
+```
+
+<center>
+<span style="color: #0069d9;">Figure: Complete cheat sheet on inference in OLS regression models with $I(1)$ variables.</span>
+</center>
+
+&nbsp;
+
+**A spurious regression** emerges when a statistically significant relationship between two $I(1)$ variables $y_t$ and $x_t$ is found although those are completely unrelated. Assume that a researcher estimates a linear regression
+\begin{equation*}
+y_t = \beta_0 + \beta_1 x_t + u_t,
+\end{equation*}
+but assuming wrongly that the variables $y_t$ and $x_t$ are stationary. Instead, they are generated by two independent random walks (i.e., $y_t$ and $x_t$ are $I(1)$ variables)
+\begin{eqnarray*}
+y_t &=& y_{t-1} + u_{1t}, \quad u_{1t} \thicksim \mathsf{iid}(0, \sigma^2_1) \\
+x_t &=& x_{t-1} + u_{2t}, \quad u_{2t} \thicksim \mathsf{iid}(0, \sigma^2_2).
+\end{eqnarray*}
+This typically leads to the estimation result of the above linear regression characterized by a fairly high $R^2$ (the coefficient of determination), highly autocorrelated residuals $\widehat{u}_t$ and a (highly) statistically significant estimate of $\beta_1$. This result is clearly spurious given that the variables are completely independent!
+
+- Estimation results like this should not be taken seriously.
+
+- The reason is that with $y_t$ and $x_t$ being $I(1)$ variables, the error term $u_t$ will also be $I(1)$, not stationary ($I(0)$). 
+
+Solution to this problem is to include the lags of $y_t$ and $x_t$ as predictors in the model. In other words, we end up a model (cf. dynamic regression models in Section 10)
+\begin{equation*}
+y_t = \beta_0 + \beta_1 x_t + \beta_2 y_{t-1} + \beta_3 x_{t-1} +  u_t.
+\end{equation*}
+In this case the OLS estimator is consistent. Thus, in general, including lagged values in the regression is sufficient to solve many of the problems associated with possibly spurious regressions.
+
+An example of a spurious regression situation can be replicated with the following program code in R lab.
+
+
+&nbsp;
+
+:::: {.content-visible when-format="html"}
+
+## R Lab
+
+All the R codes considered in this section are compiled in the following link:
+
+
+::: {.callout-tip collapse="true"}
+## R Lab: Cointegration (PIH example)
+
+```{r, message=FALSE, warning=FALSE}
+# Load required libraries
+# install.packages(c("quantmod", "tseries")) # Uncomment and run if not installed
+library(quantmod)
+library(tseries)
+library(urca)
+
+
+# 1. Data from FRED, quarterly, 1959Q1-2025Q2
+# PCECC96: Real Personal Consumption Expenditures
+# DPIC96: Real Disposable Personal Income
+# POPTHM: Population (Thousands)
+# Download the file PIH_FRED_quarterly.csv from the course website and
+# place it in the same folder as this file.
+data.raw <- as.xts(read.zoo("PIH_FRED_quarterly.csv", header = TRUE, sep = ","))
+
+# Alternatively, download the latest data yourself from FRED (requires an
+# internet connection; FRED revises its data, so the results may differ
+# slightly from the material):
+# PCECC96 <- getSymbols("PCECC96", src = "FRED", auto.assign = FALSE)
+# DPIC96 <- getSymbols("DPIC96", src = "FRED", auto.assign = FALSE)
+# POPTHM <- getSymbols("POPTHM", src = "FRED", auto.assign = FALSE)
+# data.raw <- na.omit(merge(PCECC96, DPIC96, POPTHM))
+
+# 2. Align and Transform Data (Log, Per Capita, Quarterly)
+
+# Convert to 'ts' object with quarterly frequency
+start.year <- as.numeric(format(index(head(data.raw, 1)), "%Y"))
+data.ts <- ts(data.raw, start = start.year, frequency = 4)
+
+# Calculate real, per capita, log-transformed variables
+POP_THOUSANDS <- data.ts[, "POPTHM"]
+POP <- POP_THOUSANDS * 1000 # Convert from thousands to single units
+
+# Log Per Capita Consumption (ln_C)
+ln_C <- log(data.ts[, "PCECC96"] / POP)
+
+# Log Per Capita Income (ln_Y)
+ln_Y <- log(data.ts[, "DPIC96"] / POP)
+
+
+
+# ===============================================
+# Plotting the Variables
+# ===============================================
+
+# Set up the plotting window to display all three graphs
+par(mfrow=c(3, 1), mar=c(2.5, 4, 2, 2) + 0.1) 
+
+# --- Plot 1: Population ---
+plot(POP_THOUSANDS, 
+     main = "U.S. Population (POPTHM)",
+     ylab = "Population (Thousands)",
+     col = "darkgreen", 
+     lwd = 2)
+# Observation: Population shows a clear deterministic and stochastic trend (non-stationary).
+
+# --- Plot 2: Log Per Capita Real Consumption (ln_C) ---
+plot(ln_C, 
+     main = "Log Real Per Capita Consumption (ln C)",
+     ylab = "ln(Consumption)",
+     col = "blue", 
+     lwd = 2)
+# Observation: ln_C shows a strong upward trend, typical of an I(1) process.
+
+# --- Plot 3: Log Per Capita Real Disposable Income (ln_Y) ---
+plot(ln_Y, 
+     main = "Log Real Per Capita Disposable Income (ln Y)",
+     ylab = "ln(Income)",
+     col = "red", 
+     lwd = 2)
+# Observation: ln_Y also shows a strong upward trend. Visually, ln_C and ln_Y 
+# appear to move together, suggesting a common stochastic trend, a prerequisite for cointegration.
+
+# Reset plot layout
+par(mfrow=c(1, 1))
+
+# Optionally, plot the two log series together to visually confirm they share a trend
+cat("\n--- Visual Cointegration Check (Overlay) ---\n")
+plot(ln_C, 
+     main = "Log Per Capita Consumption (Blue) vs. Income (Red)", 
+     ylab = "Log Value", 
+     col = "blue", 
+     lwd = 2,
+     ylim = range(c(ln_C, ln_Y)))
+lines(ln_Y, col = "red", lwd = 2)
+legend("topleft", 
+       legend = c("ln C (Consumption)", "ln Y (Income)"), 
+       col = c("blue", "red"), 
+       lwd = 2, 
+       bty = "n")
+
+
+
+# ===============================================
+# Unit Root Pre-Checks (Confirm I(1) for both)
+# ===============================================
+
+# cat("\n--- ADF Test on LOG(Consumption) Levels (ln_C) ---\n")
+# print(adf.test(ln_C, k = 4)) # k=4 for quarterly data is a common starting point
+
+# ADF-test: Constant and trend
+adf_lags <- 4
+cat("\n--- ur.df() | type = 'trend' ---\n")
+test_ur_trend <- ur.df(ln_C, type = "trend", lags = adf_lags)
+stat_trend <- test_ur_trend@teststat[1, 1]
+p_val_trend <- punitroot(q = stat_trend, N = length(test_ur_trend@res), trend = "ct")
+cat("Test Statistic:", stat_trend, "\n")
+cat("P-value:", p_val_trend, "\n")
+
+
+#cat("\n--- ADF Test on LOG(Income) Levels (ln_Y) ---\n")
+#print(adf.test(ln_Y, k = 4))
+# # NOTE: If p-value is > 0.05 for both, the I(1) condition is met to proceed.
+
+# ADF-test: Constant and trend
+adf_lags <- 4
+cat("\n--- ur.df() | type = 'trend' ---\n")
+test_ur_trend <- ur.df(ln_Y, type = "trend", lags = adf_lags)
+stat_trend <- test_ur_trend@teststat[1, 1]
+p_val_trend <- punitroot(q = stat_trend, N = length(test_ur_trend@res), trend = "ct")
+cat("Test Statistic:", stat_trend, "\n")
+cat("P-value:", p_val_trend, "\n")
+
+
+
+# ===============================================
+# The Engle-Granger Cointegration Test
+# ===============================================
+
+# Estimate the Long-Run Relationship (The Cointegrating Regression)
+# Model: ln_C = alpha + beta * ln_Y + epsilon
+cointegrating_regression <- lm(ln_C ~ ln_Y)
+
+cat("\n--- Cointegrating Regression (ln_C ~ ln_Y) ---\n")
+print(summary(cointegrating_regression))
+
+
+# Extract the residual series (the potential long-run equilibrium error)
+resids <- ts(residuals(cointegrating_regression), start = start.year, frequency = 4)
+
+# Plot the residuals (to visually check for stationarity)
+# The time indexing (year and quarters) is correctly inherited from the 'ln_C' and 'ln_Y' ts objects
+plot(resids, 
+     main = "Residuals from cointegrating regression (Engle-Granger residual)", 
+     ylab = "Residual", 
+     xlab = "Time", 
+     type="l",
+     col = "purple",
+     lwd = 2)
+abline(h = 0, col = "gray", lty = 2)
+# Observation: If the series appears mean-reverting around zero, it visually supports stationarity (I(0)).
+
+
+# 3b. Test the Residuals for Stationarity (The Cointegration Test)
+# Null Hypothesis (H0): Residuals are Non-Stationary (No cointegration)
+# Alternative (HA): Residuals are Stationary (Cointegration exists)
+
+
+# Case 2: Constant (drift) only
+cat("\n--- ur.df() | type = 'drift' ---\n")
+test_ur_drift <- ur.df(resids, type = "drift", lags = adf_lags)
+stat_drift <- test_ur_drift@teststat[1, 1]
+p_val_drift <- punitroot(q = stat_drift, N = length(test_ur_drift@res), trend = "c")
+cat("Test Statistic:", stat_drift, "\n")
+cat("P-value:", p_val_drift, "\n")
+
+
+```
+:::
+
+
+::: {.callout-tip collapse="true"}
+## R Lab: Spurious regression simulation
+
+```{r, message=FALSE, warning=FALSE}
+
+# Spurious regression
+
+# Setup: Set length (T) and simulate innovations (epsilon)
+T <- 500
+set.seed(42) # For reproducibility
+epsilon_1 <- rnorm(T)
+epsilon_2 <- rnorm(T)
+
+# 1. Simulate two independent Random Walks (I(1) processes)
+# Cumulative sum creates the random walk (y_t = y_{t-1} + epsilon_t)
+y <- cumsum(epsilon_1)
+x <- cumsum(epsilon_2)
+
+# Optional: Plot the random walks (to show non-stationarity)
+# par(mfrow=c(2, 1))
+# plot(y, type="l", main="Random Walk y")
+# plot(x, type="l", main="Random Walk x")
+# par(mfrow=c(1, 1))
+
+# 2. Estimate Spurious Regression (y on x)
+estim_model <- lm(y ~ x)
+print("--- Spurious Regression Summary (y ~ x) ---")
+summary(estim_model)
+
+# 3. Analyze Spurious Regression Residuals (should look non-stationary/autocorrelated)
+resid_1 <- resid(estim_model)
+print("--- ACF of Spurious Regression Residuals ---")
+acf(resid_1, main="ACF of Spurious Regression Residuals") 
+
+# 4. Optional: Augmented Regression (with lags)
+# Prepare lagged variables (removes the first observation)
+y_lag1 <- y[1:(T-1)]
+x_lag1 <- x[1:(T-1)]
+y_t <- y[2:T]
+x_t <- x[2:T]
+
+estim_model_2 <- lm(y_t ~ x_t + x_lag1 + y_lag1)
+print("--- Augmented Regression Summary (y_t ~ x_t + x_{t-1} + y_{t-1}) ---")
+summary(estim_model_2)
+
+resid_2 <- resid(estim_model_2)
+print("--- ACF of Spurious Regression Residuals With Lags ---")
+acf(resid_2, main="ACF of Spurious Regression Residuals") 
+```
+:::
+
+::::
+

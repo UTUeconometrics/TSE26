@@ -1,0 +1,57 @@
+# A primer on time series models {#part-ch2 .chapter-title}
+
+## Starting point
+
+**Relation to linear regression for cross-sectional datasets**. In standard econometrics or statistics courses, linear regression models are typically introduced using cross-sectional data. A key assumption in these models is the absence of autocorrelation in the error term. With time series data, however, autocorrelation is a fundamental characteristic and is almost always present.
+
+- While linear regression can be applied to time series variables, the notation changes to reflect the temporal ordering. Variables are indexed by time, such as $y_t$ and $x_t$ (instead of $y_i$ and $x_i$ for cross-sectional observations).
+
+We will return to multivariate regression models with time series variables later. First, we will explore **a pure time series approach**, as characterized by Verbeek (2008).
+
+- In this approach, the current value of a univariate time series, $y_t$, is modeled as a function of its past values, either directly or indirectly.
+
+- The emphasis is entirely on exploiting the information contained in $y_t$ and its own history for modeling and forecasting purposes.
+
+
+&nbsp;
+
+
+## Notes on deterministic components
+
+In time series analysis, we often decompose a process $y_t$ into deterministic and stochastic components. This separation allows us to distinguish deterministic elements, such as the mean or the trend, from random fluctuations, which are typically the primary focus in stochastic models like ARMA or VAR models to be introduced later in this course.
+
+The general decomposition and notation used throughout this material is
+\begin{equation*}
+y_t = \mu_t + z_t,
+\end{equation*}
+where
+
+- $\mu_t$ is the **deterministic component**, representing features such as the mean, a trend or seasonality.
+
+- $z_t$ is the **stochastic component**, capturing random fluctuations around the deterministic part. We assume $\mathsf{E}(z_t)=0$, so $z_t$ represents the demeaned and detrended process. Importantly, $z_t$ typically exhibits its own autocorrelation structure and is therefore not merely pure random noise.
+
+By construction, the expected value of $y_t$ is then simply its deterministic component:
+\begin{equation*}
+\mathsf{E}(y_t) = \mathsf{E}(\mu_t + z_t) = \mu_t + \mathsf{E}(z_t) = \mu_t.
+\end{equation*}
+
+&nbsp;
+
+**Common forms of the deterministic component**. The functional form of $\mu_t$ depends on the underlying characteristics of the data and the application. Two of the most common specifications are:
+
+- **Constant mean**: If the time series fluctuates around a fixed, time-invariant level, the deterministic component is simply a constant
+  \begin{equation*}
+    \mu_t = \mu.
+  \end{equation*}
+  Here, $\mu$ (sometimes denoted $\mu_0$) represents the unconditional mean of $y_t$, that is, $\mathsf{E}(y_t) = \mu$. In practice, almost all real-world time series have a nonzero mean.
+
+- **Constant and linear time trend**: If the series exhibits a persistent upward or downward movement over time, the deterministic component includes both a constant and a linear trend
+  \begin{equation*}
+    \mu_t = \mu_0 + \mu_1 t.
+  \end{equation*}
+  Here, $\mu_0$ is the constant or intercept (the value of $\mu_t$ at $t=0$), and $\mu_1$ is the trend coefficient, representing the average change in $y_t$ from one period to the next.
+
+In practice, we may first estimate the parameters of the deterministic component $\mu_t$, for example, using Ordinary Least Squares (OLS), and then work with the residual series $\widehat{z}_{t}=y_{t}-\widehat{\mu}_{t}$. This approach corresponds to the simple detrending technique described in Section 1. Alternatively, and more commonly, the deterministic and stochastic components are modelled simultaneously.
+
+
+&nbsp;

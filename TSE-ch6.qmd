@@ -1,0 +1,312 @@
+# Parameter estimation {#part-ch6 .chapter-title}
+
+In this section, we will consider how to estimate (unknown) values of the parameters of an ARMA($p,q$) model (or ARIMA($p,d,q$) model). In a nutshell, we observe the estimation to be possible with different methods depending on the model at hand:
+
+- AR($p$): estimation can be done by (conditional) ordinary least squares (OLS).
+    
+- ARMA($p,q$): due to the MA($q$) part, estimation is more complicated. However, estimation can be carried out by the method of maximum likelihood, which is naturally also available for the AR($p$) model as well.
+
+
+## Estimation of AR models with OLS
+
+Estimation of the AR($p$) model can be carried out with ordinary least squares (OLS), conditioning on the first $p$ observations. The AR($p$) model (including constant term) can be rewritten as
+\begin{equation*}
+y_t= \boldsymbol{x}^{\prime}_t \boldsymbol{\beta} + u_t,
+\end{equation*}
+where $\boldsymbol{x}_t=[1 \quad y_{t-1} \, \cdots \, y_{t-p}]^{\prime}$ and $\boldsymbol{\beta}=[\nu \quad \phi_1 \, \cdots \, \phi_p]^{\prime}$. The OLS estimators of $\boldsymbol{\beta}$ (and $\sigma^2$) can be constructed in the usual way familiar from past studies related to linear regression models. That is, the conditional OLS estimator of $\boldsymbol{\beta}$ is
+\begin{equation*}
+\widehat{\boldsymbol{\beta}} = \Big(\sum_{t=1}^T \boldsymbol{x}_t \boldsymbol{x}^{\prime}_t \Big)^{-1} \sum_{t=1}^T \boldsymbol{x}_t y_t.
+\end{equation*}
+In this case (notation), it is assumed that the required $p$ initial values $y_{-p+1},\ldots, y_0$ are available. Furthermore, the OLS estimator for $\sigma^2$ is
+\begin{equation*}
+\widehat{\sigma}^2 = \frac{1}{T} \sum_{t=1}^T \Big(y_t- \boldsymbol{x}^{\prime}_t \widehat{\boldsymbol{\beta}} \Big)^2.
+\end{equation*}
+
+- This is the (conditional) maximum likelihood form of the variance estimator; in practice the degrees-of-freedom corrected version, obtained by dividing by $T-k$ with $k=p+1$ the number of estimated regression coefficients, is often reported instead. The two are of course asymptotically ($T \rightarrow \infty$) equivalent.
+
+- Notice that the summation in the OLS estimator starts from $t=1,2,\ldots$ due to these available initial values. Depending on, mainly notational choices, the OLS estimator is alternatively at times written as
+\begin{equation*}
+\widehat{\boldsymbol{\beta}} = \Big(\sum_{t=p+1}^T \boldsymbol{x}_t \boldsymbol{x}^{\prime}_t \Big)^{-1} \sum_{t=p+1}^T \boldsymbol{x}_t y_t,
+\end{equation*}
+if treating observations $y_1,\ldots, y_p$ as initial values.
+
+The usual (asymptotic) statistical properties of the resulting OLS estimator hold. In particular, it can be shown that:
+
+- As the error term $u_t$ is uncorrelated with the lags of $y_t$, we have $\mathsf{E}(\boldsymbol{x}_t u_t)=\mathbf{0}$. That is, $\mathsf{E}(u_t y_{t-j}) = 0$ for $j=1,2,\ldots,p$, and
+
+- the OLS estimator $\widehat{\boldsymbol{\beta}}$ is a consistent estimator of $\boldsymbol{\beta}$.
+
+- Note that consistency relies on the error term being uncorrelated with the regressors. If autocorrelation remains in the residuals, then $u_t$ is correlated with the lags of $y_t$ and the OLS estimator becomes *inconsistent*. Remaining residual autocorrelation is therefore a sign of misspecification that has to be fixed by respecifying the model (typically by increasing the lag length $p$), and it cannot be cured by adjusting the standard errors.
+
+- Conditional heteroskedasticity, on the other hand, does not threaten consistency but does invalidate the conventional standard errors. Heteroskedasticity consistent (White) or heteroskedasticity-autocorrelation consistent (HAC, e.g. Newey--West) standard errors can then be used to take it into account for detailed statistical inference (if this is the main objective in the empirical analysis). Modelling the conditional variance explicitly (see the AR-GARCH models later on) is the alternative route.
+
+
+&nbsp;
+
+
+## Maximum likelihood estimation
+
+Estimation of ARMA (and ARIMA) models with a moving average component is somewhat more complicated than the OLS based estimation of autoregressive models. The essential problem in estimating these models stems from the fact that $u_t$ is not observable. 
+
+The estimation of an ARMA($p,q$) model, including also the AR($p$), can be based on (conditional) method of maximum likelihood by making an assumption of the distribution of the error $u_t$. A typical case would be to assume the error term is Gaussian $u_t\sim \mathsf{nid}(0,\sigma^2)$. 
+
+- It is worth noting that regardless of the errors being exactly Gaussian or not, the maximum likelihood estimator (MLE) can be interpreted as a **quasi-MLE (QMLE)** where the possible error in the model specification can be taken into consideration by using a robust parameter covariance matrix in formulation of the standard errors.
+
+- We will come back to this QMLE interpretation within the context of AR-GARCH model. Similar argumentation as there can be used also in this context (without the GARCH errors).
+
+&nbsp;
+
+We will next consider details on so called conditional maximum likelihood technique. The exact method (exact method of maximum likelihood) will be introduced at the end of next section in Extra material.
+
+&nbsp;
+
+**Conditional maximum likelihood method**. The (exact) ML estimation of ARMA models requires the necessary selections for the initial values of $y_t$ and $u_t$. By conditioning to the initial values, we get the conditional maximum likelihood technique. If the sample size (length of the time series) is large, the conditional and exact MLEs are close to each other (both lead to the same asymptotic distributions). Moreover, in practice, numerical methods can be used to maximize the log-likelihood function in both cases.
+
+&nbsp;
+
+Let us consider a concrete example case of an ARMA(1,1) model
+\begin{equation*}
+y_t = \nu + \phi_1 y_{t-1} + u_t + \theta_1 u_{t-1},
+\end{equation*}
+where $u_t \thicksim \mathsf{nid}(0,\sigma^2)$. That is, the normality assumption of the error term is assumed. The goal is to estimate the vector of parameters $\boldsymbol{\vartheta}=(\nu, \phi_1, \theta_1, \sigma^2)^{\prime}$.
+
+- We use the notation $\boldsymbol{\vartheta}$ ("vartheta") to denote a general parameter vector containing all the parameters of the model.
+
+- Even though we concentrate on the ARMA(1,1), the following argumentation generalizes readily to more general ARMA processes, which are of the form $y_t = \mathsf{E}_{t-1}(y_t) + u_t$ where $\mathsf{E}_{t-1}(y_t)$ corresponds to the employed model structure (systematic part of the model). Here $\mathsf{E}_{t-1}(\cdot)$ denotes the conditional expectation and it will be introduced more detail in Forecasting section. In this ARMA(1,1) case, we get $\mathsf{E}_{t-1}(y_t) = \nu + \phi_1 y_{t-1} + \theta_1 u_{t-1}$, whereas, e.g., in the AR($p$) case we get $\mathsf{E}_{t-1}(y_t) = \nu + \phi_1 y_{t-1} + \cdots + \phi_p y_{t-p}$.
+
+In the ARMA(1,1) model, taking the initial values for $y_0$ and $u_0$ as given, the sequence of $u_1, \ldots, u_T$ can be constructed from $y_1, \ldots, y_T$ by iterating
+\begin{equation*}
+u_t = y_t  - \nu - \phi_1 y_{t-1} - \theta_1 u_{t-1}, \quad t=1,\ldots,T.
+\end{equation*}
+When conditioning on $y_{t-1}$ and $u_{t-1}$, which are included in the information available at time $t-1$, the normality assumption of $u_t$ implies that the conditional distribution of $y_t$ is also normal:
+\begin{equation*}
+y_t|(y_{t-1}, u_{t-1}) \thicksim \mathsf{N}(\nu + \phi_1 y_{t-1} + \theta_1 u_{t-1}, \sigma^2).
+\end{equation*}
+The specific form of the conditional density function of $y_t$, conditional on $y_{t-1}$ and $u_{t-1}$, is hence
+\begin{equation*}
+f_{y_t|y_{t-1}, u_{t-1}}(y_t|y_{t-1}, u_{t-1}; \boldsymbol{\vartheta}) = \frac{1}{\sqrt{2 \pi \sigma^2}} \mathrm{exp} \Big(- \frac{(y_t - \nu - \phi_1 y_{t-1} - \theta_1 u_{t-1})^2}{2 \sigma^2}  \Big).
+\end{equation*}
+
+&nbsp;
+
+**Construction of the log-likelihood function**. The (conditional) log-likelihood function can be based on the conditional density functions of single observations. Here we are not restricting ourselves to the ARMA(1,1) and/or Gaussian case: the following steps generalize also to other modelling choices, such as other error distributions or models with a time-varying conditional variance (GARCH).
+
+Denote $\ubar{\mathbf{Y}}_{t}= (y_1 \ldots y_t)$ and, therefore, the sample of observations is denoted by $\ubar{\mathbf{Y}}_T=(y_1, \ldots y_T)$. The joint conditional density function (without arguments) $f_{\ubar{\mathbf{Y}}_{T}}(\ubar{\mathbf{Y}}_{T})$ is obtained as the product of conditional density functions
+\begin{equation*}
+f_{\ubar{\mathbf{Y}}_T}=f_{y_T|\ubar{\mathbf{Y}}_{T-1}}\cdot f_{\ubar{\mathbf{Y}}_{T-1}}=f_{y_T|\ubar{\mathbf{Y}}_{T-1}} f_{y_{T-1}|\ubar{\mathbf{Y}}_{T-2}}\cdot f_{\ubar{\mathbf{Y}}_{T-2}}=\cdots=\prod_{t=1}^{T} f_{y_t|\ubar{\mathbf{Y}}_{t-1}}\cdot f_{\ubar{\mathbf{Y}}_0}.
+\end{equation*}
+By conditioning on $\ubar{\mathbf{Y}}_0$, which contains the necessary initial values (depending on, e.g., the lag lengths $p$ and $q$ of the ARMA($p,q$) model), the conditional density function gets the form
+\begin{equation*}
+    \prod_{t=1}^{T} f_{y_t|\ubar{\mathbf{Y}}_{t-1}},
+\end{equation*}
+which then leads to the (conditional) log-likelihood function
+\begin{equation*}
+l(\boldsymbol{\vartheta}) = \sum_{t=1}^{T} \mathrm{log} \, f_{y_t|\ubar{\mathbf{Y}}_{t-1}}(y_t|\ubar{\mathbf{Y}}_{t-1}; \boldsymbol{\vartheta}).
+\end{equation*}
+
+- Going back to the specific example of Gaussian ARMA(1,1) model, the (conditional) log-likelihood function is hence
+\footnotesize
+\begin{equation*}
+l(\boldsymbol{\vartheta}) = -\frac{T}{2} \mathrm{log}(2 \pi) - \frac{T}{2} \mathrm{log}(\sigma^2) - \frac{1}{2 \sigma^2} \sum_{t=1}^{T} 
+u^2_t,
+\end{equation*}
+\normalsize
+where $u_t = y_t - \nu - \phi_1 y_{t-1} - \theta_1 u_{t-1}$ in this ARMA(1,1) case.
+
+The maximum likelihood estimate (MLE) of $\boldsymbol{\vartheta}$, that is $\widehat{\boldsymbol{\vartheta}}$, is obtained by maximizing the (conditional) log-likelihood function. 
+
+- This requires numerical optimization methods. These numerical (iterative) algorithms require initial values and/or possibly also preliminary estimation of the parameters, but econometric and statistical program packages are carrying out these steps straightforwardly.
+
+&nbsp;
+
+**AR($p$) case**. We will next show that, in the case of the AR($p$) model, the conditional maximum likelihood estimation actually leads to the (conditional) least squares estimates when the error term is Gaussian ($u_t \thicksim \mathsf{nid}(0, \sigma^2)$). 
+
+Since $y_t$ is a linear combination of $u_t, u_{t-1}, \ldots$ (given stationarity and corresponding MA($\infty$) representation), it follows that $u_s$ and $\boldsymbol{x}_t$ are independent $\forall s \ge t$, where, as above in the AR($p$) case, $\boldsymbol{x}_t=[1 \quad y_{t-1} \, \cdots \, y_{t-p}]^{\prime}$. By assuming the normality of the error term, we get 
+\begin{equation*}
+    y_t|\ubar{\mathbf{Y}}_{t-1} \thicksim \mathsf{N}(\boldsymbol{x}^{\prime}_t \boldsymbol{\beta}, \sigma^2),
+\end{equation*}
+and the conditional density function of $y_t$ is
+\begin{equation*}
+    f_{y_t|\ubar{\mathbf{Y}}_{t-1}}(y_t|\boldsymbol{x}_t) = \frac{1}{\sqrt{2 \pi \sigma^2}}\mathrm{exp}\Big(-\frac{1}{2\sigma^2}(y_t -\boldsymbol{x}^{\prime}_t \boldsymbol{\beta})^2 \Big).
+\end{equation*}
+From this we get the (sample) log-likelihood function
+\begin{equation*}
+l(\boldsymbol{\vartheta}) \equiv l(\boldsymbol{\beta}, \sigma^2)=-\frac{T}{2} \mathrm{log}(2\pi)-\frac{T}{2} \mathrm{log}(\sigma^2)-\frac{1}{2\sigma^2}\sum_{t=1}^{T}(y_t-\boldsymbol{x}^{\prime}_t \boldsymbol{\beta})^2.
+\end{equation*}
+Here the first term can also be removed because it does not depend on the parameters in $\boldsymbol{\vartheta}$. This corresponds to the (conditional) log-likelihood function of a Gaussian linear regression model, but now for the time series observations $(y_1,\ldots, y_T)$. Maximizing this gives us the same conditional least squares estimator $\widehat{\boldsymbol{\beta}}$ (and $\widehat{\sigma}^2$) as obtained above.
+
+
+&nbsp;
+
+**Exact method of maximum likelihood**. The exact log-likelihood function contains also the impact of initial values when constructing the log-likelihood function. Some details on this technique are provided below.
+
+&nbsp;
+
+::: {.callout-note collapse="true"}
+## Extra: Exact maximum likelihood estimation of ARMA models
+
+
+Let us take a closer look at exact maximum likelihood (ML) based estimation.
+
+**The exact likelihood function**. For the purpose of estimation based on the exact method of maximum likelihood, consider the *Gaussian* zero-mean ARMA($p,q$) process
+\begin{equation*}
+    y_{t} = \phi_{1}y_{t-1}+\cdots+\phi_{p}y_{t-p}+u_{t}+\theta_{1}u_{t-1}+\cdots+\theta_{q}u_{t-q},\,\, u_{t}\sim\mathsf{nid}\left(  0,\sigma^{2}\right),
+\end{equation*}
+and assume the stationarity, invertibility and the identification condition of the ARMA process hold. Suppose $\boldsymbol{y}=\left(  y_{1},\ldots,y_{T}\right)^{\prime}$ is a vector of observations generated by this process. As before, denote $\boldsymbol{\phi}=(\phi_{1},\ldots,\phi_{p})^{\prime}$, $\boldsymbol{\theta}=\left(  \theta_{1},\ldots,\theta_{q}\right)^{\prime}$ and, for notational simplicity in this zero-mean case, $\boldsymbol{\beta}=(\boldsymbol{\phi}^{\prime},\boldsymbol{\theta}^{\prime})^{\prime}$ (the constant term is left out here and can be added as discussed below). Making use of the general formulas for the mean and autocovariance function of a linear process, it can be seen that $\mathsf{E}\left(\boldsymbol{y}\right) = \boldsymbol{0}$ and $\mathsf{Cov}\left(  \boldsymbol{y}\right)  =\sigma^{2} \boldsymbol{\Sigma}$, where the (positive definite) matrix $\boldsymbol{\Sigma} = \boldsymbol{\Sigma}\left(\boldsymbol{\beta}\right)$ $\left(  T\times T\right)$ is a function of the parameter $\boldsymbol{\beta}$ (but not of the parameter $\sigma^{2}$).
+
+Since linear transformations of Gaussian distributions are also Gaussian (this holds also for infinite dimensional transformations), $\boldsymbol{y}\sim \mathsf{N}\left(\boldsymbol{0},\sigma ^{2} \boldsymbol{\Sigma} \right)$.
+
+- The zero-mean assumption is only a notational convenience: a constant term, and even a trend component, can be included without affecting the asymptotic properties of the ML estimators of $\boldsymbol{\beta}$ and $\sigma^{2}$. In the stationary case, working with $y_{t}$ demeaned by the (estimated) mean $\mu=\nu/(1-\phi_{1}-\cdots-\phi_{p})$ leads to the same asymptotic results.
+
+The density function of the random vector $\boldsymbol{y}$ is 
+\begin{equation*}
+    f_{\boldsymbol{y}}\left( \boldsymbol{y}\right) =\left( 2\pi \right) ^{-T/2}\det\left( \sigma ^{2}\boldsymbol{\Sigma }\right) ^{-1/2}\exp\left\{ -\frac{1}{2\sigma ^{2}}\boldsymbol{y}^{\prime}\boldsymbol{\Sigma}^{-1}\boldsymbol{y}\right\} .
+\end{equation*}
+Making use of properties of the determinant, $\det\left(  \sigma^{2}\boldsymbol{\Sigma}\right)=\sigma^{2T}\det\left(\boldsymbol{\Sigma}\right)$, so that the log likelihood function becomes
+\begin{equation*}
+    l\left( \boldsymbol{\beta},\sigma ^{2}\right) =-\frac{T}{2}\log \sigma ^{2}-\frac{1}{2}\log \det \left(\boldsymbol{\Sigma }\left( \boldsymbol{\beta} \right)\right) -\frac{1}{2\sigma ^{2}}\boldsymbol{y}^{\prime }\boldsymbol{\Sigma}\left(\boldsymbol{\beta} \right) ^{-1}\boldsymbol{y}.
+\end{equation*}
+Because the matrix $\boldsymbol{\Sigma}\left(  \boldsymbol{\beta}\right)$ is a rather complicated function of the parameter $\boldsymbol{\beta}$, the log-likelihood function cannot be expressed in a simple form and, consequently, the above expression is difficult to use directly for maximizing the likelihood function. In practice, one has to resort to numerical methods to maximize the likelihood function. This involves computing the inverse matrix $\boldsymbol{\Sigma}\left(  \boldsymbol{\beta}\right)  ^{-1}$ and the determinant $\det\left(  \boldsymbol{\Sigma}\left(  \boldsymbol{\beta}\right)\right)$ for a range of given values of $\boldsymbol{\beta}$. For a given value of $\boldsymbol{\beta}$, the matrix $\boldsymbol{\Sigma}\left(  \boldsymbol{\beta}\right)$ can be computed for ARMA processes.
+
+Many different algorithms have been proposed to solve the maximization problem described above.
+
+:::
+
+&nbsp;
+
+**Statistical inference**. Collect the parameters of the conditional mean into the $p+q+1$-dimensional vector
+\begin{equation*}
+    \boldsymbol{\beta} = (\nu, \phi_{1},\ldots,\phi_{p},\theta_{1},\ldots,\theta_{q})^{\prime},
+\end{equation*}
+so that the full parameter vector of the model is $\boldsymbol{\vartheta}=(\boldsymbol{\beta}^{\prime},\sigma^{2})^{\prime}$.
+
+- The AR($p$) model is obtained as the special case $q=0$, in which case $\boldsymbol{\beta}=(\nu,\phi_{1},\ldots,\phi_{p})^{\prime}$ coincides with the regression parameter vector used above in the OLS discussion. Likewise, the pure MA($q$) model is obtained with $p=0$.
+
+- If the model is parameterized through the mean $\mu$ instead of the constant term $\nu$ (recall $\nu = \mu(1-\phi_{1}-\cdots-\phi_{p})$ in the stationary case), the results below apply as such with $\nu$ replaced by $\mu$ in $\boldsymbol{\beta}$.
+
+It can be shown that when the stationarity, invertibility, and identification conditions hold (and $\sigma^{2}>0$), the "usual" asymptotic properties of a maximum likelihood estimator (exact or conditional) hold. In particular, the estimators $\widehat{\boldsymbol{\beta}}$ and $\widehat{\sigma}^{2}$ are consistent, asymptotically normally distributed, and asymptotically independent of each other. Formally,
+\begin{equation*}
+    \sqrt{T}\left(\widehat{\boldsymbol{\vartheta}}-\boldsymbol{\vartheta}\right) \overset{d}{\rightarrow} \mathsf{N}\left(\boldsymbol{0}, \mathcal{I}\left(\boldsymbol{\vartheta}\right)^{-1}\right), \quad \text{where} \quad \mathcal{I}\left(\boldsymbol{\vartheta}\right)=\lim_{T\rightarrow\infty}\frac{1}{T}\mathsf{E}\left[-\frac{\partial^{2}l(\boldsymbol{\vartheta})}{\partial\boldsymbol{\vartheta}\partial\boldsymbol{\vartheta}^{\prime}}\right]
+\end{equation*}
+is the (average) Fisher information matrix. In practice it is convenient to state the same result in the "unscaled" form
+\begin{equation*}
+    \widehat{\boldsymbol{\beta}}\underset{as}{\sim}\mathsf{N}\left(\boldsymbol{\beta},
+    \boldsymbol{\mathrm{V}}\left(\boldsymbol{\vartheta}\right)^{-1}\right),
+    \qquad
+    \boldsymbol{\mathrm{V}}\left(\boldsymbol{\vartheta}\right)=\mathsf{E}\left[-\frac{\partial^{2}l(\boldsymbol{\beta},\sigma^{2})}{\partial\boldsymbol{\beta}\partial\boldsymbol{\beta}^{\prime}}\right],
+\end{equation*}
+where $\boldsymbol{\mathrm{V}}\left(\boldsymbol{\vartheta}\right)$ is the (sample) Fisher information matrix of the parameter $\boldsymbol{\beta}$
+
+&nbsp;
+
+::: {.callout-note collapse="true"}
+## Extra: Some additional details on asymptotic distribution
+
+
+First, note that $\boldsymbol{\mathrm{V}}\left(\boldsymbol{\vartheta}\right)\approx T\mathcal{I}_{\boldsymbol{\beta}\boldsymbol{\beta}}\left(\boldsymbol{\vartheta}\right)$, so that its inverse is of order $1/T$ and shrinks towards zero as the sample size grows, as it should.
+
+Second, because the information matrix is block diagonal with respect to $\boldsymbol{\beta}$ and $\sigma^{2}$, the $\boldsymbol{\beta}$-block of $\mathcal{I}\left(\boldsymbol{\vartheta}\right)^{-1}$ equals the inverse of the $\boldsymbol{\beta}$-block of $\mathcal{I}\left(\boldsymbol{\vartheta}\right)$. This is why inference on the conditional mean parameters $\boldsymbol{\beta}$ can be based on $\boldsymbol{\mathrm{V}}\left(\boldsymbol{\vartheta}\right)^{-1}$ alone, and the estimation of $\sigma^{2}$ can be ignored (asymptotically).
+
+Furthermore, even though $\boldsymbol{\mathrm{V}}$ concerns $\boldsymbol{\beta}$ only, it does depend on $\sigma^{2}$ as well. Indeed, differentiating the (conditional) log-likelihood function derived above gives
+\begin{equation*}
+    \boldsymbol{\mathrm{V}}\left(\boldsymbol{\vartheta}\right)=\frac{1}{\sigma^{2}}\sum_{t=1}^{T}\mathsf{E}\left[\frac{\partial u_{t}}{\partial\boldsymbol{\beta}}\frac{\partial u_{t}}{\partial\boldsymbol{\beta}^{\prime}}\right],
+\end{equation*}
+which shows concretely how the AR and MA parts enter the result. In the AR($p$) case $\partial u_{t}/\partial\boldsymbol{\beta}=-\boldsymbol{x}_{t}$, and hence $\boldsymbol{\mathrm{V}}\left(\boldsymbol{\vartheta}\right)^{-1}=\sigma^{2}\big(\sum_{t=1}^{T}\mathsf{E}(\boldsymbol{x}_{t}\boldsymbol{x}_{t}^{\prime})\big)^{-1}$, whose empirical counterpart $\widehat{\sigma}^{2}\big(\sum_{t=1}^{T}\boldsymbol{x}_{t}\boldsymbol{x}_{t}^{\prime}\big)^{-1}$ is exactly the familiar OLS covariance matrix estimator. In the ARMA case the derivatives $\partial u_{t}/\partial\boldsymbol{\beta}$ are obtained recursively (they themselves depend on their own lags through the MA part), which is one reason why no closed-form expression is available.
+
+:::
+
+&nbsp;
+
+The asymptotic distribution result holds also without the normality assumption. That is, for the QMLE, provided the errors are $\mathsf{iid}$ with $\mathsf{E}(u_{t})=0$ and $\mathsf{E}(u_{t}^{2})=\sigma^{2}<\infty$ (and $\mathsf{E}(u_{t}^{4})<\infty$ for inference on $\sigma^{2}$). In that case the estimators are no longer (asymptotically) efficient, but the standard errors of $\widehat{\boldsymbol{\beta}}$ obtained from $\boldsymbol{\mathrm{V}}(\boldsymbol{\vartheta})^{-1}$ remain asymptotically valid.
+
+- If, however, the errors are conditionally heteroskedastic (as is typical with financial time series), the information matrix equality fails and the above covariance matrix is no longer valid. A robust ("sandwich") covariance matrix estimator should then be used. This is exactly the situation we will return to in the context of AR-GARCH models.
+
+- The asymptotic independence of $\widehat{\boldsymbol{\beta}}$ and $\widehat{\sigma}^{2}$ is automatic under normality. For the QMLE it additionally requires the error distribution to be symmetric in the sense $\mathsf{E}(u_{t}^{3})=0$; with skewed errors the two estimators are asymptotically correlated (which, however, does not affect inference on $\boldsymbol{\beta}$ alone).
+
+- It should be noted that the stationarity, invertibility, and identification conditions are required for the above asymptotic distribution result, which can give a poor approximation also when these conditions are "nearly violated". Three cases are worth distinguishing:
+
+    - *Near-nonstationarity*: the autoregressive polynomial has a root close to the unit circle (e.g. $\phi_{1}\approx 1$ in the AR(1) case). The normal approximation is then poor and, in the limiting unit root case, the asymptotic distribution is nonstandard altogether (unit root tests, considered later, are needed).
+    
+    - *Near-noninvertibility*: the moving average polynomial has a root close to the unit circle (e.g. $\theta_{1}\approx\pm 1$ in the MA(1) case). Since the parameter is then close to the boundary of the admissible parameter space, the estimator has a nonstandard finite-sample distribution and the estimate tends to "pile up" at the boundary.
+    
+    - *Near-violation of the identification condition*: the AR and MA polynomials have (approximately) a common factor, e.g. $\phi_{1}\approx-\theta_{1}$ in the ARMA(1,1) case. The information matrix is then close to singular, so the standard errors become very large and the estimates numerically unstable, a symptom of an overparameterized model rather than of genuinely uncertain parameters.
+
+- The exact and the conditional ML estimators have the same asymptotic distribution, but they can differ noticeably in small samples, and the more so the closer the roots are to the unit circle. In such cases the exact method is preferable.
+
+&nbsp;
+
+**Hypothesis testing**. Using the empirical counterpart of $\boldsymbol{\mathrm{V}}(\boldsymbol{\vartheta})$, namely
+\begin{equation*}
+    \widehat{\boldsymbol{\mathrm{V}}} \equiv \boldsymbol{\mathrm{V}}(\widehat{\boldsymbol{\vartheta}}) = -\frac{\partial^{2}l(\widehat{\boldsymbol{\beta}},\widehat{\sigma}^{2})}{\partial\boldsymbol{\beta}\partial\boldsymbol{\beta}^{\prime}}
+\end{equation*}
+(the so-called empirical or observed information matrix of the parameter $\boldsymbol{\beta}$, obtained by evaluating the Hessian of the log-likelihood function at the ML estimates and by dropping the expectation), the asymptotic distribution result above can be used to construct statistical Wald tests and confidence intervals concerning the parameter $\boldsymbol{\beta}$.
+
+- The partial derivatives appearing in this expression can in practice be approximated with their numerical counterparts.
+
+In particular, the square roots of the diagonal elements of the matrix $\widehat{\boldsymbol{\mathrm{V}}}^{-1}$ can be used as approximate standard errors of the components of the estimator $\widehat{\boldsymbol{\beta}}$.
+
+- For instance, an individual ($i$th) estimated component of $\widehat{\boldsymbol{\beta}}$, that is $\widehat{\beta}_{i}$, would be interpreted as "significantly" different from zero if its absolute value is at least 2 (specifically 1.96) times the size of its approximate standard error.
+
+Formally, let us denote $\boldsymbol{\mathrm{V}}(\boldsymbol{\vartheta})^{-1} = [v^{ij}]$ and its empirical counterpart $\widehat{\boldsymbol{\mathrm{V}}}^{-1} = [\widehat{v}^{ij}]$. Then, componentwise,
+\begin{equation*}
+    \widehat{\beta}_i \underset{as.}{\thicksim} \mathsf{N}(\beta_i, v^{ii}),
+\end{equation*}
+and $\mathrm{s.e.}(\widehat{\beta}_{i})=\sqrt{\widehat{v}^{ii}}$. Thus the null hypothesis $\beta_i=0$ gets rejected at the 5\% significance level if the $t$-ratio (cf. $t$-test)
+\begin{equation*}
+    \Big|\frac{\widehat{\beta}_i}{\sqrt{\widehat {v}^{ii}}}\Big|\ge 1.96 \Longleftrightarrow |\widehat{\beta}_i| \ge 1.96 \sqrt{\widehat {v}^{ii}},
+\end{equation*}
+and the 95\% confidence interval for $\beta_i$ is obtained as
+\begin{equation*}
+    \widehat{\beta}_i \pm 1.96 \cdot \mathrm{s.e.}(\widehat{\beta}_i) = \widehat{\beta}_i \pm 1.96\sqrt{\widehat {v}^{ii}}.
+\end{equation*}
+
+- The critical value 1.96 is the $97.5$th percentile of the standard normal distribution, as the result is asymptotic. The name "$t$-ratio" is used by analogy with the linear regression model; many software packages report $p$-values based on the $t(T-k)$ distribution instead, which makes little difference unless $T$ is small.
+
+&nbsp;
+
+**Wald test statistic**. More generally than above, linear restrictions of the form $\mathsf{H}_{0}:\boldsymbol{\mathrm{R}}\boldsymbol{\beta}=\boldsymbol{r}$, where the $N \times (p+q+1)$ matrix $\boldsymbol{\mathrm{R}}$ has full row rank $N$, can be tested with the Wald test statistic
+\begin{equation*}
+    W = \left(\boldsymbol{\mathrm{R}}\widehat{\boldsymbol{\beta}}-\boldsymbol{r}\right)^{\prime}\left(\boldsymbol{\mathrm{R}}\widehat{\boldsymbol{\mathrm{V}}}^{-1}\boldsymbol{\mathrm{R}}^{\prime}\right)^{-1}\left(\boldsymbol{\mathrm{R}}\widehat{\boldsymbol{\beta}}-\boldsymbol{r}\right)\mathrel{\underset{as}{\overset{\mathsf{H}_{0}}{\sim}}} \chi_{N}^{2}
+\end{equation*}
+under the null hypothesis, so that $\mathsf{H}_{0}$ is rejected for large values of $W$. The squared $t$-ratio above is the special case $N=1$ with $\boldsymbol{\mathrm{R}}=(0,\ldots,1,\ldots,0)$ and $r=0$ (and, accordingly, $1.96^{2}\approx 3.84$ is the 5\% critical value of the $\chi^{2}(1)$ distribution).
+
+&nbsp;
+
+**LR test statistic**. Tests constructed using likelihood ratio principles can also be used in a conventional manner. Denoting by $\widetilde{\boldsymbol{\vartheta}}$ the ML estimator obtained under the $N$ restrictions of $\mathsf{H}_{0}$ and by $\widehat{\boldsymbol{\vartheta}}$ the unrestricted one, the likelihood ratio test statistic (under the null hypothesis) is
+\begin{equation*}
+    LR = 2\left(l(\widehat{\boldsymbol{\vartheta}})-l(\widetilde{\boldsymbol{\vartheta}})\right)\mathrel{\underset{as}{\overset{\mathsf{H}_{0}}{\sim}}} \chi_{N}^{2}.
+\end{equation*}
+The Wald, likelihood ratio, and Lagrange multiplier (score) tests are asymptotically equivalent, but their finite-sample properties differ.
+
+- When applying the $LR$ test in practice, the restricted and unrestricted log-likelihood functions must be computed from *exactly the same* observations (and with the same treatment of the initial values). 
+
+- With conditional ML this is easy to violate: an ARMA(3,0) and an ARMA(1,0) model estimated by conditional ML "as such" use effective samples of different length, in which case the log-likelihood values are not comparable.
+
+<!-- - Individual $t$-ratios and joint tests can give different answers. Lags of $y_{t}$ are typically strongly correlated, so it may well happen that no individual coefficient appears significant while their joint restriction is clearly rejected (or the other way round). Order selection should therefore not be based on individual $t$-ratios alone; the information criteria and residual diagnostics discussed in the previous section are used alongside them.
+
+- The standard results require the restrictions to be interior to the parameter space and the model to be identified both under the null and the alternative. For instance, testing whether an ARMA(1,1) model reduces to white noise ($\mathsf{H}_{0}\text{: }\phi_{1}=\theta_{1}=0$) is a nonstandard testing problem, because under the null the parameters are not identified. Similarly, testing $\theta_{1}=1$ in an MA(1) model is a boundary problem, and the $\chi^{2}$ approximation does not apply. -->
+
+&nbsp;
+
+
+**Empirical example**. In the previous section, we concluded an AR(2) model to be one possible candidate for the quarterly U.S real GDP growth (1985:Q1--2007:Q2). The conditional maximum likelihood estimation of this model gives us
+\begin{equation*}
+    y_{t} = \underset{\left(0.197\right) }{1.693} + \underset{\left(0.101\right) }{0.160} y_{t-1} + \underset{\left(0.101\right) }{0.287} y_{t-2} + \widehat{u}_{t}, \quad \widehat{\sigma}^{2}=3.536,
+\end{equation*}
+where in parentheses under the estimates are the approximate standard errors. The corresponding $t$-ratios are $1.693/0.197\approx 8.6$, $0.160/0.101\approx 1.6$, and $0.287/0.101\approx 2.8$.
+
+- The coefficient of the second lag is statistically significant at the 5\% significance level ($2.8>1.96$), and hence the model cannot be reduced to an AR(1) model. Its 95\% confidence interval is $0.287\pm1.96\cdot0.101$, that is, roughly $\left[0.089,0.485\right]$.
+
+- The coefficient of the first lag is, in turn, *not* significant at the 5\% level ($1.6<1.96$). Note, however, that dropping the first lag while keeping the second one would be unconventional: the model would no longer be a "complete" AR(2) specification, and such lag restrictions should be tested jointly (and supported by the residual diagnostics) rather than by looking at a single $t$-ratio.
+
+Alternatively, if reporting the estimation result for the demeaned time series, we then obtain
+\begin{equation*}
+    \bar{y}_{t} = \underset{\left(0.101\right) }{0.160}\bar{y}_{t-1} + \underset{\left(0.102\right) }{0.287}\bar{y}_{t-2} +\widehat{u}_{t},
+\end{equation*}
+where $\bar{y}_{t}=y_{t}-3.061$ is the demeaned GDP growth series. The value $3.061$ is the estimated mean of the process, obtained from the estimates as follows
+\begin{equation*}
+\widehat{\mu} = \widehat{\nu}/(1-\widehat{\phi}_{1}-\widehat{\phi}_{2})=1.693/(1-0.160-0.287)\approx3.061.
+\end{equation*}
+
+
+&nbsp;

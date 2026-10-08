@@ -1,0 +1,46 @@
+project:
+  type: book
+  output-dir: _book
+
+book:
+  title: "Time Series Econometrics (TSE)"
+  author: "Henri Nyberg"
+  date: last-modified
+  date-format: "MMMM DD, YYYY"
+  downloads: [pdf]
+  output-file: "msTSE2026"
+
+  chapters:
+    - file: index.qmd
+    - file: TSE-ch1.qmd
+    - file: TSE-ch2.qmd
+    - file: TSE-ch3.qmd
+    - file: TSE-ch4.qmd
+    - file: TSE-ch5.qmd
+    - file: TSE-ch6.qmd
+    - file: TSE-ch7.qmd
+    - file: TSE-ch8.qmd
+    - file: TSE-ch9.qmd
+    - file: TSE-ch10.qmd
+    - file: TSE-ch11.qmd
+    - file: TSE-ch12.qmd
+    - file: TSE-ch13.qmd
+
+  sidebar:
+    style: docked
+    search: true
+
+format:
+  html:
+    html-math-method: mathjax
+    include-in-header:
+      - file: assets/html-header.html
+    theme: cerulean
+    css: assets/styles-TSE.css
+
+  pdf:
+    pdf-engine: pdflatex
+    documentclass: book
+    include-in-header:
+      - assets/preamble-TSE.tex
+    toc: true

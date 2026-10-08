@@ -1,0 +1,5 @@
+# Tekstitiedostot tallennetaan repoon aina samoilla rivinvaihdoilla (LF),
+# jolloin Windows- ja Mac-koneilla tehdyt muutokset eivät näy turhina eroina.
+* text=auto
+*.png binary
+*.xlsx binary

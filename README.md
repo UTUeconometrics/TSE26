@@ -209,7 +209,8 @@ Muita käsitteitä:
 
 ------------------------------------------------------------------------
 
-## Käyttöönotto (kerran) {#käyttöönotto-kerran}
+
+## Käyttöönotto (kerran)
 
 1.  **Ohjelmat**: R ja RStudio. Quarto tulee RStudion mukana.
 
